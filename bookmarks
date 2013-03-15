@@ -1,0 +1,49 @@
+#!/bin/sh
+
+
+# Use this template to fix up all your ifttt triggers as well... just send via e-mail.
+
+url="$1"
+title="$2"
+description="$3"
+
+# trimming length of title so it's tweetable!
+if [ ${#title} -gt 109 ]; then
+	short_title=`echo "$title" | awk '{print substr($0,1,110)}'`
+else
+	short_title="$title"
+fi
+
+# Requires a slightly modified version of 
+# https://gist.github.com/uriel1998/3310028
+# which only returns the shortened URL.
+shorturl=`bitly2.py "$url"`
+
+case "$description" in 
+	[tT][wW]*)
+		#twitter - requires ttytter.pl
+		#http://www.floodgap.com/software/ttytter/
+		szAnswer=`echo "$short_title: $shorturl"`
+		perl ttytter.pl -silent -status="$szAnswer"
+	;;
+	
+	[pP][oO][Cc]*)
+		# I hate dealing with API OAuth for something as simple as adding a freaking link.
+		# Send to e-mail DONE.
+		#http://help.getpocket.com/customer/portal/articles/482759
+		echo "$url" | mutt -s "$short_title" add@getpocket.com
+		notify-send --icon=notification-network-wireless-full "Sent to Pocket"
+	;;
+	#BUFFER: Send to email using http://bufferapp.com/guides/email
+	[Bb][uU][Ff]*)
+		#AInk
+		echo "$url" | mutt -s "$short_title" buffer-BLAHBLAHBLAH@to.bufferapp.com
+		notify-send --icon=notification-network-wireless-full "Mailed to Buffer"
+	;;
+	*) 
+		echo "${url}\t${title}" >> ~/bookmarks.txt
+		notify-send --icon=notification-network-wireless-full "Saved to URL List"		
+	;;
+esac
+
+	echo "${url}\t${title}" >> ~/bookmarks.txt
