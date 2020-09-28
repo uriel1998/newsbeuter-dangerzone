@@ -4,16 +4,11 @@ function save_html_send {
     #THIS IS THE BASE PATH WHERE THIS MODULE WILL SAVE COPIES
     HtmlSavePath="/home/steven/documents/html_save"
 
-
-
-wget  "${url}"
-
-
-    if [ -f (which detox) ];then
+    if [ -f $(which detox) ];then
         dttitle=$(detox "${title}")}
-        outpath="${HtmlSavePath}/${dttitle}
+        outpath="${HtmlSavePath}/${dttitle}"
     else
-        outpath="${HtmlSavePath}/${title}
+        outpath="${HtmlSavePath}/${title}"
     fi
     
     nowdir=$(echo "$PWD")
@@ -27,5 +22,6 @@ wget  "${url}"
     fi
     if [ -f "$binary" ];then
         outstring=$(echo "$binary -H --connect-timeout=2 --read-timeout=10 --tries=1 -p -k --convert-links --restrict-file-names=windows -e robots=off \"${link}\"")
-    eval ${outstring}
+        eval "${outstring}"
+    fi
 }

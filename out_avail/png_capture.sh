@@ -5,7 +5,7 @@ function png_capture_send {
 
     #customize outpath!
     #can also make copy for jpg and png
-    if [ -f (which detox) ];then
+    if [ -f $(which detox) ];then
         dttitle=$(detox "${title}")}
         outpath="$HOME/${dttitle}.png"
     else
@@ -19,5 +19,6 @@ function png_capture_send {
     if [ -f "$binary" ];then
         outstring=$(printf "%s" "$link" )
         outstring=$(echo "$binary --smooth --insecure --url=\"$outstring\" --out=\"${outpath}\"")
-    eval ${outstring}
+        eval ${outstring}
+    fi
 }

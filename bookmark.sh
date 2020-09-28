@@ -10,8 +10,11 @@
 url="$1"
 title="${@:2}"
 
-export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
+#Could this be causing the problem since it's in a subshell?
+#export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+export SCRIPT_DIR="$HOME/.newsboat"
+cd "${SCRIPT_DIR}"
 #Deshortening, deobfuscating, and unredirecting the URL
 
 source "$SCRIPT_DIR/unredirector.sh"
@@ -43,7 +46,7 @@ fi
 # Parsing enabled out systems. Find files in out_enabled, then import 
 # functions from each and running them with variables already established.
 
-posters=$(/usr/bin/ls -A "$PWD/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi | sed 's/$/.sh&/p' | uniq)
+posters=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi | sed 's/$/.sh&/p' | uniq)
             
 
 for p in $posters;do
