@@ -6,8 +6,7 @@ function wallabag_send {
     if [ ! -f "$binary" ];then
         binary=$(which wallabag)
     fi
-    # For some reason, wallabag-cli will not run without sudo. ::shrug::
-    outstring=$(echo "sudo $binary add --quiet --title \"$title\" $link ")
+    outstring=$(echo "$binary add --title \"$title\" $link ")
     echo "$outstring"
     eval ${outstring} > /dev/null
 }

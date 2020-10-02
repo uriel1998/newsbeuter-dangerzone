@@ -5,7 +5,7 @@ function save_html_send {
     HtmlSavePath="/home/steven/documents/html_save"
 
     if [ -f $(which detox) ];then
-        dttitle=$(detox "${title}")}
+        dttitle=$(echo "${title}" | detox --inline)
         outpath="${HtmlSavePath}/${dttitle}"
     else
         outpath="${HtmlSavePath}/${title}"

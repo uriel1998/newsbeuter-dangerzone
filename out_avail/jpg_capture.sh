@@ -4,7 +4,7 @@ function jpeg_capture_send {
 
 
     if [ -f $(which detox) ];then
-        dttitle=$(detox "${title}")}
+        dttitle=$(echo "${title}" | detox --inline)
         outpath="$HOME/${dttitle}.jpeg"
     else
         outpath="$HOME/${title}.jpeg"
