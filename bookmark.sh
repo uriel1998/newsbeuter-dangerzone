@@ -4,9 +4,9 @@
 #
 #  This will interactively let you determine where your bookmarks will go.
 #  (c) Steven Saus 2020
-#  Tmux and my Tmux-devour script encouraged with this 
 #
 ##############################################################################
+
 url="$1"
 title="${@:2}"
 

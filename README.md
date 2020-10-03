@@ -27,6 +27,9 @@ Dehtml is available here: http://www.moria.de/~michael/dehtml/
 
 Then I use the script in question to strip out the image links (with jpg/jpeg/gif/png extensions) and wget ( https://www.gnu.org/software/wget/ )to download them.  BDOW.
 
+Yes, there is pipe-to, which is nice if that's what you want........ 
+
+
 # NOTE: DO NOT MAKE THE MAIL ONE BACKGROUNDED - it needs input or put only a static address
 
 #NOTE: Wallabag-cli after 0.5.0 doesn't work for me...
