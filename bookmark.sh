@@ -2,8 +2,10 @@
 
 ##############################################################################
 #
-#  This will interactively let you determine where your bookmarks will go.
+#  This will interactively let you determine where your bookmarks will go for 
+#  newsboat or newsbeuter
 #  (c) Steven Saus 2020
+#  Licensed under the MIT license
 #
 ##############################################################################
 

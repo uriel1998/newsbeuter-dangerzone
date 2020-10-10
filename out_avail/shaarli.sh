@@ -1,5 +1,13 @@
 #!/bin/bash
 
+##############################################################################
+#
+#  sending script
+#  (c) Steven Saus 2020
+#  Licensed under the MIT license
+#
+##############################################################################
+
 function shaarli_send {
     
     binary=$(grep 'shaarli =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')

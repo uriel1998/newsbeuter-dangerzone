@@ -1,5 +1,13 @@
 #!/bin/bash
 
+##############################################################################
+#
+#  sending script
+#  (c) Steven Saus 2020
+#  Licensed under the MIT license
+#
+##############################################################################
+
 function oysttyer_send {
     
     binary=$(grep 'oysttyer =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')

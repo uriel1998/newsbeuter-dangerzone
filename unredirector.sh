@@ -1,5 +1,14 @@
 #!/bin/bash
   
+
+##############################################################################
+#
+#  Unredirector script 
+#  (c) Steven Saus 2020
+#  Licensed under the MIT license
+#
+##############################################################################  
+  
 # because this is a bash function, it's using the variable $url as the returned
 # variable.  So there's no real "return" other than setting that var.
 

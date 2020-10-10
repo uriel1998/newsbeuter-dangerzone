@@ -1,6 +1,12 @@
 #!/bin/bash
 
-#bitly is updating thier API - mandatorily - in march 2020, so I'm backburnering this.
+##############################################################################
+#
+#  shortening script
+#  (c) Steven Saus 2020
+#  Licensed under the MIT license
+#
+##############################################################################
 
 function bitly_shortener {
  

@@ -1,5 +1,39 @@
 #!/bin/bash
 
+##############################################################################
+#
+#  sending script
+#  (c) Steven Saus 2020
+#  Licensed under the MIT license
+#
+##############################################################################
+
+
+##############################################################################
+# Add in content warning using https://git.faithcollapsing.com/agaetr/
+##############################################################################
+
+function get_content_warning {
+
+    if [ -f "$HOME/.config/agaetr/agaetr.ini" ];then
+        words=(${title})
+
+        for word in $words; do
+            tCW=$(grep --before-context=1 ${word} "$HOME/.config/agaetr/agaetr.ini" | head -1 | awk '{print $3}')
+            if [ ! -z "$tCW" ] && [[ ${tCW} =~ ${CW} ]];then
+                CW=$(echo "$CW $tCW")
+            fi
+        done
+        if [ ! -z "${CW}" ];then
+            CW=$(echo "-p \"$CW\"")
+        fi
+    fi
+}
+
+##############################################################################
+# Post this toot
+##############################################################################
+
 function toot_send {
 
     binary=$(grep 'toot =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
@@ -12,12 +46,15 @@ function toot_send {
             chop1=$( 500 - ${#link} )
             chop=$( ${#title} - ${chop1} )
             title=${title::${#title}-${chop}}
-            outstring=$(printf "%s: %s" "$title" "$link" )
+            outstring=$(printf "%s: %s" "$title" "$link" "$cw")
         fi
-    
-    postme=$(printf "%s post \"%s\" --quiet" "$binary" "$outstring")
-    eval ${postme}
+        postme=$(printf "%s post \"%s\" %s %s --quiet" "$binary" "$outstring" "$Limgurl" "$cw")
+        echo "${postme}"
+        #eval ${postme}
+    fi
 }
+
+
 
 ##############################################################################
 # Are we sourced?

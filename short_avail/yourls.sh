@@ -1,5 +1,13 @@
 #!/bin/bash
 
+##############################################################################
+#
+#  shortening script
+#  (c) Steven Saus 2020
+#  Licensed under the MIT license
+#
+##############################################################################
+
 function yourls_shortener {
  
 yourls_api=$(grep yourls_api "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g'| awk -F '=' '{print $2}')

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+##############################################################################
+#
+#  sending script
+#  (c) Steven Saus 2020
+#  Licensed under the MIT license
+#
+##############################################################################
+
+
 function add_to_todo_send {
     
     binary=$(which todo-txt)
