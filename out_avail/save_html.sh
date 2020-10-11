@@ -11,7 +11,7 @@
 function save_html_send {
 
     #THIS IS THE BASE PATH WHERE THIS MODULE WILL SAVE COPIES
-    HtmlSavePath="/home/steven/documents/html_save"
+    HtmlSavePath="${HOME}/html_save"
 
     if [ -f $(which detox) ];then
         dttitle=$(echo "${title}" | detox --inline)

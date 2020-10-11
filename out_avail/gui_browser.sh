@@ -2,7 +2,7 @@
 
 function gui_browser_send {
     
-    /home/steven/apps/firefox/firefox --new-tab "$link" 
+    xdg-open --new-tab "$link" 
 
 }
 ##############################################################################

@@ -12,9 +12,6 @@
 function pdf_capture_send {
 
 
-
-    #customize outpath!
-    #can also make copy for jpg and png
     if [ -f $(which detox) ];then
         dttitle=$(echo "${title}" | detox --inline)
         outpath="$HOME/${dttitle}.pdf"
