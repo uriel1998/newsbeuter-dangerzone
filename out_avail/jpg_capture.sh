@@ -10,6 +10,8 @@
 
 function jpeg_capture_send {
 
+
+
     if [ -f $(which detox) ];then
         dttitle=$(echo "${title}" | detox --inline)
         outpath="$HOME/${dttitle}.jpeg"

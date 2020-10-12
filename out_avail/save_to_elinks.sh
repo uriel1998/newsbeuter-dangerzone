@@ -1,9 +1,9 @@
 #!/bin/bash
 
-function gui_browser_send {
+function save_to_elinks_send {
     
-    /home/steven/apps/firefox/firefox --new-tab "$link" 
-
+        printf "%s\t%s" "$title" "$link" >>  ${HOME}/.elinks/bookmarks
+    
 }
 ##############################################################################
 # Are we sourced?
@@ -28,6 +28,6 @@ else
         if [ ! -z "$2" ];then
             title="$2"
         fi
-        gui_browser_send
+        save_to_elinks_send
     fi
 fi
