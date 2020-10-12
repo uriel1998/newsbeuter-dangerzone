@@ -1,12 +1,12 @@
-newsbeuter-dangerzone
-=====================
-
 # dangerzone!
+### (officially *newsbeuter-dangerzone* )
 
 Enhanced, modular, bookmarking for newsboat, newsbeuter, or (for that matter) 
 anything that can pass a title and an URL to a program.
 
-![dangerzone logo](https://raw.githubusercontent.com/uriel1998/agaetr/master/dangerzone-open-graph.png "logo")
+![dangerzone logo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/dangerzone-open-graph.png "logo")  
+
+![demo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/docs/demo.gif "demo")  
 
 ## Contents
  1. [About](#1-about)
@@ -85,10 +85,10 @@ of your choice. Change into that directory.
 * If using `newsboat` or `newsbeuter`, edit your `config` file with bookmark-cmd 
 set to the path where you put the files:
 
-`# -- Bookmarks ---------------------------------------------------------`
-`bookmark-cmd "~/.newsboat/bookmark.sh"`
-`bookmark-interactive yes`
-`bookmark-autopilot no`
+`# -- Bookmarks ---------------------------------------------------------`  
+`bookmark-cmd "~/.newsboat/bookmark.sh"`  
+`bookmark-interactive yes`  
+`bookmark-autopilot no`  
 
 Any service you would like to use needs to have a symlink made from the "avail" 
 directory to the "enabled" directory. For example:
@@ -103,10 +103,10 @@ services.
 Using the INI file is optional *if* all of your binary files are on your $PATH 
 or hand-edited in *and* you have no use for content warnings.
 
-I'm repurposing the agaetr.ini file, the format is the same.  The example 
+I'm adding value to the agaetr.ini file, the format is the same.  The example 
 shows the possible options.  You can leave the unused entries blank without 
 any difficulty (unless you're using `agaetr`, which it should work with 
-seamlessly).  The [Feed] sections are completely ignored here.
+seamlessly).  The [Feed] sections are completely ignored with `dangerzone`.
 
 After editing `agaetr.ini`:
  
@@ -115,6 +115,9 @@ After editing `agaetr.ini`:
 
 
 ## 5. Services Setup
+
+The services are left unbackgrounded here for maximum compatibility. And most 
+(except for `cutycapt` or the one that saves all the HTML) only take a second.
 
 ### Services Not Covered Here
 
@@ -130,11 +133,11 @@ If you create one for another service, please contact me so I can merge it in
 
 ### Shorteners
 
-#### murls  
+#### murls (shortener)  
 
 Murls is a free service and does not require an API key. 
 
-#### YOURLS  
+#### YOURLS (shortener)  
 
 Go to your already functional YOURLS instance.  Get the API key from 
 Place the URL of your instance and API key into `agaetr.ini`.  
@@ -144,7 +147,7 @@ Place the URL of your instance and API key into `agaetr.ini`.
 
 ### Bookmarking Helpers
 
-#### Twitter via Oysttyer  
+#### Twitter via Oysttyer (output)  
 
 Posts the title and URL to Twitter using Oysttyer.
 
@@ -169,12 +172,12 @@ Note that shorteners and wallabag don't get along all the time.
 
 **NOTE: Wallabag-cli after 0.5.0 doesn't work for me...**
 
-#### todo.txt
+#### todo.txt (output)  
 
 Install and set up [Todo-txt](http://todotxt.org/).  It will add a task made up 
 of the title and the URL.
 
-#### Send to email
+#### Send to email (output)  
 
 *DO NOT BACKGROUND THIS ONE*
 
@@ -188,27 +191,27 @@ a horribly convoluted bespoke filter which uses [hxclean and hxnormalize and hxu
 
 The default is to use `lynx`.  
 
-#### GUI browser
+#### GUI browser (output)  
 
 Uses XDG-OPEN; no configuration should be needed.
 
-#### Capture to JPG/PNG/PDF
+#### Capture to JPG/PNG/PDF (output)  
 
 Utilizes [cutycapt](http://cutycapt.sourceforge.net/), if [detox](http://detox.sourceforge.net/) is in 
 $PATH, it will be used to sanitize the title string for use as a filename. Saves 
 in the $HOME directory.
 
-#### Save to Surfraw / Elinks Bookmark file
+#### Save to Surfraw / Elinks Bookmark file (output)  
 
 Examples to show the different paths; this is essentially the "default" bookmarking 
 behavior of newsbeuter/newsboat.  They have almost identical formats.
 
-#### Submit to the Wayback Machine
+#### Submit to the Wayback Machine (output)  
 
 While there is an official client, I wrote this using curl calls and [API Keys](https://archive.org/account/s3.php). 
 You need an account there to get your own API keys.  Place them into `agaeter.ini`.
 
-#### Mastodon via toot  
+#### Mastodon via toot (output)  
 
 Install and set up [toot](https://github.com/ihabunek/toot/).  Place the 
 location of the binary into `agaetr.ini`.
@@ -249,6 +252,8 @@ added to the title string.
 
 You will then have a `fzf` created interface with all the enabled "out" options 
 available to you. Choose as many or few as you like (press TAB to multi-select).
+
+![demo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/docs/demo.gif "demo")  
 
 The individual modules are written so that they may be sourced by your other 
 scripts as well. The function called is [filename]_send, so inside `pdf_capture` 
