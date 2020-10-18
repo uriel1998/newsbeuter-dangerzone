@@ -17,15 +17,16 @@ function oysttyer_send {
     if [ -f "$binary" ];then
         outstring=$(printf "%s: %s" "$title" "$link" )
 
-    if [ ${#outstring} -gt 280 ]; then
-        chop1=$( 280 - ${#link} )
-        chop=$( ${#title} - ${chop1} )
-        title=${title::${#title}-${chop}}
-        outstring=$(printf "%s: %s" "$title" "$link" )
-    fi
+    	if [ ${#outstring} -gt 280 ]; then
+        	chop1=$( 280 - ${#link} )
+        	chop=$( ${#title} - ${chop1} )
+        	title=${title::${#title}-${chop}}
+        	outstring=$(printf "%s: %s" "$title" "$link" )
+	    fi
     
-    outstring=$(echo "$binary -silent -status=\"$outstring\"")
-    eval ${outstring}
+	    outstring=$(echo "$binary -silent -status=\"$outstring\"")
+	    eval ${outstring}
+	fi
 }
 
 
