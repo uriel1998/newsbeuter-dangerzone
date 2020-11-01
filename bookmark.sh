@@ -13,6 +13,7 @@ url="$1"
 title="${@:2}"
 
 
+
 #Could this be causing the problem since it's in a subshell?
 #export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 export SCRIPT_DIR="$HOME/.newsboat"
@@ -22,6 +23,13 @@ cd "${SCRIPT_DIR}"
 source "$SCRIPT_DIR/unredirector.sh"
 unredirector
 link="$url"
+
+
+# If no title, get one
+# from https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
+if [ -z "${title}" ]; then
+    title=$(wget -qO- $"{url}" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html.. )
+fi
 
 # SHORTENING OF URL
 # call first (should be only) element in shortener dir to shorten url
