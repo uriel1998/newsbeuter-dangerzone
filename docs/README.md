@@ -2,22 +2,24 @@
 ### (officially *newsbeuter-dangerzone* )
 
 Enhanced, modular, bookmarking for newsboat, newsbeuter, or (for that matter) 
-anything that can pass a title and an URL to a program.
+anything that can pass a title and an URL to a program...or even from clipboard!
 
 ![dangerzone logo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/dangerzone-open-graph.png "logo")  
 
 ![demo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/docs/demo.gif "demo")  
+
+![GUI demo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/docs/gui-demo.png "GUI demo")  
 
 ## Contents
  1. [About](#1-about)
  2. [License](#2-license)
  3. [Prerequisites](#3-prerequisites)
  4. [Installation](#4-installation)
- 6. [Services Setup](#5-services-setup)
- 7. [Content Warning](#9-advanced-content-warning)
- 8. [Usage](#10-usage)
- 9. [Other Files](#11-other-files)
- 10. [TODO](#12-todo)
+ 5. [Services Setup](#5-services-setup)
+ 6. [Content Warning](#6-advanced-content-warning)
+ 7. [Usage](#7-usage)
+ 8. [Other Files](#8-other-files)
+ 9. [TODO](#9-todo)
 
 ***
 
@@ -27,7 +29,9 @@ anything that can pass a title and an URL to a program.
 
 `dangerzone` (previously called `newsbeuter-dangerzone`, though it's still in 
 that repo) is a modular bookmarking script for the [newsboat](https://newsboat.org/) and [newsbeuter](https://www.newsbeuter.org/) 
-RSS readers, but will work with anything that can spit out a string and an URL.
+RSS readers, but will work with anything that can spit out a string and an URL. 
+It doesn't even need the string - if there is no title passed, it will determine 
+one from the URL.
 
 It can also *deobfuscate* incoming links and optionally shorten outgoing links.
 
@@ -64,8 +68,10 @@ linux-like distros:
 You will also need:
 
 * [fzf](https://github.com/junegunn/fzf)
+* [yad](https://sourceforge.net/projects/yad-dialog/) - for GUI mode
+* [xclip](https://github.com/astrand/xclip) - for capturing URL on clipboard
 
-and one of the following (or something else that is sending URLs to `dangerzone`):
+and one of the following (or something else that is sending URLs to `dangerzone` - see the GUI mode under [usage](#7-usage)):
 
 * [newsboat](https://newsboat.org/)
 * [newsbeuter](https://www.newsbeuter.org/) 
@@ -128,8 +134,7 @@ examples for other tools or new services with as little fuss as possible
 and without requiring a great deal of knowledge on the part of the user. 
 
 If you create one for another service, please contact me so I can merge it in 
-(this repository is mirrored multiple places).
-
+(this repository is mirrored multiple places).  
 
 ### Shorteners
 
@@ -216,7 +221,13 @@ You need an account there to get your own API keys.  Place them into `agaeter.in
 Install and set up [toot](https://github.com/ihabunek/toot/).  Place the 
 location of the binary into `agaetr.ini`.
 
-## 9. Content Warning
+#### Video/Audio via YouTube-Dl (output)
+
+Install and set up [youtube-dl](https://youtube-dl.org/) in your $PATH. Without 
+editing, these scripts save audio/video into `$HOME/Downloads/mp3` and `$HOME/Downloads/videos` 
+respectively.
+
+## 6. Content Warning
 
 Currently, content warnings are only used with Mastodon. If you do not wish 
 to have automatic content warnings, remove the [CW##] sections of `agaetr.ini`.
@@ -243,12 +254,13 @@ warning.
 
 ### The keyword should **NOT** be a potentially sensitive word itself.
 
-## 10. Usage
+## 7. Usage
 
 Inside newsbeuter/newsboat, press Ctrl-B (by default) to bring up the bookmarking 
 options - it will prompt you with (pre-filled when possible) URL, title, 
 description, and feed. Anything you add into the "description" string will be 
-added to the title string.
+added to the title string.  *If no title string is passed, the program will 
+attempt to fetch the title from the webpage.*
 
 You will then have a `fzf` created interface with all the enabled "out" options 
 available to you. Choose as many or few as you like (press TAB to multi-select).
@@ -259,7 +271,23 @@ The individual modules are written so that they may be sourced by your other
 scripts as well. The function called is [filename]_send, so inside `pdf_capture` 
 the function is `pdf_capture_send` Pertinent variables are "${title}" and "${link}" .
 
-## 11. Other files
+### GUI mode
+
+Using GUI mode (and the clipboard support) will allow you to use this framework 
+with any program.  If you invoke `bookmark.sh -g [URL] [TITLE]` you will be 
+presented with a dialog to use any of the helper programs. 
+
+That is only a partial solution, though. So if you simply invoke `bookmark.sh -g` 
+*without* anything else, it will use `xclip` to get the URL from the clipboard, then 
+present the GUI interface.  
+
+![GUI demo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/docs/gui-demo.png "GUI demo")  
+
+This means that you can bind any hotkey you like to call `bookmark.sh -g` and 
+have it pull the URL from your clipboard, using it as a lightweight extension that 
+future updates can't break.
+
+## 8. Other files
 
 There are other files in this repository:
 
@@ -278,5 +306,6 @@ I added a few things:
 * `renderer.sh` - I use this for rendering articles in `newsboat`. It's the funky 
 bespoke method I mention above about sending mail.
 
-## 12. TODO
+## 9. TODO
 
+* Test the URL for validity 
