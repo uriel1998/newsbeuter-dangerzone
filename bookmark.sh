@@ -60,7 +60,7 @@ fi
 # functions from each and running them with variables already established.
 
 if [ ! -z $"{GUI}" ];then 
-	posters=$(yad --width=400 --height=200 --center --window-icon=gtk-error --borders 3 --title="Choose outputs" --checklist --list --column=Use:RD --column=metadata:text $( /usr/bin/ls -A "$SCRIPT_DIR/out_avail" | sed 's/.sh//g' | grep -v ".keep" | sed 's/^/false /' ) | awk -F '|' '{ print $2 }' )
+	posters=$(yad --width=400 --height=200 --center --window-icon=gtk-error --borders 3 --title="Choose outputs for\n $link" --checklist --list --column=Use:RD --column=metadata:text $( /usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | sed 's/^/false /' ) | awk -F '|' '{ print $2 }' | sed 's/$/.sh&/p' | uniq )
 else
     posters=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi | sed 's/$/.sh&/p' | uniq)
 fi
