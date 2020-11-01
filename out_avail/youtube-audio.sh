@@ -2,7 +2,7 @@
 
 function youtube-audio_send {
 
-    youtube-dl "$link" -x --netrc --ignore-errors --write-description --cookies /home/steven/vault/cookies.txt --no-check-certificate --embed-thumbnail --prefer-ffmpeg --no-playlist --mark-watched --continue --audio-format mp3 -o '/home/steven/downloads/mp3/%(title)s:%(uploader)s:%(upload_date)s.%(ext)s' --rate-limit 1M --restrict-filenames  
+    youtube-dl "$link" -x --netrc --ignore-errors --write-description --cookies /home/steven/vault/cookies.txt --no-check-certificate --embed-thumbnail --prefer-ffmpeg --no-playlist --mark-watched --continue --audio-format mp3 -o '$/Downloads/mp3/%(title)s:%(uploader)s:%(upload_date)s.%(ext)s' --rate-limit 1M --restrict-filenames  
 }
 
 ##############################################################################
