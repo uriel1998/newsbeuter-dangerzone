@@ -31,8 +31,8 @@ link="$url"
 
 # If no title, get one
 # from https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
-if [ -z "${title}" ]; then
-    title=$(wget -qO- $"{url}" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html.. )
+if [ -z "$title" ]; then
+    title=$(wget -qO- "$link" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html.. )
 fi
 
 # SHORTENING OF URL
@@ -59,8 +59,8 @@ fi
 # Parsing enabled out systems. Find files in out_enabled, then import 
 # functions from each and running them with variables already established.
 
-if [ ! -z $"{GUI}" ];then 
-	posters=$(yad --width=400 --height=200 --center --window-icon=gtk-error --borders 3 --title="Choose outputs for\n $link" --checklist --list --column=Use:RD --column=metadata:text $( /usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | sed 's/^/false /' ) | awk -F '|' '{ print $2 }' | sed 's/$/.sh&/p' | uniq )
+if [ ! -z "$GUI" ];then 
+	posters=$(yad --width=400 --height=400 --center --window-icon=gtk-error --borders 3 --skip-taskbar --title="Choose outputs for $link" --text="${title}" --checklist --list --column=Use:RD --column=metadata:text $( /usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | sed 's/^/false /' ) | awk -F '|' '{ print $2 }' | sed 's/$/.sh&/p' | uniq )
 else
     posters=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi | sed 's/$/.sh&/p' | uniq)
 fi
