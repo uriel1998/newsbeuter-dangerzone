@@ -26,7 +26,12 @@ fi
 title="${@:2}"
 
 if [ -z "$1" ];then 
-    tempurl=$(yad --width=500 --center --window-icon="icon-gtk-network" --title="Choose URL" --text="Please input an URL" --entry --editable )
+    if [ "$GUI" == "YUP" ];then
+        tempurl=$(yad --width=500 --center --window-icon="icon-gtk-network" --title="Choose URL" --text="Please input an URL" --entry --editable )
+    else
+        echo "Please input an URL.  "
+        read tempurl
+    fi
     if [ -z "$tempurl" ];then
         exit 1
     else
