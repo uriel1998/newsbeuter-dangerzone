@@ -131,6 +131,14 @@ case "$url" in
     # Added by Steven Saus
     # For Subreddits where it's just an image post
     ##########################################################################
+    i.redd.it/*)
+        if [ "${CliOnly}" = "false" ];then 
+            CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
+            eval "${CommandLine}"
+		else 
+            tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
+        fi
+        ;;
     
     *r/dndmemes/*|*r/memes/*|*r/reactiongifs/*|*r/quotesporn/*|*r/spaceporn/*|*r/detailcraft/*|*r/minecraftinventions/*|*r/gonemildplus/*|*r/kink/*|*r/gonewild/*|*r/realgirls/*)
         cleanurl="$(wget --load-cookies $HOME/vault/cookies.txt -q "$url" -O - | grep -oP '"media":{"obfuscated":null,"content":"\K[^"]+')"
