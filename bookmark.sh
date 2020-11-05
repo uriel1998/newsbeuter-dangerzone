@@ -25,6 +25,15 @@ fi
 
 title="${@:2}"
 
+if [ -z "$1" ];then 
+    tempurl=$(yad --width=500 --center --window-icon="icon-gtk-network" --title="Choose URL" --text="Please input an URL" --entry --editable )
+    if [ -z "$tempurl" ];then
+        exit 1
+    else
+        url="$tempurl"
+    fi
+fi
+
 #Could this be causing the problem since it's in a subshell?
 #export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 export SCRIPT_DIR="$HOME/.newsboat"
