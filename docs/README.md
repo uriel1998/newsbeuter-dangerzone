@@ -227,6 +227,11 @@ Install and set up [youtube-dl](https://youtube-dl.org/) in your $PATH. Without
 editing, these scripts save audio/video into `$HOME/Downloads/mp3` and `$HOME/Downloads/videos` 
 respectively.
 
+#### Facebook
+
+This helper uses `urlencode` (I got it from the `gridsite-clients` package on Debian) on the link, then 
+calls `sensible-browser` with the generic Facebook sharing link. User interaction *is* required.
+
 ## 6. Content Warning
 
 Currently, content warnings are only used with Mastodon. If you do not wish 
