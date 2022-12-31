@@ -68,7 +68,8 @@ VIDEO_QUEUE="tsp mpv --ontop --no-border --force-window --autofit=900x600 --geom
 VIDEO_CLIP="mpv --loop --quiet --ontop --no-border --force-window --autofit=900x600 --geometry=-15+60"
 IMAGEGUI="feh -. -x -B black -g --insecure --keep-http --output-dir /home/steven/tmp --geometry=600x600+15+60"
 # IMAGECLI="w3m /usr/lib/w3m/cgi-bin/treat_as_url.cgi -o display_image=1 -o imgdisplay=/usr/lib/w3m/w3mimgdisplay"
-IMAGECLI="chafa --colors=256 --dither=diffusion"
+# IMAGECLI="chafa --colors=256 --dither=diffusion"
+IMAGECLI="/usr/local/bin/image"
 TORRENTCLI="transmission-remote --add"
 # LIVEFEED='streamlink -p "mpv --cache 2048 --ontop --no-border --force-window --autofit=500x280 --geometry=-15-60"'
 LIVEFEED="tsp streamlink"
@@ -135,7 +136,7 @@ case "$url" in
         if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else 
+        else 
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
@@ -145,7 +146,7 @@ case "$url" in
         if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else 
+        else 
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
@@ -163,7 +164,7 @@ case "$url" in
         if [ "${CliOnly}" = "false" ];then         
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
@@ -181,7 +182,7 @@ case "$url" in
         if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
@@ -190,7 +191,7 @@ case "$url" in
         if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
@@ -199,22 +200,22 @@ case "$url" in
         if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     *imageshtorm.com/img*)
         cleanurl="$(curl -s "$url" | grep onclick | grep -oP '<a href=\047\K[^\047]+')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     *freescreens.ru/allimage/*|*imgclick.ru/allimage/*|*money-pic.ru/allimage/*)
         cleanurl="$(printf $url | sed 's/-thumb//')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
         else
@@ -223,25 +224,25 @@ case "$url" in
         ;;
     *freescreens.ru/*)
         cleanurl="$(printf "$url/1/" | sed 's/freescreens.ru/picpic.online/')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     *pixcloud.ru/view*)
         cleanurl="$(curl -s "$url" | grep -oP '<img id="photo" src="\K[^"]+')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     *money-pic.ru/*)
         cleanurl="$(curl -s "$url/1/" | grep allimage | grep -oP '<img src="\K[^"]+')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
         else
@@ -250,35 +251,35 @@ case "$url" in
         ;;
     *imagecurl.com/viewer.php?file=*)
         cleanurl="$(printf $url | sed 's@https://@https://cdn.@' | sed 's@/viewer.php?file=@/images/@')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     *img2share.com/*|*imgpeak.com/*|*damimage.com/img*|*imagedecode.com/img*|*picfuture.com/*|*imageteam.org/*|*imgsalem.com/*|*dimtus.com/img*|*imgstudio.org/img*|*imagehub.pro/img*|*trans.firm.in//img*|*pic.hotimg.site/img*)
         # cleanurl="$(curl -s "$url" | grep -oP '<img class=\047centred\047 src=\047\K[^\047]+')"
         cleanurl="$(curl -s "$url" | grep centred | grep -oP 'src=\047\K[^\047]+')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     *imgadult.com/img*|*imgdrive.net/*)
         cleanurl="$(curl -s "$url" | grep -oP '<meta property="og:image" content="\K[^"]+' | sed 's/small/big/')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     *xxximagetpb.org/*|*img-central.com/*|*imgdone.com/image/*|*i.nmfiles.com/image/*|*i.imghost.top/image/*|*mstimg.com/image/*|*imagebam.com/image/*|*imgflip.com/i/*)
         cleanurl="$(lynx -source "$url" | grep -oP '<meta property="og:image" content="\K[^"]+')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
         else
@@ -287,19 +288,19 @@ case "$url" in
         ;;
     *wallpaperspic.pw/*|*pornweb.xyz/*)
         cleanurl="$(curl -s "$url" | grep imagebam | grep -oP '<p><img src="\K[^"]+')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     */imagetwist.com/*)
         cleanurl="$(curl -s "$url" | grep -oP '<p style="display: block; text-align:center;"><img src="\K[^"]+')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
@@ -308,16 +309,16 @@ case "$url" in
         if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
     *hotimage.uk/img*)
         cleanurl="$(curl --data "imgContinue=Continue to image ..." --location "$(printf $url | sed 's@http://@https://www.@')" | grep centred | grep -oP 'src=\047\K[^\047]+')"
-		if [ "${CliOnly}" = "false" ];then 
+        if [ "${CliOnly}" = "false" ];then 
             CommandLine=$(echo "nohup ${IMAGEGUI} ${cleanurl} &")
             eval "${CommandLine}"
-		else
+        else
             tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$cleanurl' && tmux kill-pane" 'Enter'
         fi
         ;;
@@ -343,8 +344,12 @@ case "$url" in
         $TORRENTCLI "$url"
         ;;
     *.jpg|*.jpeg|*.png|*:large)
+        if [ "${CliOnly}" = "false" ];then 
+            nohup $IMAGEGUI "$url" > /dev/null 2>&1 &
+        else 
+            tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$url' ; read && tmux kill-pane" 'Enter'
+        fi    
         #tmux new-window -n pixcli && tmux send-keys "$IMAGECLI '$url' && tmux kill-pane" 'Enter'
-        nohup $IMAGEGUI "$url" > /dev/null 2>&1 &
         ;;
     *.gif)
         nohup $VIDEO_CLIP "${url/.gifv/.webm}" > /dev/null 2>&1 &

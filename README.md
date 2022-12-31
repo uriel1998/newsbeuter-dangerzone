@@ -307,6 +307,7 @@ I added a few things:
 * -c switch to use CLI instead of GUI
 * Configurable default of the above
 * Switched references to rtv to tuir
+* uses [`terminal-image-cli`](https://github.com/sindresorhus/terminal-image-cli) by default instead of chafa.
 
 * `renderer.sh` - I use this for rendering articles in `newsboat`. It's the funky 
 bespoke method I mention above about sending mail.
