@@ -1,4 +1,5 @@
 # dangerzone!
+
 ### (officially *newsbeuter-dangerzone* )
 
 Enhanced, modular, bookmarking for newsboat, newsbeuter, or (for that matter) 
@@ -136,11 +137,11 @@ and without requiring a great deal of knowledge on the part of the user.
 If you create one for another service, please contact me so I can merge it in 
 (this repository is mirrored multiple places).  
 
+Some have been removed due to changes in the API that made it impractical (Facebook), and 
+some (such as the one for Twitter/X) because of API issues and because I don't give a
+shit about fascists.
+
 ### Shorteners
-
-#### murls (shortener)  
-
-Murls is a free service and does not require an API key. 
 
 #### YOURLS (shortener)  
 
@@ -152,12 +153,6 @@ Place the URL of your instance and API key into `agaetr.ini`.
 
 ### Bookmarking Helpers
 
-#### Twitter via Oysttyer (output)  
-
-Posts the title and URL to Twitter using Oysttyer.
-
-Install and set up [oysttyer](https://github.com/oysttyer/oysttyer). Place the 
-location of the binary into `agaetr.ini` or into your $PATH.   
 
 ### Shaarli (output)
 
@@ -227,11 +222,6 @@ Install and set up [youtube-dl](https://youtube-dl.org/) in your $PATH. Without
 editing, these scripts save audio/video into `$HOME/Downloads/mp3` and `$HOME/Downloads/videos` 
 respectively.
 
-#### Facebook
-
-This helper uses `urlencode` (I got it from the `gridsite-clients` package on Debian) on the link, then 
-calls `sensible-browser` with the generic Facebook sharing link. User interaction *is* required.
-
 ## 6. Content Warning
 
 Currently, content warnings are only used with Mastodon. If you do not wish 
@@ -296,8 +286,7 @@ future updates can't break.
 
 There are other files in this repository:
 
-* `unredirector.sh` - Used by `agaetr` to remove redirections and shortening. 
-Exactly the same as [muna](https://github.com/uriel1998/muna).  
+* `muna.sh` - Exactly the same as [muna](https://github.com/uriel1998/muna). Used to remove redirections and shortening. 
 
 * `urlportal.sh` - I use this as my "browser" helper. Originally from [Gotbletu](https://github.com/gotbletu/shownotes/blob/master/urlportal.sh), 
 I added a few things:

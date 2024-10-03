@@ -3,7 +3,7 @@
 ##############################################################################
 #
 #  sending script
-#  (c) Steven Saus 2020
+#  (c) Steven Saus 2022
 #  Licensed under the MIT license
 #
 ##############################################################################
@@ -11,7 +11,7 @@
 function save_html_send {
 
     #THIS IS THE BASE PATH WHERE THIS MODULE WILL SAVE COPIES
-    HtmlSavePath="$HOME/documents/html_save"
+    HtmlSavePath="${XDG_DATA_HOME}/agaetr/save"
 
     if [ -f $(which detox) ];then
         dttitle=$(echo "${title}" | detox --inline)
@@ -25,7 +25,7 @@ function save_html_send {
     cd "${outpath}"
 
     
-    binary=$(grep 'wget =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+    binary=$(grep 'wget =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
     if [ ! -f "$binary" ];then
         binary=$(which wget)
     fi

@@ -3,19 +3,16 @@
 ##############################################################################
 #
 #  sending script
-#  (c) Steven Saus 2020
+#  (c) Steven Saus 2022
 #  Licensed under the MIT license
 #
 ##############################################################################
 
-
 function wallabag_send {
     
-    binary=$(grep 'wallabag =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
-    if [ ! -f "$binary" ];then
-        binary=$(which wallabag)
-    fi
-    outstring=$(echo "$binary add --title \"$title\" $link ")
+    binary=$(grep 'wallabag =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+
+    outstring=$(echo "$binary add --quiet --title \"$title\" $link ")
     echo "$outstring"
     eval ${outstring} > /dev/null
 }

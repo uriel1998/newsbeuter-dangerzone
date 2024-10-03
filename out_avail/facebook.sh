@@ -3,7 +3,7 @@
 ##############################################################################
 #
 #  sending script
-#  (c) Steven Saus 2020
+#  (c) Steven Saus 2024
 #  Licensed under the MIT license
 #
 #   REQUIRES URLENCODE which is in package gridsite-clients on Debian

@@ -4,7 +4,7 @@
 #
 #  This will interactively let you determine where your bookmarks will go for 
 #  newsboat or newsbeuter
-#  (c) Steven Saus 2020
+#  (c) Steven Saus 2024
 #  Licensed under the MIT license
 #
 ##############################################################################
@@ -45,7 +45,7 @@ export SCRIPT_DIR="$HOME/.newsboat"
 cd "${SCRIPT_DIR}"
 #Deshortening, deobfuscating, and unredirecting the URL
 
-source "$SCRIPT_DIR/unredirector.sh"
+source "$SCRIPT_DIR/muna.sh"
 unredirector
 link="$url"
 
@@ -97,3 +97,7 @@ for p in $posters;do
     fi
 done
 
+# TODO: add preview function to each of the modules for fzf --preview giving a quick explanation of what it does
+# TODO: modules for each possible browser?
+# TODO: Allow calling an editor with multiselect capabilities of fzf?
+# TODO: Preview current values (and allow editing of) with fzf selection screen

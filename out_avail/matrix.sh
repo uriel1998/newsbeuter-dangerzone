@@ -8,23 +8,20 @@
 #
 ##############################################################################
 
-# USING CURL credit
-#https://blog.edmdesigner.com/send-email-from-linux-command-line/
-
 function loud() {
     if [ $LOUD -eq 1 ];then
         echo "$@"
     fi
 }
 
-# should have been passed in, but just in case...
     
 if [ ! -d "${XDG_DATA_HOME}" ];then
     export XDG_DATA_HOME="${HOME}/.local/share"
 fi
 inifile="${XDG_CONFIG_HOME}/agaetr/agaetr.ini" 
 
-function email_send {
+
+function matrix_send {
     if [ -z "${1}" ];then
         title="Automated email from agaetr: ${link}"
     else
@@ -97,8 +94,6 @@ else
         else 
             title="${1}"
         fi
-        email_send "${title}"
+        matrix_send "${title}"
     fi
 fi
-
-
