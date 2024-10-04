@@ -1,8 +1,8 @@
 #!/bin/bash
 
-function gui_browser_send {
+function firefox_send {
     
-    /home/steven/apps/waterfox/waterfox --new-tab "$link" 
+    /usr/bin/firefox --new-tab "$link" 
 
 }
 

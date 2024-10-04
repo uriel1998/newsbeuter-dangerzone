@@ -1,8 +1,8 @@
 #!/bin/bash
 
-function gui_browser_send {
+function work_browser_send {
     
-    /home/steven/apps/waterfox/waterfox --new-tab "$link" 
+    /home/steven/apps/waterfox/waterfox -P work -no-remote --class workWaterfoxProfile "$link" 
 
 }
 

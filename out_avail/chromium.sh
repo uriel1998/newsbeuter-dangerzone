@@ -1,21 +1,12 @@
 #!/bin/bash
 
-##############################################################################
-#
-#  sending script
-#  (c) Steven Saus 2024
-#  Licensed under the MIT license
-#
-#   REQUIRES URLENCODE which is in package gridsite-clients on Debian
-#   REQUIRES sensible-browser to be set up
-##############################################################################
+function chromium_send {
+    
+    /usr/bin/chromium/firefox --new-tab "$link" 
 
-function facebook_send {
-    tmp=$(urlencode "${link}")
-    link="https://www.facebook.com/sharer/sharer.php?u=${tmp}"
-    outstring=$(echo "sensible-browser ${link} ")
-    eval ${outstring} > /dev/null
 }
+
+
 
 ##############################################################################
 # Are we sourced?
@@ -40,6 +31,6 @@ else
         if [ ! -z "$2" ];then
             title="$2"
         fi
-        facebook_send
+        gui_browser_send
     fi
 fi

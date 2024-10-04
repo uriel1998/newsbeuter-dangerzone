@@ -83,7 +83,9 @@ fi
 if [ ! -z "$GUI" ];then 
     posters=$(yad --width=400 --height=400 --center --window-icon=gtk-network --borders 3 --skip-taskbar --title="Choose outputs for $link" --text="${title}" --checklist --list --column=Use:RD --column=metadata:text $( /usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | sed 's/^/false /' ) | awk -F '|' '{ print $2 }' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
 else
-    posters=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi | sed 's/$/.sh&/p' | awk '!_[$0]++' )
+    header_text=$(echo -e "Title: ${title} \n Link: ${link}")
+    prompt_text="Choose your outputs!"
+    posters=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" | sed 's/$/.sh&/p' | awk '!_[$0]++' )
 fi
 
 for p in $posters;do
@@ -98,6 +100,11 @@ for p in $posters;do
 done
 
 # TODO: add preview function to each of the modules for fzf --preview giving a quick explanation of what it does
+# CHECK FOR THIS by checking for the preview string which will contain the path of the posters!!!!!!!!!!!!! so
+# bookmarker_preview=$(ps aux | grep fzf | grep -v "grep" | grep -c ${SCRIPT_DIR}/out_enabled")
+# so if that's > 0 then.... yup.
 # TODO: modules for each possible browser?
 # TODO: Allow calling an editor with multiselect capabilities of fzf?
 # TODO: Preview current values (and allow editing of) with fzf selection screen
+ 
+ 

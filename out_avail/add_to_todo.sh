@@ -10,12 +10,20 @@
 
 
 function add_to_todo_send {
-    
+    # todo-cli 
     binary=$(which todo-txt)
     if [ -f ${binary} ];then
         outstring=$(printf "%s : %s" "$title" "$link")
         outstring=$(echo "$binary a \"$outstring\"")
         eval ${outstring}
+    else
+        # todoman python package
+        binary=$(which todo)
+        if [ -f ${binary} ];then
+            outstring=$(printf "%s : %s" "$title" "$link")
+            outstring=$(echo "$binary new \"${outstring}\"")
+            eval ${outstring}
+        fi
     fi
 }
 ##############################################################################
