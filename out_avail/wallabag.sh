@@ -9,9 +9,11 @@
 ##############################################################################
 
 function wallabag_send {
-    
-    binary=$(grep 'wallabag =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
-
+    # if it's in your $PATH, you don't need the ini file.
+    binary=$(which wallabag)
+    if [ ! -f "${binary}" ];then 
+        binary=$(grep 'wallabag =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+    fi
     outstring=$(echo "$binary add --quiet --title \"$title\" $link ")
     echo "$outstring"
     eval ${outstring} > /dev/null

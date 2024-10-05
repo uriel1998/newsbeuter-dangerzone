@@ -17,10 +17,9 @@ anything that can pass a title and an URL to a program...or even from clipboard!
  3. [Prerequisites](#3-prerequisites)
  4. [Installation](#4-installation)
  5. [Services Setup](#5-services-setup)
- 6. [Content Warning](#6-advanced-content-warning)
- 7. [Usage](#7-usage)
- 8. [Other Files](#8-other-files)
- 9. [TODO](#9-todo)
+ 6. [Usage](#7-usage)
+ 7. [Other Files](#8-other-files)
+ 8. [TODO](#9-todo)
 
 ***
 
@@ -36,9 +35,11 @@ one from the URL.
 
 It can also *deobfuscate* incoming links and optionally shorten outgoing links.
 
-This uses (and even relies somewhat) on the ini file format used by [agaetr](https://github.com/uriel1998/agaetr), 
-primarily for content warnings (for Mastodon) and for API keys, it also uses 
-the url deobfuscating from [agaetr](https://github.com/uriel1998/agaetr) and [muna](https://github.com/uriel1998/muna).
+This uses the ini file format used by [agaetr](https://github.com/uriel1998/agaetr), 
+primarily for API keys and binary file locations; however, if your binaries are on `$PATH` 
+and you export keys as environment variables, you can skip that entirely. 
+
+It also uses the url deobfuscating from [muna](https://github.com/uriel1998/muna).
 
 The urlportal script is modified from [gotbletu](https://github.com/gotbletu/shownotes/blob/master/urlportal.sh)'s 
 script, see below.
@@ -166,13 +167,11 @@ location of the binary into `agaetr.ini` or into your $PATH.
 
 Saves the article to a Wallabag instance.
 
-Install and set up [Wallabag-cli](https://github.com/Nepochal/wallabag-cli). 
-Place the location of the binary into `agaetr.ini` or into your $PATH.
+Install and set up [Wallabag-cli](https://github.com/Nepochal/wallabag-cli). If
+`wallabag` is not in your `$PATH`, then use the `agaetr.ini` to specify its location. 
 Note that shorteners and wallabag don't get along all the time.
 
-**NOTE: Wallabag-cli after 0.5.0 doesn't work for me...**
-
-#### todo.txt (output)  
+#### todo.txt / todoman (output)  
 
 This actually has integrations for two different todo systems, both [Todo-txt](http://todotxt.org/) and [todoman](https://github.com/pimutils/todoman), 
 depending on what is available and installed. It will try `todo-txt` first. It will add a task made up of the title and the URL 
@@ -213,8 +212,8 @@ You need an account there to get your own API keys.  Place them into `agaeter.in
 
 #### Mastodon via toot (output)  
 
-Install and set up [toot](https://github.com/ihabunek/toot/).  Place the 
-location of the binary into `agaetr.ini`.
+Install and set up [toot](https://github.com/ihabunek/toot/).  If `toot` is not in 
+your `$PATH`, then you need to place the location of the binary into `agaetr.ini`.
 
 #### Video/Audio via YouTube-Dl (output)
 
@@ -222,34 +221,7 @@ Install and set up [youtube-dl](https://youtube-dl.org/) in your $PATH. Without
 editing, these scripts save audio/video into `$HOME/Downloads/mp3` and `$HOME/Downloads/videos` 
 respectively.
 
-## 6. Content Warning
-
-Currently, content warnings are only used with Mastodon. If you do not wish 
-to have automatic content warnings, remove the [CW##] sections of `agaetr.ini`.
-
-If you need ideas for what tags/terms make good content warnings, the file 
-`cwlist.txt` is included for your convenience. 
-
-Because of how matching is performed, a filter of "abuse" should catch "child 
-abuse" and "sexual abuse", etc. However, it matches whole words, so "war" 
-should *not* catch "bloatware" or "warframe".
-
-The content warning system is configured in the `agaetr.ini` as well:
-
-```
-[CW9]
-keyword = social-media
-matches = facebook twitter mastodon social-media online
-```
-
-The number after `[CW` does not matter as long as they are not duplicated.
-The "keyword" is what is outputted as the content warning, the space-separated 
-line after matches is what strings will trigger that keyword as a content 
-warning.   
-
-### The keyword should **NOT** be a potentially sensitive word itself.
-
-## 7. Usage
+## 6. Usage
 
 Inside newsbeuter/newsboat, press Ctrl-B (by default) to bring up the bookmarking 
 options - it will prompt you with (pre-filled when possible) URL, title, 
