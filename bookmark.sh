@@ -23,7 +23,7 @@ else
     shift
 fi
 
-title="${@:2}"
+title="${@:1}"
 
 if [ -z "$url" ];then 
     if [ "$GUI" == "YUP" ];then
@@ -83,9 +83,29 @@ fi
 if [ ! -z "$GUI" ];then 
     posters=$(yad --width=400 --height=400 --center --window-icon=gtk-network --borders 3 --skip-taskbar --title="Choose outputs for $link" --text="${title}" --checklist --list --column=Use:RD --column=metadata:text $( /usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | sed 's/^/false /' ) | awk -F '|' '{ print $2 }' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
 else
-    header_text=$(echo -e "Title: ${title} \n Link: ${link}")
-    prompt_text="Choose your outputs!"
-    posters=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
+    READY=0
+    # begin loop
+    while [ "$READY" == "0" ];do
+        header_text=$(echo -e " Title: ${title} \n Link: ${link}")
+        prompt_text=" Choose your outputs!"
+        bob=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled")
+        
+        posters=$(echo -e "edit_link\nedit_description\n${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
+        # we will exit the loop UNLESS
+        READY=1
+        
+        if [[ $posters == *"edit_link"* ]]; then
+            READY=0
+            echo "Old: ${link}"
+            read -p "Enter your new URL: " link
+        fi
+        if [[ $posters == *"edit_description"* ]]; then
+            READY=0
+            echo "Old: ${title}"
+            read -p "Enter your new description: " title
+            echo "It's there!"
+        fi        
+    done
 fi
 
 for p in $posters;do
