@@ -162,6 +162,28 @@ browser" one showing an example of where I have it open a specific profile with 
 If you're looking at how to adapt this for your own use case, these are probably 
 the ones to look at.
 
+#### Save to Surfraw / Elinks Bookmark file (output)  
+
+Examples to show the different paths; this is essentially the "default" bookmarking 
+behavior of newsbeuter/newsboat.  They have almost identical formats.
+
+#### Submit to the Wayback Machine (output)  
+
+While there is an official client, I wrote this using curl calls and [API Keys](https://archive.org/account/s3.php). 
+You need an account there to get your own API keys.  Place them into `agaeter.ini`, or export `WAYBACK_SECRET` and `WAYBACK_ACCESS` as environment variables.
+
+#### Mastodon via toot (output)  
+
+Install and set up [toot](https://github.com/ihabunek/toot/).  If `toot` is not in 
+your `$PATH`, then you need to place the location of the binary into `agaetr.ini`.
+
+#### todo.txt / todoman (output)  
+
+This actually has integrations for two different todo systems, both [Todo-txt](http://todotxt.org/) and [todoman](https://github.com/pimutils/todoman), 
+depending on what is available and installed. It will try `todo-txt` first. It will 
+add a task made up of the title and the URL. This is a good example of where adding 
+a description during the bookmark creation process is very useful.
+
 ### Shaarli (output) *
 
 Saves the URL to your Shaarli instance.
@@ -178,10 +200,7 @@ Install and set up [Wallabag-cli](https://github.com/Nepochal/wallabag-cli). If
 `wallabag` is not in your `$PATH`, then use the `agaetr.ini` to specify its location. 
 Note that shorteners and wallabag don't get along all the time.
 
-#### todo.txt / todoman (output)  
 
-This actually has integrations for two different todo systems, both [Todo-txt](http://todotxt.org/) and [todoman](https://github.com/pimutils/todoman), 
-depending on what is available and installed. It will try `todo-txt` first. It will add a task made up of the title and the URL 
 
 #### Send to email (output)  *
 
@@ -198,28 +217,17 @@ a horribly convoluted bespoke filter which uses [hxclean and hxnormalize and hxu
 The default is to use `lynx`.  
 
 
-#### Capture to JPG/PNG/PDF (output)  
+#### Capture to JPG/PNG/PDF (output)  *
 
 Utilizes [cutycapt](http://cutycapt.sourceforge.net/), if [detox](http://detox.sourceforge.net/) is in 
 $PATH, it will be used to sanitize the title string for use as a filename. Saves 
 in the $HOME directory.
 
-#### Save to Surfraw / Elinks Bookmark file (output)  
 
-Examples to show the different paths; this is essentially the "default" bookmarking 
-behavior of newsbeuter/newsboat.  They have almost identical formats.
+#### Video/Audio via YouTube-Dl (output) *
 
-#### Submit to the Wayback Machine (output)  
-
-While there is an official client, I wrote this using curl calls and [API Keys](https://archive.org/account/s3.php). 
-You need an account there to get your own API keys.  Place them into `agaeter.ini`, or export `WAYBACK_SECRET` and `WAYBACK_ACCESS` as environment variables.
-
-#### Mastodon via toot (output)  
-
-Install and set up [toot](https://github.com/ihabunek/toot/).  If `toot` is not in 
-your `$PATH`, then you need to place the location of the binary into `agaetr.ini`.
-
-#### Video/Audio via YouTube-Dl (output)
+These are examples of how `dangerzone` can be used with other programs that handle 
+URLs or even as a standalone tool.
 
 Install and set up [youtube-dl](https://youtube-dl.org/) in your $PATH. Without 
 editing, these scripts save audio/video into `$HOME/Downloads/mp3` and `$HOME/Downloads/videos` 
