@@ -12,16 +12,20 @@ function jpeg_capture_send {
 
 
 
+    SAVEDIR=$(xdg-user-dir DOWNLOAD)
+    if [ ! -d "${SAVEDIR}" ];then
+        SAVEDIR="${HOME}"
+    fi    
     if [ -f $(which detox) ];then
         dttitle=$(echo "${title}" | detox --inline)
-        outpath="$HOME/${dttitle}.jpeg"
+        outpath="${SAVEDIR}/${dttitle}.jpg"
     else
-        outpath="$HOME/${title}.jpeg"
+        outpath="${SAVEDIR}/${title}.jpg"
     fi
-    
-    binary=$(grep 'cutycapt =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+    echo "Writing to ${outpath}"
+    binary=$(which cutycapt)
     if [ ! -f "$binary" ];then
-        binary=$(which cutycapt)
+        binary=$(grep 'cutycapt =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')    
     fi
     if [ -f "$binary" ];then
         outstring=$(printf "%s" "$link" )

@@ -11,20 +11,20 @@
 function png_capture_send {
 
 
-
-    #customize outpath!
-    #can also make copy for jpg and png
+    SAVEDIR=$(xdg-user-dir DOWNLOAD)
+    if [ ! -d "${SAVEDIR}" ];then
+        SAVEDIR="${HOME}"
+    fi
     if [ -f $(which detox) ];then
         dttitle=$(echo "${title}" | detox --inline)
-        outpath="$HOME/${dttitle}.png"
+        outpath="${SAVEDIR}/${dttitle}.png"
     else
-        outpath="$HOME/${title}.png"
+        outpath="${SAVEDIR}/${title}.png"
     fi
     echo "Writing to ${outpath}"
-    #echo "${dttitle}"
-    binary=$(grep 'cutycapt =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+    binary=$(which cutycapt)
     if [ ! -f "$binary" ];then
-        binary=$(which cutycapt)
+        binary=$(grep 'cutycapt =' "$HOME/.config/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')    
     fi
     if [ -f "$binary" ];then
         outstring=$(printf "%s" "$link" )

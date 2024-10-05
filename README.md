@@ -200,7 +200,13 @@ Install and set up [Wallabag-cli](https://github.com/Nepochal/wallabag-cli). If
 `wallabag` is not in your `$PATH`, then use the `agaetr.ini` to specify its location. 
 Note that shorteners and wallabag don't get along all the time.
 
+#### Capture to JPG/PNG/PDF (output) 
 
+Utilizes [cutycapt](http://cutycapt.sourceforge.net/). If [detox](http://detox.sourceforge.net/) is in 
+`$PATH`, it will be used to sanitize the title string for use as a filename (you want this). Saves 
+the output in the XDG download directory, usually `$HOME/Downloads`, which it finds
+using `xdg-user-dir`, which is *probably* already installed on your system. If that fails 
+for any reason, falls back to writing the file to `$HOME`.
 
 #### Send to email (output)  *
 
@@ -217,11 +223,7 @@ a horribly convoluted bespoke filter which uses [hxclean and hxnormalize and hxu
 The default is to use `lynx`.  
 
 
-#### Capture to JPG/PNG/PDF (output)  *
 
-Utilizes [cutycapt](http://cutycapt.sourceforge.net/), if [detox](http://detox.sourceforge.net/) is in 
-$PATH, it will be used to sanitize the title string for use as a filename. Saves 
-in the $HOME directory.
 
 
 #### Video/Audio via YouTube-Dl (output) *
