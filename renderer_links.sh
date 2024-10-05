@@ -53,7 +53,6 @@ if [ $# -eq 0 ]; then
             echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=140 -collapse_br_tags | grep -v "READ MORE:" 
         fi
     fi
-
 fi                                                                        
 
  
