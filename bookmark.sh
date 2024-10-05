@@ -99,12 +99,3 @@ for p in $posters;do
     fi
 done
 
-# TODO: add preview function to each of the modules for fzf --preview giving a quick explanation of what it does
-# CHECK FOR THIS by checking for the preview string which will contain the path of the posters!!!!!!!!!!!!! so
-# bookmarker_preview=$(ps aux | grep fzf | grep -v "grep" | grep -c ${SCRIPT_DIR}/out_enabled")
-# so if that's > 0 then.... yup.
-# TODO: modules for each possible browser?
-# TODO: Allow calling an editor with multiselect capabilities of fzf?
-# TODO: Preview current values (and allow editing of) with fzf selection screen
- # upgraded tmux to 55, so have --tmux popup!
- 

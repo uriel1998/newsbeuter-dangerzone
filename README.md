@@ -174,8 +174,8 @@ Note that shorteners and wallabag don't get along all the time.
 
 #### todo.txt (output)  
 
-Install and set up [Todo-txt](http://todotxt.org/).  It will add a task made up 
-of the title and the URL.
+This actually has integrations for two different todo systems, both [Todo-txt](http://todotxt.org/) and [todoman](https://github.com/pimutils/todoman), 
+depending on what is available and installed. It will try `todo-txt` first. It will add a task made up of the title and the URL 
 
 #### Send to email (output)  
 
@@ -304,3 +304,12 @@ bespoke method I mention above about sending mail.
 ## 9. TODO
 
 * Test the URL for validity 
+# TODO: add preview function to each of the modules for fzf --preview giving a quick explanation of what it does
+# CHECK FOR THIS by checking for the preview string which will contain the path of the posters!!!!!!!!!!!!! so
+# bookmarker_preview=$(ps aux | grep fzf | grep -v "grep" | grep -c ${SCRIPT_DIR}/out_enabled")
+# so if that's > 0 then.... yup.
+# TODO: modules for each possible browser?
+# TODO: Allow calling an editor with multiselect capabilities of fzf?
+# TODO: Preview current values (and allow editing of) with fzf selection screen
+ # upgraded tmux to 55, so have --tmux popup!
+# TODO - notify-send integration for output
