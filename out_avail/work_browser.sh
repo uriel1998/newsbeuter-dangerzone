@@ -2,7 +2,7 @@
 
 function work_browser_send {
     
-    /home/steven/apps/waterfox/waterfox -P work -no-remote --class workWaterfoxProfile "$link" 
+    /home/steven/apps/waterfox/waterfox -P work --class workWaterfoxProfile "$link" 
 
 }
 
