@@ -2,7 +2,7 @@
 
 function chromium_send {
     
-    /usr/bin/chromium/firefox --new-tab "$link" 
+    /usr/bin/chromium --new-tab "$link" 
 
 }
 

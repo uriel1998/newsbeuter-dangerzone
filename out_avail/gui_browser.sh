@@ -1,9 +1,7 @@
 #!/bin/bash
 
-function gui_browser_send {
-    
-    /home/steven/apps/waterfox/waterfox --new-tab "$link" 
-
+function gui_browser_send {    
+    xdg-open "$link" 
 }
 
 

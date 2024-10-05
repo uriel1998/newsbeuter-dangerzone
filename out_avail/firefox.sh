@@ -1,9 +1,7 @@
 #!/bin/bash
 
-function firefox_send {
-    
+function firefox_send {    
     /usr/bin/firefox --new-tab "$link" 
-
 }
 
 

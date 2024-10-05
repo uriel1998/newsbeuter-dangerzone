@@ -109,12 +109,10 @@ services.
 ### The INI file
 
 Using the INI file is optional *if* all of your binary files are on your $PATH 
-or hand-edited in *and* you have no use for content warnings.
+or hand-edited in, and you have exported the needed API keys to environment variables.
 
-I'm adding value to the agaetr.ini file, the format is the same.  The example 
-shows the possible options.  You can leave the unused entries blank without 
-any difficulty (unless you're using `agaetr`, which it should work with 
-seamlessly).  The [Feed] sections are completely ignored with `dangerzone`.
+If you are already using `agaetr`, then just *add* the lines that do not exist. The 
+example in this repo shows *only* the possible options for `dangerzone`. 
 
 After editing `agaetr.ini`:
  
@@ -144,7 +142,7 @@ shit about fascists.
 
 ### Shorteners
 
-#### YOURLS (shortener)  
+#### YOURLS (shortener)  * 
 
 Go to your already functional YOURLS instance.  Get the API key from 
 Place the URL of your instance and API key into `agaetr.ini`.  
@@ -154,8 +152,17 @@ Place the URL of your instance and API key into `agaetr.ini`.
 
 ### Bookmarking Helpers
 
+#### GUI browser (output) 
 
-### Shaarli (output)
+Uses XDG-OPEN; no configuration should be needed.  *However*, there are additional 
+examples to show how you can make more outputs so you can choose your GUI browser. 
+One is included specifically for Firefox and for Chromium, there's also a "work 
+browser" one showing an example of where I have it open a specific profile with Waterfox.
+
+If you're looking at how to adapt this for your own use case, these are probably 
+the ones to look at.
+
+### Shaarli (output) *
 
 Saves the URL to your Shaarli instance.
 
@@ -176,7 +183,7 @@ Note that shorteners and wallabag don't get along all the time.
 This actually has integrations for two different todo systems, both [Todo-txt](http://todotxt.org/) and [todoman](https://github.com/pimutils/todoman), 
 depending on what is available and installed. It will try `todo-txt` first. It will add a task made up of the title and the URL 
 
-#### Send to email (output)  
+#### Send to email (output)  *
 
 *DO NOT BACKGROUND THIS ONE*
 
@@ -190,9 +197,6 @@ a horribly convoluted bespoke filter which uses [hxclean and hxnormalize and hxu
 
 The default is to use `lynx`.  
 
-#### GUI browser (output)  
-
-Uses XDG-OPEN; no configuration should be needed.
 
 #### Capture to JPG/PNG/PDF (output)  
 
