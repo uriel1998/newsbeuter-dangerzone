@@ -85,7 +85,7 @@ if [ ! -z "$GUI" ];then
 else
     header_text=$(echo -e "Title: ${title} \n Link: ${link}")
     prompt_text="Choose your outputs!"
-    posters=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" | sed 's/$/.sh&/p' | awk '!_[$0]++' )
+    posters=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
 fi
 
 for p in $posters;do
@@ -106,5 +106,5 @@ done
 # TODO: modules for each possible browser?
 # TODO: Allow calling an editor with multiselect capabilities of fzf?
 # TODO: Preview current values (and allow editing of) with fzf selection screen
- 
+ # upgraded tmux to 55, so have --tmux popup!
  

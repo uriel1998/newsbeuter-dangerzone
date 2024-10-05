@@ -209,7 +209,7 @@ behavior of newsbeuter/newsboat.  They have almost identical formats.
 #### Submit to the Wayback Machine (output)  
 
 While there is an official client, I wrote this using curl calls and [API Keys](https://archive.org/account/s3.php). 
-You need an account there to get your own API keys.  Place them into `agaeter.ini`.
+You need an account there to get your own API keys.  Place them into `agaeter.ini`, or export `WAYBACK_SECRET` and `WAYBACK_ACCESS` as environment variables.
 
 #### Mastodon via toot (output)  
 

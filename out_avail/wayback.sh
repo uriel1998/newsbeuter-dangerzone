@@ -11,10 +11,13 @@
 
 function wayback_send {
 
-wayback_access=$(grep wayback_access "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
-wayback_secret=$(grep wayback_secret "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+# If you don't want to make another ini file, then export these into your environment
+if [ "$WAYBACK_SECRET" == "" ] || [ "$WAYBACK_ACCESS" == "" ];then 
+    WAYBACK_ACCESS=$(grep WAYBACK_ACCESS "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+    WAYBACK_SECRET=$(grep WAYBACK_SECRET "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+fi
 
-curl -X POST -H "Accept: application/json" -H "Authorization: LOW ${wayback_access}:${wayback_secret}" -d"url=${link}&capture_outlinks=1&capture_screenshot=1&skip_first_archive=1&if_not_archived_within=1d'" https://web.archive.org/save
+curl -X POST -H "Accept: application/json" -H "Authorization: LOW ${WAYBACK_ACCESS}:${WAYBACK_SECRET}" -d"url=${link}&capture_outlinks=1&capture_screenshot=1&skip_first_archive=1'" https://web.archive.org/save
 
 #https://docs.google.com/document/d/1Nsv52MvSjbLb2PCpHlat0gkzw0EvtSgpKHu4mk0MnrA/edit#
 }
