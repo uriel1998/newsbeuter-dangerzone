@@ -42,7 +42,6 @@ if [ $# -eq 0 ]; then
         input=$(cat "${1}")
         # this is to deal with stupid hidden divs in HTML emails
         # should only invoke when it's there; otherwise it craps out the whole thing.
-        echo "${input}" > /home/steven/tmp/shit.txt
         antimatch=""
         antimatch=$(echo "${input}" | pup 'div[style*="display: none;"],div[style*="display:none;"],div[style*="visibility: hidden;"],div[style*="overflow: hidden;"]')
         if [ "$antimatch" != "" ];then
