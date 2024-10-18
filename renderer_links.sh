@@ -19,6 +19,8 @@
 # adding a br after each table row so it doesn't become collapsed and we have SOME whitespace
 # considering -nonumbers to clean up the body text, but...
 
+
+
 if [ $# -eq 0 ]; then                                                 
     # no arguments passed, use stdin
     input=$(cat)
@@ -26,10 +28,10 @@ if [ $# -eq 0 ]; then
     antimatch=$(echo "${input}" | pup 'div[style*="display: none;"],div[style*="display:none;"], div[style*="visibility: hidden;"], div[style*="overflow: hidden;"]')
         if [ "$antimatch" != "" ];then
             echo " "
-            echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=140 -collapse_br_tags | grep -v "READ MORE:"             
+            echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=130 -collapse_br_tags | grep -v "READ MORE:"  | rich -m -a rounded -d 2,2,2,2 -y --soft --print -W 140 -w 138 -
         else
             echo " "
-            echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=140 -collapse_br_tags | grep -v "READ MORE:" 
+            echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=130 -collapse_br_tags | grep -v "READ MORE:"  | rich -m -a rounded -d 2,2,2,2 -y --soft --print -W 140 -w 138 -
         fi
     else
     # it's a URL, pass to elinks directly
@@ -46,12 +48,10 @@ if [ $# -eq 0 ]; then
         antimatch=$(echo "${input}" | pup 'div[style*="display: none;"],div[style*="display:none;"],div[style*="visibility: hidden;"],div[style*="overflow: hidden;"]')
         if [ "$antimatch" != "" ];then
             echo " "
-            echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g' | hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -underscore -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=140 | grep -v "READ MORE:"             
+            echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g' | hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -underscore -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=130 | grep -v "READ MORE:"  | rich -m -a rounded -d 2,2,2,2 -y --soft --print -W 140 -w 138 -
         else
             echo " "
-            echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=140 -collapse_br_tags | grep -v "READ MORE:" 
+            echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/⬞/g' | sed -e 's/<\/em>/⬞/g' | sed -e 's/<strong[^>]*>/⬞/g' | sed -e 's/<\/strong>/⬞/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=130 -collapse_br_tags | grep -v "READ MORE:"  | rich -m -a rounded -d 2,2,2,2 -y --soft --print -W 140 -w 138 -
         fi
     fi
 fi                                                                        
-
- 

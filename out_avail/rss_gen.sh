@@ -79,3 +79,56 @@ else
         rss_gen
     fi
 fi
+
+
+https://stackoverflow.com/questions/12827343/linux-send-stdout-of-command-to-an-rss-feed
+
+I'm looking to use a personal RSS Feed for system reporting, so I'm wondering if it's possible to create a script that sends its $1 to an RSS feed, ala self_test_command > rss_report.sh. I don't currently have an RSS feed set up, either, so what would be the easiest way to set up an RSS feed running from a Linux box?
+
+    linuxrssstdout
+
+Share
+Improve this question
+Follow
+asked Oct 10, 2012 at 19:56
+Suchipi's user avatar
+Suchipi
+77311 gold badge66 silver badges2323 bronze badges
+Add a comment
+2 Answers
+Sorted by:
+6
+
+There is another solution using xmlstarlet:
+
+Create an initial rss feed file feed.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+  <channel>
+    <title>My RSS Feed</title>
+    <description>This is my RSS Feed</description>
+  </channel>
+</rss>
+
+Create a shell script that uses xmlstarlet to add items:
+
+#!/bin/sh
+
+TITLE="My RSS entry"
+LINK="http://example.com/entry4711"
+DATE="`date`"
+DESC="Good news"
+GUID="http://example.com/entry4711" 
+
+xmlstarlet ed -L   -a "//channel" -t elem -n item -v ""  \
+     -s "//item[1]" -t elem -n title -v "$TITLE" \
+     -s "//item[1]" -t elem -n link -v "$LINK" \
+     -s "//item[1]" -t elem -n pubDate -v "$DATE" \
+     -s "//item[1]" -t elem -n description -v "$DESC" \
+     -s "//item[1]" -t elem -n guid -v "$GUID" \
+     -d "//item[position()>10]"  feed.xml ; 
+
+To have a generic solution one would prefer passing the parameters from the commandline of course.
+
+The -d command ensures that the feed does not grow inifinet but has at most 10 items.

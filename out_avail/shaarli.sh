@@ -17,27 +17,24 @@ function shaarli_send {
     tags=$(echo "$hashtags"  | sed 's|#||g' )
 
     #outstring=$(printf "From %s: %s - %s %s %s" "$pubtime" "$title" "$description" "$link" "$hashtags")
-
-    # Check to loop over multiple configs in ini
-    configs=$(grep --after-context=1 "[shaarli_config" "${inifile}" | grep -v -e "[shaarli_config" -e "--")
-    # this isn't in quotation marks so we get the newline, fyi.
-    for cfile in ${configs}
-    do
-        if [ ! -f ${cfile} ];then
-            # The above is both for backwards compatibility and for continuing even after errors
-            if [ -z "${description}" ];
-                outstring=$(echo "$binary post-link --title \"$title\" --url $link ")
-            else
-                outstring=$(echo "$binary post-link --description \"$description\" --tags \"$tags\" --title \"$title\" --url $link ")
-            fi
-        else
-            if [ -z "${description}" ];
-                outstring=$(echo "$binary --config ${cfile} post-link --title \"$title\" --url $link ")
-            else
-                outstring=$(echo "$binary --config ${cfile} post-link --description \"$description\" --tags \"$tags\" --title \"$title\" --url $link ")
-            fi
-        fi
-
+    
+    if [ -z "${description}" ];
+        outstring=$(echo "$binary post-link --title \"$title\" --url $link ")
+    else
+        outstring=$(echo "$binary post-link --description \"$description\" --tags \"$tags\" --title \"$title\" --url $link ")
+    fi
+    # To configure a different instance, you'll want to configure the shaarli client, then 
+    # make a *COPY* of this, and add the -i [instance] flag to it (example below). Or if you want it sent to 
+    # more than one, just add them inline here.
+    
+#    if [ -z "${description}" ];
+#        outstring=$(echo "$binary post-link -i ideatrash --title \"$title\" --url $link ")
+#    else
+#        outstring=$(echo "$binary post-link -i ideatrash --description \"$description\" --tags \"$tags\" --title \"$title\" --url $link ")
+#    fi
+    
+    
+    
         eval ${outstring} > /dev/null
     done
 }
