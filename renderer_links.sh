@@ -23,6 +23,9 @@
 # Saving image links to $XDG_CONFIG_HOME/newsboat_img_links as a read/write communication pipe.
 
 CacheDir=${XDG_CACHE_HOME:-$HOME/.local/state}
+if [ -z "${XDG_CACHE_HOME}" ];then
+    export XDG_CACHE_HOME="${HOME}/.config"
+fi
 CacheFile=${CacheDir}/newsboat_img_links
 ImagesExist=0
 
