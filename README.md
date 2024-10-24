@@ -286,6 +286,8 @@ I added a few things:
 
 * `renderer.sh` - I use this for rendering articles in `newsboat`. It's the funky 
 bespoke method I mention above about sending mail.
+* `renderer_links.sh` - I use this for rendering articles in `newsboat`. Includes URLs.
+* `renderer_images.sh` - I use this for showing the images in `newsboat`. Collects image URLs in a cachefile with each article view. Call via a macro.
 
 ## 9. TODO
 

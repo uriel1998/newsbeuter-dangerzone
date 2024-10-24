@@ -19,8 +19,21 @@
 # adding a br after each table row so it doesn't become collapsed and we have SOME whitespace
 # considering -nonumbers to clean up the body text, but...
 # using rich to draw a box around the text and format it a little more nicely
-
+ 
 PROCESSED=""
+
+# If you have issues with tput, export COLUMNS prior to launching your app
+
+if [ -z "$COLUMNS" ];then
+    COLUMNS=$(tput cols)
+fi
+if [ $COLUMNS -gt 140 ];then
+    COLUMNS=140
+    WRAP=$(( COLUMNS - 10 ))
+else
+    WRAP=$(( COLUMNS ))
+fi
+
 
 if [ $# -eq 0 ]; then                                                 
     # no arguments passed, use stdin
@@ -38,6 +51,13 @@ else
     fi
 fi
 if [ -z "$PROCESSED" ];then    
+
+    # putting image links in cache file here.
+    ImagesExist=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep -c -e "^http")
+    if [ $ImagesExist -gt 0 ];then
+        echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep -e "^http" > "${CacheFile}"
+    fi
+
     antimatch=""
     antimatch=$(echo "${input}" | pup 'div[style*="display: none;"],div[style*="display:none;"], div[style*="visibility: hidden;"], div[style*="overflow: hidden;"]')
         if [ "$antimatch" != "" ];then
@@ -50,5 +70,12 @@ if [ -z "$PROCESSED" ];then
 fi        
 
 # This isn't perfect -- multiline doesn't work at all, and combos of italics and strongs confuse it, but... it's readable?
-printf "%s" "${PROCESSED}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' | sed 's/⬞§ *§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' -e 's/§//g' | rich -m -a rounded -d 2,2,2,2 -y --soft --print -W 140 -w 138 -
-
+printf "%s" "${PROCESSED}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' | sed 's/⬞§ *§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' -e 's/§//g' | rich -m -a rounded -d 2,2,2,2 -y --soft --print -W $COLUMNS -c -C -W $COLUMNS -w 138 -
+rich -u
+if [ $ImagesExist -gt 0 ];then
+    echo "Image Links Present : "
+    echo " "
+    echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep -e "^http" 
+    echo " "
+    rich -u
+fi
