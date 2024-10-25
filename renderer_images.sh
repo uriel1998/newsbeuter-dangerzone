@@ -23,8 +23,6 @@ MODTIME=0
 
 
 function show_album_art {
-    
-    clear
     cols=$(tput cols)
     lines=$(tput lines)
     if [ "$cols" -gt "$lines" ]; then
@@ -39,7 +37,7 @@ function show_album_art {
         bvalue=78
     fi
     if [ -f $(which timg) ];then
-        timg -U -pq "${1}"
+        timg -pq "${1}"
     else
         if [ -f $(which jp2a) ];then
             # if it looks bad, try removing invert
@@ -53,7 +51,7 @@ function show_album_art {
 main () {
     if [ "$MODTIME" != $(date -r "${CacheFile}" +%s) ];then 
         MODTIME=$(date -r "${CacheFile}" +%s)
-        cat "${CacheFile}" | grep -e "^http" | while IFS= read -r line; do    
+        cat "${CacheFile}" | grep -e "^http" | grep -v -e "\/track" -e "sendgrid\." -e "cloudfront\." -e "icon" -e "ICON" |  while IFS= read -r line; do    
             echo "${line}"
             show_album_art "${line}"
         done
