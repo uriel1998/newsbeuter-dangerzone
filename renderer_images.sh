@@ -97,7 +97,7 @@ main () {
             fi
         done
         if [ $ANTITRACKING == 1 ];then
-            timg -pq ${TMPDIR}/* 2>/dev/null
+            timg --loops=1 -pq ${TMPDIR}/* 2>/dev/null
             rm ${TMPDIR}/* 2>/dev/null
         fi
         rich -u
