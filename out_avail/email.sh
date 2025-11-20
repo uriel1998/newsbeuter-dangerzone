@@ -3,7 +3,7 @@
 ##############################################################################
 #
 #  sending script
-#  (c) Steven Saus 2022
+#  (c) Steven Saus 2025
 #  Licensed under the MIT license
 #
 ##############################################################################
@@ -51,7 +51,7 @@ function email_send {
     IFS=';' read -ra email_addresses <<< "${raw_emails}"
     IFS="$OIFS"
     curl_bin=$(which curl)
-    for email_addy in "${email_addresses[@]}"
+    for email_addy in ${email_addresses[@]}
     do
         # assemble the header
         loud "Assembling the header"
@@ -84,13 +84,17 @@ $(return >/dev/null 2>&1)
 
 # What exit code did that give?
 if [ "$?" -eq "0" ];then
-    echo "[info] Function ready to go."
-    OUTPUT=0
+    echo "[info] Function email ready to go."
 else
-    OUTPUT=1
     if [ "$#" = 0 ];then
         echo -e "Please call this as a function or with \nthe url as the first argument and optional \ndescription as the second."
     else
+        if [ "${1}" == "--loud" ];then
+            LOUD=1
+            shift
+        else
+            LOUD=0
+        fi    
         link="${1}"
         if [ ! -z "$2" ];then
             title="$2"

@@ -20,24 +20,32 @@
 # considering -nonumbers to clean up the body text, but...
 # using rich to draw a box around the text and format it a little more nicely
 
-# Saving image links to $XDG_CONFIG_HOME/newsboat_img_links as a read/write communication pipe.
+# Saving image links to $XDG_CACHE_HOME/newsboat_img_links as a read/write communication pipe.
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
 
-CacheDir=${XDG_CACHE_HOME:-$HOME/.local/state}
+
+CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.local/state}
 if [ -z "${XDG_CACHE_HOME}" ];then
     export XDG_CACHE_HOME="${HOME}/.config"
 fi
-CacheFile=${CacheDir}/newsboat_img_links
-ImagesExist=0
+CacheFile=${CACHE_DIR}/newsboat_img_links
+
+
+#resetting kitty display if existant
+if [ -S "/tmp/mykitty" ];then
+        kitty @ --to unix:/tmp/mykitty send-text --match "title:^newsboat_image_display" $'\x1b[D'
+fi
+
+
 
 # If you have issues with tput, export COLUMNS prior to launching your app
-
 
 PROCESSED=""
 if [ -z "$COLUMNS" ];then
     COLUMNS=$(tput cols)
 fi
-if [ $COLUMNS -gt 140 ];then
-    COLUMNS=140
+if [ $COLUMNS -gt 150 ];then
+    COLUMNS=150
     WRAP=$(( COLUMNS - 10 ))
 else
     WRAP=$(( COLUMNS ))
@@ -59,13 +67,12 @@ else
     fi
 fi
 if [ -z "$PROCESSED" ];then
-    
     # putting image links in cache file here.
-    ImagesExist=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep -c -e "^http")
-    if [ $ImagesExist -gt 0 ];then
-        echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep -e "^http" > "${CacheFile}"
+    ImageLinks=""
+    ImageLinks=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep  -e "^http" | grep -Fvf "${CONFIG_DIR}/filter_images_strings" - )
+    if [ "${ImageLinks}" != "" ];then
+        echo "${ImageLinks}" > "${CacheFile}"
     fi
-    
     # Looking for parts that wouldn't display anyway; this completely cleans up a LOT.
     antimatch=""
     antimatch=$(echo "${input}" | pup 'div[style*="display: none;"],div[style*="display:none;"], div[style*="visibility: hidden;"], div[style*="overflow: hidden;"]')
@@ -89,9 +96,9 @@ fi
 
     var1=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==1')
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
- 
+
 # This isn't perfect -- multiline doesn't work at all, and combos of italics and strongs confuse it, but... it's readable?
-printf "%s" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' | sed 's/⬞§ *§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' -e 's/§//g' | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
+printf "%s" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' -e 's/—/ -- /g' -e 's/—/ -- /g' | sed 's/⬞§ *§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' -e 's/§//g' | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
 # The references by themselves
 rich -u
 echo "Visible URLs / References : "
@@ -99,11 +106,10 @@ echo " "
 echo "$var2"
 echo " "
 rich -u
-if [ $ImagesExist -gt 0 ];then
+if [ "${ImagesExist}" != "" ];then
     echo "Image Links Present : "
     echo " "
-    echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep -e "^http" 
+    echo "${ImageLinks}"
     echo " "
     rich -u
 fi
-

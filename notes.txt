@@ -1,0 +1,34 @@
+filter_images_strings -> for paths like /icons/ and other things that are just noise
+hosts -> to further filter trackers and the like
+
+Currently, renderer and renderer-links are identical except for a few changes; if I remember correctly, that's because newsboat doesn't like sending arguments, lol.  They should be mostly done.  Need to document install for helpers and sanity checks if they don't exist.
+
+Wrapper script can call profiles as first argument, and that calls different configs (with the name of the profile at the end) and logs and caches and url lists/sources.
+
+Wrapper script will also handle tmux/kitty;  we need to see if we can pass exported variables from the wrapper script through to the environment that newsboat calls, or if my scripts need to all know how to pick things up.
+
+OH.  One of the profiles wasn't going to send anything to the preview pane, that's right.
+
+in newsbeuter_dangerzone directory
+    * "defaults" for ini, config (also no profile runs)
+    * executable scripts
+        * renderer_links & renderer <- show html
+        * filter_images_strings <- skip shitty images
+        * hosts <- blocklist
+
+in profile directory:
+    * ini file
+    * config
+    * rest gets populated by newsboat
+
+Okay, filtering doesn't seem to be working well, so will need to try this:
+
+ignore-article "*" "feedtitle =~ \"Some Hidden Feed\""
+
+
+So basic rendering with the reader profile is working.
+
+Next steps:
+image display without use_kitty
+image display with use_kitty
+videos.  use the xml from ytcs. 

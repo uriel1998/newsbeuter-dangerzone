@@ -3,19 +3,17 @@
 ##############################################################################
 #
 #  sending script
-#  (c) Steven Saus 2022
+#  (c) Steven Saus 2025
 #  Licensed under the MIT license
 #
 ##############################################################################
 
 function wallabag_send {
-    # if it's in your $PATH, you don't need the ini file.
-    binary=$(which wallabag)
-    if [ ! -f "${binary}" ];then 
-        binary=$(grep 'wallabag =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
-    fi
+    
+    binary=$(grep 'wallabag =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
+
     outstring=$(echo "$binary add --quiet --title \"$title\" $link ")
-    echo "$outstring"
+    echo "${outstring}"
     eval ${outstring} > /dev/null
 }
 
@@ -31,13 +29,19 @@ $(return >/dev/null 2>&1)
 
 # What exit code did that give?
 if [ "$?" -eq "0" ];then
-    echo "[info] Function ready to go."
+    echo "[info] Function wallabag ready to go."
     OUTPUT=0
 else
     OUTPUT=1
     if [ "$#" = 0 ];then
         echo -e "Please call this as a function or with \nthe url as the first argument and optional \ndescription as the second."
     else
+        if [ "${1}" == "--loud" ];then
+            LOUD=1
+            shift
+        else
+            LOUD=0
+        fi    
         link="${1}"
         if [ ! -z "$2" ];then
             title="$2"

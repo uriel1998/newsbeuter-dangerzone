@@ -1,0 +1,129 @@
+# -- Configuration for newsboat for general-purpose reading ------------
+
+# config, cache, log paths set by wrapper script
+# Also path to scripts for newsbeuter_dangerzone is added for shell by wrapper script
+
+# -- General -----------------------------------------------------------
+cookie-cache ""
+opml-url ""
+
+# -- GUI ---------------------------------------------------------------
+show-keymap-hint yes
+selecttag-format "[%2i] %T (%n unread articles in %f feeds, %u feeds total)"
+
+# -- TinyTinyRss -------------------------------------------------------
+ 
+# ^E is flag
+ttrss-flag-star "s"
+ttrss-flag-publish "p"
+prepopulate-query-feeds yes
+
+# -- Updating ----------------------------------------------------------
+refresh-on-startup no
+suppress-first-reload yes
+auto-reload yes
+reload-threads 10
+reload-time 120
+download-full-page yes
+download-path "/home/steven/downloads"
+
+# hide articles matching: ---------------------------------------------
+ignore-article "*" "title =~ \"Sponsor\""
+ignore-article "*" "title =~ \"Advertisement\""
+ignore-mode "display"
+
+# -- Purging ----------------------------------------------------------
+keep-articles-days 30
+cleanup-on-quit yes
+delete-read-articles-on-quit yes
+max-items 50
+
+# -- Displaying ----------------------------------------------------------
+browser "tmux neww elinks %u"
+display-article-progress yes
+feed-sort-order unreadarticlecount-desc
+show-read-feeds no
+text-width 120
+
+html-renderer "renderer_links.sh"
+external-url-viewer "urlview"
+
+
+
+# -- Bookmarks ---------------------------------------------------------
+bookmark-cmd "bookmark.sh"
+bookmark-interactive yes
+bookmark-autopilot no
+
+# -- Macros -----------------------------------------------------------
+
+macro Y set set html-renderer "renderer.sh"
+macro y set html-renderer "renderer_links.sh"
+macro R set show-read-feeds yes
+macro r set show-read-feeds no
+
+# under development
+
+#A clever little hack allows one to pass the URL of an article to an external command. The idea is to use a macro to set the browser that Newsboat opens the article with to the path of some other command and then change it back afterwards.
+#For example, subscribers of a particular youtube channel can open the video with mpv, by doing the following:
+#macro y set browser "mpv %u" ; open-in-browser ; set browser "elinks %u"
+# macro p set browser "show_images.sh; open-in-browser ; set browser "tmux neww elinks %u"
+#macro i set html-renderer "cat"; set pager "renderer_images.sh | /usr/bin/less";
+# THIS IS CLOSE, but it needs to have a simplified save.
+# macro s set browser "renderer_save_images.sh; open-in-browser ; set browser "tmux neww elinks %u"
+
+
+# -- Keybindings -------------------------------------------------------
+
+unbind-key r all
+unbind-key j all
+unbind-key k all
+unbind-key NPAGE all
+unbind-key PPAGE all
+unbind-key \ all
+unbind-key / all
+
+bind-key LEFT quit
+bind-key RIGHT open
+bind-key "SPACE" open
+bind-key r toggle-article-read
+bind-key p prev-unread
+bind-key n next-unread
+#bind-key p prev feedlist
+bind-key \ set-tag
+bind-key k next-unread-feed
+bind-key j prev-unread-feed
+bind-key NPAGE next-unread-feed
+bind-key PPAGE prev-unread-feed
+bind-key ] next-unread-feed
+bind-key [ prev-unread-feed
+bind-key / select-tag
+unbind-key       R
+bind-key         ^R    reload-all
+bind-key        R   reload
+
+
+
+# -- Colors ---------------------------------------------
+color background          color240   default
+color listnormal          color245   default
+color listnormal_unread   color251   default
+color listfocus           color229   color61 bold
+color listfocus_unread    color229   color61 bold
+color info                color247   color235
+color article             color251   default
+
+# highlights
+highlight article "^(Feed|Link):.*$" color46 default
+highlight article "^(Title|Date|Author):.*$" color39 default
+highlight article "https?://[^ ]+" green default
+highlight article "](.+@.+) " cyan default
+highlight article "\\[[0-9]+\\]" color63 default bold
+highlight article "\\[image\\ [0-9]+\\]" color63 default bold
+highlight article "⬞.+⬞" color3 default
+highlight article "Flags: p" color60 default
+highlight article "Flags: ps" color63 default
+highlight feedlist "^─.*$" color61 color235 bold
+
+external-url-viewer "urlview"
+bind-key U show-urls

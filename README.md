@@ -86,6 +86,9 @@ You will (obviously) need the bookmarking apps; I've put together several alread
 Download or clone the repository, and put the uncompressed files in a location 
 of your choice. Change into that directory.
 
+
+
+
 * Edit `bookmark.sh` line 18 so that it matches where you put the files:
 
 `export SCRIPT_DIR="$HOME/.newsboat"`

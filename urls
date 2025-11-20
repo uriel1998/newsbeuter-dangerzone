@@ -1,0 +1,8 @@
+"query:Unread Articles:unread = \"yes\" and tags !# \"comics\" and tags !# \"art\"" "Queries"
+"query:AllNews: unread = \"yes\" and tags # \"news\"" "Queries"
+"query:AllTech: unread = \"yes\" and tags # \"tech\"" "Queries"
+"query:AllSociety: unread = \"yes\" and tags # \"society\"" "Queries"
+"query:AllLife: unread = \"yes\" and tags # \"life\"" "Queries"
+"query:AllFolks: unread = \"yes\" and tags # \"folks\"" "Queries"
+"query:AllArt: unread = \"yes\" and tags # \"art\"" "Queries"
+"query:AllComics: unread = \"yes\" and tags # \"comics\"" "Queries"

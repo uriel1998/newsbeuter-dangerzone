@@ -1,6 +1,8 @@
 # reference, old shit
 1_reference/
-hosts
+helpers.env
+genres.json
+*.diff
 
 # macOS Junks
 .DS_Store

@@ -3,18 +3,19 @@
 ##############################################################################
 #
 #  sending script
-#  (c) Steven Saus 2024
+#  (c) Steven Saus 2020
 #  Licensed under the MIT license
 #
+#   REQUIRES URLENCODE which is in package gridsite-clients on Debian
+#   REQUIRES sensible-browser to be set up
 ##############################################################################
 
-
-function surfraw_bookmark {
-    echo -e "${title}\t${link}" >> ${XDG_CONFIG_DIR}/surfraw/bookmarks
-
-#https://docs.google.com/document/d/1Nsv52MvSjbLb2PCpHlat0gkzw0EvtSgpKHu4mk0MnrA/edit#
+function facebook_send {
+    tmp=$(urlencode "${link}")
+    link="https://www.facebook.com/sharer/sharer.php?u=${tmp}"
+    outstring=$(echo "sensible-browser ${link} ")
+    eval ${outstring} > /dev/null
 }
-
 
 ##############################################################################
 # Are we sourced?
@@ -28,20 +29,17 @@ $(return >/dev/null 2>&1)
 
 # What exit code did that give?
 if [ "$?" -eq "0" ];then
-    loud "[info] Function tumblr ready to go."
+    echo "[info] Function ready to go."
+    OUTPUT=0
 else
+    OUTPUT=1
     if [ "$#" = 0 ];then
         echo -e "Please call this as a function or with \nthe url as the first argument and optional \ndescription as the second."
     else
-        if [ "${1}" == "--loud" ];then
-            LOUD=1
-            shift
-        else
-            LOUD=0
-        fi    
         link="${1}"
         if [ ! -z "$2" ];then
             title="$2"
         fi
-        surfraw_bookmark
+        facebook_send
     fi
+fi
