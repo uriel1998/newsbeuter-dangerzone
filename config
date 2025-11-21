@@ -12,7 +12,7 @@ show-keymap-hint yes
 selecttag-format "[%2i] %T (%n unread articles in %f feeds, %u feeds total)"
 
 # -- TinyTinyRss -------------------------------------------------------
- 
+
 # ^E is flag
 ttrss-flag-star "s"
 ttrss-flag-publish "p"
@@ -56,9 +56,10 @@ bookmark-interactive yes
 bookmark-autopilot no
 
 # -- Macros -----------------------------------------------------------
-
-macro Y set set html-renderer "renderer.sh"
-macro y set html-renderer "renderer_links.sh"
+# TODO - set the environment variable instead of calling different programs
+# Also, we're always exporting the links anyway....
+macro Y set set html-renderer "export show_links=true;renderer.sh"
+macro y set html-renderer "export show_links=false;renderer_links.sh"
 macro R set show-read-feeds yes
 macro r set show-read-feeds no
 

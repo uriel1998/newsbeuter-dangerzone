@@ -25,10 +25,19 @@ Okay, filtering doesn't seem to be working well, so will need to try this:
 
 ignore-article "*" "feedtitle =~ \"Some Hidden Feed\""
 
+Perhaps symlink ~/.newsboat to $XDG_CONFIG_HOME/newsbeuter_dangerzone  ?
 
 So basic rendering with the reader profile is working.
+
+IT ABSOLUTELY DOES PASS EXPORTED ENVIRONMENT VARIABLES TO RENDERER
+
+THIS MEANS ONLY ONE PROGRAM TO MAINTAIN BECAUSE WE CAN MAINTAIN ENVIRONMENT VARIABLES!!
+# TODO - set the environment variable instead of calling different programs
+# Also, we're always exporting the links anyway....
+add use_kitty switch to renderer and show images and all that.
+
 
 Next steps:
 image display without use_kitty
 image display with use_kitty
-videos.  use the xml from ytcs. 
+videos.  use the xml from ytcs.

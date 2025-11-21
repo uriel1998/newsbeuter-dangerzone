@@ -29,14 +29,15 @@ if [ -z "${XDG_CACHE_HOME}" ];then
     export XDG_CACHE_HOME="${HOME}/.config"
 fi
 CacheFile=${CACHE_DIR}/newsboat_img_links
+LinksCacheFile=${CACHE_DIR}/newsboat_links
+echo "" > "${CacheFile}"
+echo "" > "${LinksCacheFile}"
 
 
 #resetting kitty display if existant
 if [ -S "/tmp/mykitty" ];then
         kitty @ --to unix:/tmp/mykitty send-text --match "title:^newsboat_image_display" $'\x1b[D'
 fi
-
-
 
 # If you have issues with tput, export COLUMNS prior to launching your app
 
@@ -74,16 +75,22 @@ if [ -z "$PROCESSED" ];then
         echo "${ImageLinks}" > "${CacheFile}"
     fi
     # Looking for parts that wouldn't display anyway; this completely cleans up a LOT.
+
+# TODO I don't think this is working for the lynx variables, but exporting the var first is DEFINITELY going to work for setting it in newsboat
+
+    lynx_vars="-dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags"
+    if [ "${show_links}" != "true" ];then
+        lyx_vars="-nolist $lynx_vars"
+    fi
     antimatch=""
     antimatch=$(echo "${input}" | pup 'div[style*="display: none;"],div[style*="display:none;"], div[style*="visibility: hidden;"], div[style*="overflow: hidden;"]')
-
-        if [ "$antimatch" != "" ];then
-            echo " "
-            PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
-        else
-            echo " "
-            PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin  -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
-        fi
+    if [ "$antimatch" != "" ];then
+        echo " "
+        PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx $lynx_vars | grep -v "READ MORE:" )
+    else
+        echo " "
+        PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx $lynx_vars | grep -v "READ MORE:" )
+    fi
 fi
 
 # We need to separate out the references portion so it doesn't cut off URLs.
@@ -96,20 +103,23 @@ fi
 
     var1=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==1')
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
+    echo "${var2}" > "${LinksCacheFile}"
 
 # This isn't perfect -- multiline doesn't work at all, and combos of italics and strongs confuse it, but... it's readable?
 printf "%s" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' -e 's/—/ -- /g' -e 's/—/ -- /g' | sed 's/⬞§ *§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' -e 's/§//g' | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
-# The references by themselves
-rich -u
-echo "Visible URLs / References : "
-echo " "
-echo "$var2"
-echo " "
-rich -u
-if [ "${ImagesExist}" != "" ];then
-    echo "Image Links Present : "
+if [ "$show_links" = "true" ];then
+    # The references by themselves
+    rich -u
+    echo "Visible URLs / References : "
     echo " "
-    echo "${ImageLinks}"
+    echo "$var2"
     echo " "
     rich -u
+    if [ "${ImageLinks}" != "" ];then
+        echo "Image Links Present : "
+        echo " "
+        echo "${ImageLinks}"
+        echo " "
+        rich -u
+    fi
 fi
