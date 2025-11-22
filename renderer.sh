@@ -105,6 +105,7 @@ if [ -z "$PROCESSED" ];then
         fi
     fi
 fi
+echo "${PROCESSED}" > /home/steven/tmp/shitt.txt
 if [ "$PROCESSED" != "" ];then
     # We need to separate out the references portion so it doesn't cut off URLs.
     # get the References line number
@@ -118,7 +119,7 @@ if [ "$PROCESSED" != "" ];then
     echo "${var2}" > "${LinksCacheFile}"
 
     # This isn't perfect -- multiline doesn't work at all, and combos of italics and strongs confuse it, but... it's readable?
-    printf "%s" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' -e 's/—/ -- /g' -e 's/—/ -- /g' | sed 's/⬞§ *§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' -e 's/§//g' | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
+    printf "%s" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§ *§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' -e 's/§//g' | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
     if [ "$show_links" = "true" ];then
         # The references by themselves
         rich -u

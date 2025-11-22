@@ -2,22 +2,30 @@
 
 ##############################################################################
 #
-#  This will interactively let you determine where your bookmarks will go for 
+#  This will interactively let you determine where your bookmarks will go for
 #  newsboat or newsbeuter
 #  (c) Steven Saus 2024
 #  Licensed under the MIT license
 #
 ##############################################################################
 
-GUI=""
-if [ "$1" == "-g" ];then
-    GUI="YUP"
-    shift
-fi
+# no gui, dammit. Kitty or spawned or in terminal.
+# gets passed URL, title, description IIRC
+# basically I want to either use tdab devour
+
+
+   #the URL to bookmark (already preset with the URL of the current selection);
+#   the bookmark title (in most cases preset with the title of the current selection);
+
+ #  the bookmark description (default empty); and
+
+  # (since Newsboat 2.10) the title of the feed you’re currently in (preset as you’d expect).
+#(If you find that the above preset values always work for you, enable bookmark-autopilot to avoid being asked anything.)
+
 
 if [ -z "$1" ];then
     url=$(xclip -o)
-    shift 
+    shift
 else
     url="$1"
     shift
@@ -25,7 +33,7 @@ fi
 
 title="${@:1}"
 
-if [ -z "$url" ];then 
+if [ -z "$url" ];then
     if [ "$GUI" == "YUP" ];then
         tempurl=$(yad --width=500 --center --window-icon="icon-gtk-network" --title="Choose URL" --text="Please input an URL" --entry --editable )
     else
@@ -64,7 +72,7 @@ if [ "$(ls -A "$SCRIPT_DIR/short_enabled")" ]; then
     if [ -z "$shortener" ];then
         echo "No URL shortening performed."
     else
-        if [ "$shortener" != ".keep" ];then 
+        if [ "$shortener" != ".keep" ];then
             short_funct=$(echo "${shortener%.*}_shortener")
             source "$SCRIPT_DIR/short_enabled/$shortener"
             url="$link"
@@ -77,10 +85,10 @@ if [ "$(ls -A "$SCRIPT_DIR/short_enabled")" ]; then
     fi
 fi
 
-# Parsing enabled out systems. Find files in out_enabled, then import 
+# Parsing enabled out systems. Find files in out_enabled, then import
 # functions from each and running them with variables already established.
 
-if [ ! -z "$GUI" ];then 
+if [ ! -z "$GUI" ];then
     posters=$(yad --width=400 --height=400 --center --window-icon=gtk-network --borders 3 --skip-taskbar --title="Choose outputs for $link" --text="${title}" --checklist --list --column=Use:RD --column=metadata:text $( /usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | sed 's/^/false /' ) | awk -F '|' '{ print $2 }' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
 else
     READY=0
@@ -89,12 +97,12 @@ else
         header_text=$(echo -e " Title: ${title} \n Link: ${link}")
         prompt_text=" Choose your outputs!"
         bob=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled")
-        
+
         #posters=$(echo -e "edit_link\nedit_description\n${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         posters=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         # we will exit the loop UNLESS
         READY=1
-        
+
         if [[ $posters == *"edit_link"* ]]; then
             READY=0
             echo "Old: ${link}"
@@ -105,12 +113,12 @@ else
             echo "Old: ${title}"
             read -p "Enter your new description: " title
             echo "It's there!"
-        fi        
+        fi
     done
 fi
 
 for p in $posters;do
-    if [ "$p" != ".keep" ];then 
+    if [ "$p" != ".keep" ];then
         echo "Processing ${p%.*}..."
         send_funct=$(echo "${p%.*}_send")
         source "$SCRIPT_DIR/out_enabled/$p"
@@ -119,4 +127,3 @@ for p in $posters;do
         sleep 5
     fi
 done
-

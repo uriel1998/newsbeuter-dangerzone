@@ -27,24 +27,22 @@ ignore-article "*" "feedtitle =~ \"Some Hidden Feed\""
 
 Perhaps symlink ~/.newsboat to $XDG_CONFIG_HOME/newsbeuter_dangerzone  ?
 
-So basic rendering with the reader profile is working.
+So basic rendering with the reader profile is working, using env var to toggle links.
 
-IT ABSOLUTELY DOES PASS EXPORTED ENVIRONMENT VARIABLES TO RENDERER
 
-THIS MEANS ONLY ONE PROGRAM TO MAINTAIN BECAUSE WE CAN MAINTAIN ENVIRONMENT VARIABLES!!
-So consolidate them together, dammit < - next step
-* macros for env export to turn on the links <- step afterwards
 
 
 
 There's a world where rdrview would be more useful, but remember, we're reading RSS and emails, not random web pages
 
-# TODO - set the environment variable instead of calling different programs
 # Also, we're always exporting the links anyway....
 add use_kitty switch to renderer and show images and all that.
 
 
 Next steps:
+MACRO FOR FULL TEXT USING RDRVIEW!!!
+    - get link
+bookmarker
 image display without use_kitty
 image display with use_kitty
 videos.  use the xml from ytcs.
