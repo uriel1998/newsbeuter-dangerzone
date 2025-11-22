@@ -9,7 +9,6 @@
 ##############################################################################
 
 # For reference:
-
 # using pup to clean it up, then to select divs that are supposed to be hidden and storing them in a variable.
 # then taking the input, and removing those divs (yay grep)
 # removing empty divs
@@ -20,7 +19,7 @@
 # considering -nonumbers to clean up the body text, but...
 # using rich to draw a box around the text and format it a little more nicely
 
-# Saving image links to $XDG_CACHE_HOME/newsboat_img_links as a read/write communication 
+# Saving image links to $XDG_CACHE_HOME/newsboat_img_links as a read/write communication
 # Saving URLS found to $XDG_CACHE_HOME/newsboat_links as read/write communication
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
 
@@ -87,20 +86,26 @@ if [ -z "$PROCESSED" ];then
     echo " " # <- leading whitespace, do not delete
     lynx_vars=""
     if [ "${show_links}" != "true" ];then
+        notify-send "1"
         if [ "$antimatch" != "" ];then
+            notify-send "1a"
             PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -nolist -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
         else
+            notify-send "1b"
             PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -nolist -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
         fi
     else
+        notify-send "2"
         if [ "$antimatch" != "" ];then
+            notify-send "2a"
             PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
         else
+            notify-send "2b"
             PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
         fi
     fi
 fi
-if [ -z "$PROCESSED" ];then
+if [ "$PROCESSED" != "" ];then
     # We need to separate out the references portion so it doesn't cut off URLs.
     # get the References line number
     ref_line=$(echo "${PROCESSED}" | grep -n '^References$' | cut -f1 -d:)

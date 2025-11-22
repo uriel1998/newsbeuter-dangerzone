@@ -2,7 +2,7 @@
 
 ### (officially *newsbeuter-dangerzone* )
 
-Enhanced, modular, bookmarking for newsboat, newsbeuter, or (for that matter) 
+Enhanced, modular, bookmarking for newsboat, newsbeuter, or (for that matter)
 anything that can pass a title and an URL to a program...or even from clipboard!
 
 ![dangerzone logo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/dangerzone-open-graph.png "logo")  
@@ -27,29 +27,29 @@ anything that can pass a title and an URL to a program...or even from clipboard!
 
 ### Credit
 
-`dangerzone` (previously called `newsbeuter-dangerzone`, though it's still in 
-that repo) is a modular bookmarking script for the [newsboat](https://newsboat.org/) and [newsbeuter](https://www.newsbeuter.org/) 
-RSS readers, but will work with anything that can spit out a string and an URL. 
-It doesn't even need the string - if there is no title passed, it will determine 
+`dangerzone` (previously called `newsbeuter-dangerzone`, though it's still in
+that repo) is a modular bookmarking script for the [newsboat](https://newsboat.org/) and [newsbeuter](https://www.newsbeuter.org/)
+RSS readers, but will work with anything that can spit out a string and an URL.
+It doesn't even need the string - if there is no title passed, it will determine
 one from the URL.
 
 It can also *deobfuscate* incoming links and optionally shorten outgoing links.
 
-This uses the ini file format used by [agaetr](https://github.com/uriel1998/agaetr), 
-primarily for API keys and binary file locations; however, if your binaries are on `$PATH` 
-and you export keys as environment variables, you can skip that entirely. 
+This uses the ini file format used by [agaetr](https://github.com/uriel1998/agaetr),
+primarily for API keys and binary file locations; however, if your binaries are on `$PATH`
+and you export keys as environment variables, you can skip that entirely.
 
 It also uses the url deobfuscating from [muna](https://github.com/uriel1998/muna).
 
-The urlportal script is modified from [gotbletu](https://github.com/gotbletu/shownotes/blob/master/urlportal.sh)'s 
+The urlportal script is modified from [gotbletu](https://github.com/gotbletu/shownotes/blob/master/urlportal.sh)'s
 script, see below.
 
-The modular structure is specifically designed so that it should be easy to 
-create a new module for additional services, as it relies on other programs 
-to actually do the thing. Therefore, if one posting tool dies, another can be 
+The modular structure is specifically designed so that it should be easy to
+create a new module for additional services, as it relies on other programs
+to actually do the thing. Therefore, if one posting tool dies, another can be
 found and (relatively) easily swapped in without changing your whole setup.
 
-`dangerzone` is an anglicization of, well, *dangerzone*.  (Nah, I took a GitHub 
+`dangerzone` is an anglicization of, well, *dangerzone*.  (Nah, I took a GitHub
 suggested repository name and it's too late to change it now.)
 
 ## 2. License
@@ -76,24 +76,36 @@ You will also need:
 and one of the following (or something else that is sending URLs to `dangerzone` - see the GUI mode under [usage](#7-usage)):
 
 * [newsboat](https://newsboat.org/)
-* [newsbeuter](https://www.newsbeuter.org/) 
+* [newsbeuter](https://www.newsbeuter.org/)
 
-You will (obviously) need the bookmarking apps; I've put together several already 
+You will (obviously) need the bookmarking apps; I've put together several already
 (that I use); obviously you can use your own. See [Services Setup](#5-services-setup) for details.
 
 ## 4. Installation
 
-Download or clone the repository, and put the uncompressed files in a location 
+Download or clone the repository, and put the uncompressed files in a location
 of your choice. Change into that directory.
 
+* create ~/.config/newsbeuter_dangerzone
+
+* symlink renderer.sh to ~/.config/newsbeuter_dangerzone
+* symlink muna.sh to ~/.config/newsbeuter_dangerzone
+* filter_images_strings, newsbeuter_dangerzone.ini, newsboat.md, newsboat_wide.md
+
+* create profile directories
+* mkdir -p ~/.config/newsbeuter_dangerzone/{profiles}
+* edit newsbeuter_dangerzone.ini and copy to each profile directory as well as base newsbeuter_dangerzone
+* Edit `bookmark.sh` line 18 so that it matches where you put the files, move to config dir
 
 
 
-* Edit `bookmark.sh` line 18 so that it matches where you put the files:
+###########################################################################
+old version below here.
+#######################################################################
 
 `export SCRIPT_DIR="$HOME/.newsboat"`
 
-* If using `newsboat` or `newsbeuter`, edit your `config` file with bookmark-cmd 
+* If using `newsboat` or `newsbeuter`, edit your `config` file with bookmark-cmd
 set to the path where you put the files:
 
 `# -- Bookmarks ---------------------------------------------------------`  
@@ -101,53 +113,53 @@ set to the path where you put the files:
 `bookmark-interactive yes`  
 `bookmark-autopilot no`  
 
-Any service you would like to use needs to have a symlink made from the "avail" 
+Any service you would like to use needs to have a symlink made from the "avail"
 directory to the "enabled" directory. For example:
 
 `ln -s $PWD/short_avail/yourls.sh $PWD/short_enabled/yourls.sh`
 
-You may use as many "out" options as you care to; choose 0 or 1 shortening 
+You may use as many "out" options as you care to; choose 0 or 1 shortening
 services.
 
 ### The INI file
 
-Using the INI file is optional *if* all of your binary files are on your $PATH 
+Using the INI file is optional *if* all of your binary files are on your $PATH
 or hand-edited in, and you have exported the needed API keys to environment variables.
 
-If you are already using `agaetr`, then just *add* the lines that do not exist. The 
-example in this repo shows *only* the possible options for `dangerzone`. 
+If you are already using `agaetr`, then just *add* the lines that do not exist. The
+example in this repo shows *only* the possible options for `dangerzone`.
 
 After editing `agaetr.ini`:
- 
+
 * `mkdir -p $HOME/.config/agaetr`
 * `cp $PWD/agaetr.ini $HOME/.config/agaetr`
 
 
 ## 5. Services Setup
 
-The services are left unbackgrounded here for maximum compatibility. And most 
+The services are left unbackgrounded here for maximum compatibility. And most
 (except for `cutycapt` or the one that saves all the HTML) only take a second.
 
 ### Services Not Covered Here
 
-One of the reason there are multiple different example service wrappers 
-(and that they are written in pretty straightforward BASH scripting) 
-is so that future users (including myself) can use them as templates or 
-examples for other tools or new services with as little fuss as possible 
-and without requiring a great deal of knowledge on the part of the user. 
+One of the reason there are multiple different example service wrappers
+(and that they are written in pretty straightforward BASH scripting)
+is so that future users (including myself) can use them as templates or
+examples for other tools or new services with as little fuss as possible
+and without requiring a great deal of knowledge on the part of the user.
 
-If you create one for another service, please contact me so I can merge it in 
+If you create one for another service, please contact me so I can merge it in
 (this repository is mirrored multiple places).  
 
-Some have been removed due to changes in the API that made it impractical (Facebook), and 
+Some have been removed due to changes in the API that made it impractical (Facebook), and
 some (such as the one for Twitter/X) because of API issues and because I don't give a
 shit about fascists.
 
 ### Shorteners
 
-#### YOURLS (shortener)  * 
+#### YOURLS (shortener)  *
 
-Go to your already functional YOURLS instance.  Get the API key from 
+Go to your already functional YOURLS instance.  Get the API key from
 Place the URL of your instance and API key into `agaetr.ini`.  
 
 `yourls_api =`  
@@ -155,44 +167,44 @@ Place the URL of your instance and API key into `agaetr.ini`.
 
 ### Bookmarking Helpers
 
-#### GUI browser (output) 
+#### GUI browser (output)
 
-Uses XDG-OPEN; no configuration should be needed.  *However*, there are additional 
-examples to show how you can make more outputs so you can choose your GUI browser. 
-One is included specifically for Firefox and for Chromium, there's also a "work 
+Uses XDG-OPEN; no configuration should be needed.  *However*, there are additional
+examples to show how you can make more outputs so you can choose your GUI browser.
+One is included specifically for Firefox and for Chromium, there's also a "work
 browser" one showing an example of where I have it open a specific profile with Waterfox.
 
-If you're looking at how to adapt this for your own use case, these are probably 
+If you're looking at how to adapt this for your own use case, these are probably
 the ones to look at.
 
 #### Save to Surfraw / Elinks Bookmark file (output)  
 
-Examples to show the different paths; this is essentially the "default" bookmarking 
+Examples to show the different paths; this is essentially the "default" bookmarking
 behavior of newsbeuter/newsboat.  They have almost identical formats.
 
 #### Submit to the Wayback Machine (output)  
 
-While there is an official client, I wrote this using curl calls and [API Keys](https://archive.org/account/s3.php). 
+While there is an official client, I wrote this using curl calls and [API Keys](https://archive.org/account/s3.php).
 You need an account there to get your own API keys.  Place them into `agaeter.ini`, or export `WAYBACK_SECRET` and `WAYBACK_ACCESS` as environment variables.
 
 #### Mastodon via toot (output)  
 
-Install and set up [toot](https://github.com/ihabunek/toot/).  If `toot` is not in 
+Install and set up [toot](https://github.com/ihabunek/toot/).  If `toot` is not in
 your `$PATH`, then you need to place the location of the binary into `agaetr.ini`.
 
 #### todo.txt / todoman (output)  
 
-This actually has integrations for two different todo systems, both [Todo-txt](http://todotxt.org/) and [todoman](https://github.com/pimutils/todoman), 
-depending on what is available and installed. It will try `todo-txt` first. It will 
-add a task made up of the title and the URL. This is a good example of where adding 
+This actually has integrations for two different todo systems, both [Todo-txt](http://todotxt.org/) and [todoman](https://github.com/pimutils/todoman),
+depending on what is available and installed. It will try `todo-txt` first. It will
+add a task made up of the title and the URL. This is a good example of where adding
 a description during the bookmark creation process is very useful.
 
 ### Shaarli (output) *
 
 Saves the URL to your Shaarli instance.
 
-Install and set up the [Shaarli-Client](https://github.com/shaarli/python-shaarli-client). 
-Make sure you set up the configuration file for the client properly. Place the 
+Install and set up the [Shaarli-Client](https://github.com/shaarli/python-shaarli-client).
+Make sure you set up the configuration file for the client properly. Place the
 location of the binary into `agaetr.ini` or into your $PATH.
 
 #### Wallabag (output)
@@ -200,27 +212,27 @@ location of the binary into `agaetr.ini` or into your $PATH.
 Saves the article to a Wallabag instance.
 
 Install and set up [Wallabag-cli](https://github.com/Nepochal/wallabag-cli). If
-`wallabag` is not in your `$PATH`, then use the `agaetr.ini` to specify its location. 
+`wallabag` is not in your `$PATH`, then use the `agaetr.ini` to specify its location.
 Note that shorteners and wallabag don't get along all the time.
 
-#### Capture to JPG/PNG/PDF (output) 
+#### Capture to JPG/PNG/PDF (output)
 
-Utilizes [cutycapt](http://cutycapt.sourceforge.net/). If [detox](http://detox.sourceforge.net/) is in 
-`$PATH`, it will be used to sanitize the title string for use as a filename (you want this). Saves 
+Utilizes [cutycapt](http://cutycapt.sourceforge.net/). If [detox](http://detox.sourceforge.net/) is in
+`$PATH`, it will be used to sanitize the title string for use as a filename (you want this). Saves
 the output in the XDG download directory, usually `$HOME/Downloads`, which it finds
-using `xdg-user-dir`, which is *probably* already installed on your system. If that fails 
+using `xdg-user-dir`, which is *probably* already installed on your system. If that fails
 for any reason, falls back to writing the file to `$HOME`.
 
 #### Send to email (output)  *
 
 *DO NOT BACKGROUND THIS ONE*
 
-Uses [mutt](http://www.mutt.org/) for sending the email, and if it finds my 
-[pplsearch](https://github.com/uriel1998/ppl_virdirsyncer_addysearch) address book 
+Uses [mutt](http://www.mutt.org/) for sending the email, and if it finds my
+[pplsearch](https://github.com/uriel1998/ppl_virdirsyncer_addysearch) address book
 helper.  Otherwise sends to the email address specified on line 12 of the script.
 
-It will also attach the body of the article as plain text.  There are three ways 
-demonstrated in the script (lines 21-28) itself - using lynx, using pandoc, and 
+It will also attach the body of the article as plain text.  There are three ways
+demonstrated in the script (lines 21-28) itself - using lynx, using pandoc, and
 a horribly convoluted bespoke filter which uses [hxclean and hxnormalize and hxunent](https://packages.debian.org/jessie/html-xml-utils) from html-xml-utils, [htmltidy](https://htmltidy.net/), [iconv](https://en.wikipedia.org/wiki/Iconv), and sed.
 
 The default is to use `lynx`.  
@@ -231,53 +243,53 @@ The default is to use `lynx`.
 
 #### Video/Audio via YouTube-Dl (output) *
 
-These are examples of how `dangerzone` can be used with other programs that handle 
+These are examples of how `dangerzone` can be used with other programs that handle
 URLs or even as a standalone tool.
 
-Install and set up [youtube-dl](https://youtube-dl.org/) in your $PATH. Without 
-editing, these scripts save audio/video into `$HOME/Downloads/mp3` and `$HOME/Downloads/videos` 
+Install and set up [youtube-dl](https://youtube-dl.org/) in your $PATH. Without
+editing, these scripts save audio/video into `$HOME/Downloads/mp3` and `$HOME/Downloads/videos`
 respectively.
 
 ## 6. Usage
 
-Inside newsbeuter/newsboat, press Ctrl-B (by default) to bring up the bookmarking 
-options - it will prompt you with (pre-filled when possible) URL, title, 
-description, and feed. Anything you add into the "description" string will be 
-added to the title string.  *If no title string is passed, the program will 
+Inside newsbeuter/newsboat, press Ctrl-B (by default) to bring up the bookmarking
+options - it will prompt you with (pre-filled when possible) URL, title,
+description, and feed. Anything you add into the "description" string will be
+added to the title string.  *If no title string is passed, the program will
 attempt to fetch the title from the webpage.*
 
-You will then have a `fzf` created interface with all the enabled "out" options 
+You will then have a `fzf` created interface with all the enabled "out" options
 available to you. Choose as many or few as you like (press TAB to multi-select).
 
 ![demo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/docs/demo.gif "demo")  
 
-The individual modules are written so that they may be sourced by your other 
-scripts as well. The function called is [filename]_send, so inside `pdf_capture` 
+The individual modules are written so that they may be sourced by your other
+scripts as well. The function called is [filename]_send, so inside `pdf_capture`
 the function is `pdf_capture_send` Pertinent variables are "${title}" and "${link}" .
 
 ### GUI mode
 
-Using GUI mode (and the clipboard support) will allow you to use this framework 
-with any program.  If you invoke `bookmark.sh -g [URL] [TITLE]` you will be 
-presented with a dialog to use any of the helper programs. 
+Using GUI mode (and the clipboard support) will allow you to use this framework
+with any program.  If you invoke `bookmark.sh -g [URL] [TITLE]` you will be
+presented with a dialog to use any of the helper programs.
 
-That is only a partial solution, though. So if you simply invoke `bookmark.sh -g` 
-*without* anything else, it will use `xclip` to get the URL from the clipboard, then 
+That is only a partial solution, though. So if you simply invoke `bookmark.sh -g`
+*without* anything else, it will use `xclip` to get the URL from the clipboard, then
 present the GUI interface.  
 
 ![GUI demo](https://github.com/uriel1998/newsbeuter-dangerzone/raw/master/docs/gui-demo.png "GUI demo")  
 
-This means that you can bind any hotkey you like to call `bookmark.sh -g` and 
-have it pull the URL from your clipboard, using it as a lightweight extension that 
+This means that you can bind any hotkey you like to call `bookmark.sh -g` and
+have it pull the URL from your clipboard, using it as a lightweight extension that
 future updates can't break.
 
 ## 8. Other files
 
 There are other files in this repository:
 
-* `muna.sh` - Exactly the same as [muna](https://github.com/uriel1998/muna). Used to remove redirections and shortening. 
+* `muna.sh` - Exactly the same as [muna](https://github.com/uriel1998/muna). Used to remove redirections and shortening.
 
-* `urlportal.sh` - I use this as my "browser" helper. Originally from [Gotbletu](https://github.com/gotbletu/shownotes/blob/master/urlportal.sh), 
+* `urlportal.sh` - I use this as my "browser" helper. Originally from [Gotbletu](https://github.com/gotbletu/shownotes/blob/master/urlportal.sh),
 I added a few things:
 
 * Proper running of GUI image viewers
@@ -287,14 +299,14 @@ I added a few things:
 * Switched references to rtv to tuir
 * uses [`terminal-image-cli`](https://github.com/sindresorhus/terminal-image-cli) by default instead of chafa.
 
-* `renderer.sh` - I use this for rendering articles in `newsboat`. It's the funky 
+* `renderer.sh` - I use this for rendering articles in `newsboat`. It's the funky
 bespoke method I mention above about sending mail.
 * `renderer_links.sh` - I use this for rendering articles in `newsboat`. Includes URLs.
 * `renderer_images.sh` - I use this for showing the images in `newsboat`. Collects image URLs in a cachefile with each article view. Call via a macro.
 
 ## 9. TODO
 
-* Test the URL for validity 
+* Test the URL for validity
 # TODO: add preview function to each of the modules for fzf --preview giving a quick explanation of what it does
 # CHECK FOR THIS by checking for the preview string which will contain the path of the posters!!!!!!!!!!!!! so
 # bookmarker_preview=$(ps aux | grep fzf | grep -v "grep" | grep -c ${SCRIPT_DIR}/out_enabled")

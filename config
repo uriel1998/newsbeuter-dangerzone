@@ -44,11 +44,8 @@ display-article-progress yes
 feed-sort-order unreadarticlecount-desc
 show-read-feeds no
 text-width 120
-
-html-renderer "renderer_links.sh"
+html-renderer "renderer.sh"
 external-url-viewer "urlview"
-
-
 
 # -- Bookmarks ---------------------------------------------------------
 bookmark-cmd "bookmark.sh"
@@ -56,9 +53,8 @@ bookmark-interactive yes
 bookmark-autopilot no
 
 # -- Macros -----------------------------------------------------------
-# TODO - set the environment variable instead of calling different programs
-# Also, we're always exporting the links anyway....
-macro Y set set html-renderer "export show_links=true;renderer.sh"
+
+macro Y set html-renderer "export show_links=true;renderer.sh"
 macro y set html-renderer "export show_links=false;renderer.sh"
 macro R set show-read-feeds yes
 macro r set show-read-feeds no
