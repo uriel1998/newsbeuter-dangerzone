@@ -59,7 +59,7 @@ bookmark-autopilot no
 # TODO - set the environment variable instead of calling different programs
 # Also, we're always exporting the links anyway....
 macro Y set set html-renderer "export show_links=true;renderer.sh"
-macro y set html-renderer "export show_links=false;renderer_links.sh"
+macro y set html-renderer "export show_links=false;renderer.sh"
 macro R set show-read-feeds yes
 macro r set show-read-feeds no
 

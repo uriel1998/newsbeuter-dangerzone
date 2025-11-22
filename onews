@@ -59,6 +59,7 @@ export profile
 export show_links
 
 # Reset image cache of current image URL
+# This is a duplicate here so that it clears on startup
 ImgCacheFile=${CACHE_DIR}/newsboat_img_links
 echo "" > "${ImgCacheFile}"
 
