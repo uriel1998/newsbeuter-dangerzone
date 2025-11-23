@@ -21,27 +21,20 @@ in profile directory:
     * config
     * rest gets populated by newsboat
 
-Okay, filtering doesn't seem to be working well, so will need to try this:
-
-ignore-article "*" "feedtitle =~ \"Some Hidden Feed\""
-
-Perhaps symlink ~/.newsboat to $XDG_CONFIG_HOME/newsbeuter_dangerzone  ?
-
 So basic rendering with the reader profile is working, using env var to toggle links.
+Macro for swapping link display.
+
+Added examples using tdab and tdab focus as browser with rdrview and renderer to get sidebar with full text from sites.
 
 
 
 
-
-There's a world where rdrview would be more useful, but remember, we're reading RSS and emails, not random web pages
 
 # Also, we're always exporting the links anyway....
 add use_kitty switch to renderer and show images and all that.
 
 
 Next steps:
-MACRO FOR FULL TEXT USING RDRVIEW!!!
-    - get link
 bookmarker
 image display without use_kitty
 image display with use_kitty
