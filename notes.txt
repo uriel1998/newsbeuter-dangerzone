@@ -39,3 +39,8 @@ bookmarker
 image display without use_kitty
 image display with use_kitty
 videos.  use the xml from ytcs.
+Syntax: include <path>
+Default: n/a
+Example: include "~/.newsboat/colors"
+
+With this command, you can include other files to be interpreted as configuration files. This is especially useful to separate your configuration into several files, e.g. key configuration, color configuration, …​
