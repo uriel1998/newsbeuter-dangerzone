@@ -35,16 +35,18 @@ else
     PATH=$PATH:"${CONFIG_DIR}"  # <- newsbeuter_dangerzone script executables
     export PATH
     # if NBDZ is configured, but no profile is set, then it means default.
-    if [ "${profile}" != "" ];then
+    if [ "${profile}" = "" ];then
         profile="default"
     fi
     # select profile-specific versions if they exist, otherwise use newsbeuter_dangerzone dir
-
-    if [ -d "${CONFIG_DIR}/${profile}" ] && [ "$profile" != "default" ];then
+echo "TI1"
+    if [ -d "$(readlink -f "${CONFIG_DIR}/${profile}")" ] && [ "$profile" != "default" ];then
         # default is a special fallback case; so if someone doesn't put in a profile, it
         # automatically falls back to default, and then to ~/.newsboat if needed.
         my_CONFIG_DIR="${CONFIG_DIR}/${profile}"
+        echo "$my_CONFIG_DIR"
     else
+        echo "TI2"
         my_CONFIG_DIR="${CONFIG_DIR}/default" # if you want, you can symlink this to ~/.newsboat
         if [[ ! -d "$(readlink -f "${CONFIG_DIR}/default")" ]]; then
             my_CONFIG_DIR="$HOME/.newsboat"
@@ -92,7 +94,7 @@ if [ -S "/tmp/mykitty" ] && [ "$use_kitty" != "false" ];then
     # So different sidebar layout needed
     if [ $c_tmux -gt 0 ];then
         if [ -f $(which tmux_topbar.sh) ];then
-            tmux_topbar.sh -f 10 -h -b rich -w 90 -m /home/steven/vault/helps/newsboat_wide.md --pager   # TODO - Need to remove absolute path here.
+            tmux_topbar.sh -f 10 -h -b rich -w 90 -m "${CONFIG_DIR}/newsboat_wide.md" --pager   # TODO - Need to remove absolute path here.
             side_pane=$(tmux list-panes -F "#D" | grep -v "$o_pane")
             tmux select-pane -t "$o_pane"
         fi
@@ -111,7 +113,7 @@ else
         if [ -f $(which tmux_sidebar.sh) ];then
             #all this is pointless if the sidebar isn't possible
             # tmux, not kitty
-            tmux_sidebar.sh -f 20 rich -w 60 -m /home/steven/vault/helps/newsboat.md --pager   # TODO - Need to remove absolute path here.
+            tmux_sidebar.sh -f 20 rich -w 60 -m "${CONFIG_DIR}/newsboat.md" --pager   # TODO - Need to remove absolute path here.
             side_pane=$(tmux list-panes -F "#D" | grep -v "$o_pane")
             # splitting sidebar for image preview
             tmux split-window -v -t 1 -p 60
