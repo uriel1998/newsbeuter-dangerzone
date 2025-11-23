@@ -94,6 +94,7 @@ of your choice. Change into that directory.
 
 * create profile directories
 * mkdir -p ~/.config/newsbeuter_dangerzone/{profiles}
+* You may create "default" as a profile or symlink `~/.config/newsbeuter_dangerzone/default` to ~/.newsboat (which is the fallback if `/default` doesn't exist)
 * edit newsbeuter_dangerzone.ini and copy to each profile directory as well as base newsbeuter_dangerzone
 * Edit `bookmark.sh` line 18 so that it matches where you put the files, move to config dir
 

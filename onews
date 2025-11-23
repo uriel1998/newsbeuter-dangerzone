@@ -34,11 +34,24 @@ if [ ! -d "${CONFIG_DIR}" ];then
 else
     PATH=$PATH:"${CONFIG_DIR}"  # <- newsbeuter_dangerzone script executables
     export PATH
+    # if NBDZ is configured, but no profile is set, then it means default.
+    if [ "${profile}" != "" ];then
+        profile="default"
+    fi
     # select profile-specific versions if they exist, otherwise use newsbeuter_dangerzone dir
-    if [ -d "${CONFIG_DIR}/${profile}" ] && [ "${profile}" != "" ];then
+
+    if [ -d "${CONFIG_DIR}/${profile}" ] && [ "$profile" != "default" ];then
+        # default is a special fallback case; so if someone doesn't put in a profile, it
+        # automatically falls back to default, and then to ~/.newsboat if needed.
         my_CONFIG_DIR="${CONFIG_DIR}/${profile}"
     else
-        my_CONFIG_DIR="${CONFIG_DIR}"
+        my_CONFIG_DIR="${CONFIG_DIR}/default" # if you want, you can symlink this to ~/.newsboat
+        if [[ ! -d "$(readlink -f "${CONFIG_DIR}/default")" ]]; then
+            my_CONFIG_DIR="$HOME/.newsboat"
+            if [[ ! -d "$(readlink -f ${my_CONFIG_DIR})" ]]; then
+                mkdir -p "${my_CONFIG_DIR}"
+            fi
+        fi
     fi
     ConfigFile="${my_CONFIG_DIR}/newsbeuter_dangerzone.ini"
     NBConfigFile="${my_CONFIG_DIR}/config"  # Note that this is in newsbeuter_dangerzone's config directory, NOT newsboat's!
@@ -57,6 +70,7 @@ export enabled_out_dir
 export save_directory
 export profile
 export show_links
+export my_CONFIG_DIR
 
 # Reset image cache of current image URL
 # This is a duplicate here so that it clears on startup
