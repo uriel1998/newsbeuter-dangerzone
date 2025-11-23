@@ -40,6 +40,10 @@ max-items 50
 
 # -- Displaying ----------------------------------------------------------
 browser "tmux neww elinks %u"
+# Examples using rdrview and tmux_sidebar and tmux_devour
+# browser "rdrview -H %u | ~/.config/newsbeuter_dangerzone/renderer.sh | less"
+# browser "export static_columns=30;tmux_sidebar.sh \"rdrview -H %u | ~/.config/newsbeuter_dangerzone/renderer.sh | less\""
+# browser "tmux_devour.sh \"rdrview -H %u | ~/.config/newsbeuter_dangerzone/renderer.sh | less\""
 display-article-progress yes
 feed-sort-order unreadarticlecount-desc
 show-read-feeds no
