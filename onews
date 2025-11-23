@@ -73,6 +73,7 @@ export save_directory
 export profile
 export show_links
 export my_CONFIG_DIR
+export use_kitty
 
 # Reset image cache of current image URL
 # This is a duplicate here so that it clears on startup
@@ -94,7 +95,7 @@ if [ -S "/tmp/mykitty" ] && [ "$use_kitty" != "false" ];then
     # So different sidebar layout needed
     if [ $c_tmux -gt 0 ];then
         if [ -f $(which tmux_topbar.sh) ];then
-            tmux_topbar.sh -f 10 -h -b rich -w 90 -m "${CONFIG_DIR}/newsboat_wide.md" --pager   # TODO - Need to remove absolute path here.
+            tmux_topbar.sh -f 10 -h -b rich -w 90 -m "${CONFIG_DIR}/newsboat_cheatsheet_wide.md" --pager   # TODO - Need to remove absolute path here.
             side_pane=$(tmux list-panes -F "#D" | grep -v "$o_pane")
             tmux select-pane -t "$o_pane"
         fi
@@ -113,7 +114,7 @@ else
         if [ -f $(which tmux_sidebar.sh) ];then
             #all this is pointless if the sidebar isn't possible
             # tmux, not kitty
-            tmux_sidebar.sh -f 20 rich -w 60 -m "${CONFIG_DIR}/newsboat.md" --pager   # TODO - Need to remove absolute path here.
+            tmux_sidebar.sh -f 20 rich -w 60 -m "${CONFIG_DIR}/newsboat_cheatsheet_tall.md" --pager   # TODO - Need to remove absolute path here.
             side_pane=$(tmux list-panes -F "#D" | grep -v "$o_pane")
             # splitting sidebar for image preview
             tmux split-window -v -t 1 -p 60
