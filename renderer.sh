@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ##############################################################################
 #
@@ -105,8 +105,12 @@ if [ -z "$PROCESSED" ];then
         fi
     fi
 fi
-echo "${PROCESSED}" > /home/steven/tmp/shitt.txt
+
+
+
+
 if [ "$PROCESSED" != "" ];then
+    notify-send "3a"
     # We need to separate out the references portion so it doesn't cut off URLs.
     # get the References line number
     ref_line=$(echo "${PROCESSED}" | grep -n '^References$' | cut -f1 -d:)
@@ -117,9 +121,52 @@ if [ "$PROCESSED" != "" ];then
     var1=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==1')
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
     echo "${var2}" > "${LinksCacheFile}"
+    printf "%s\n" "${var1}" > /home/steven/shit.txt
+    notify-send "333"
+    # Get rid of garbage, translate back. Also remove emphasis and bold that are just over whitespace.
+    var=$(printf "%s\n" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' | fold -s -w $WRAP)
+    # fixing multiline em/strong by wrapping first.
+    open_mark="§⬞"
+    close_mark="⬞§"
+    new_var=""
+    while IFS= read -r line; do
+        tmp="${line//${open_mark}/}"
+        open_count=$(( ( ${#line} - ${#tmp} ) / ${#open_mark} ))
 
-    # This isn't perfect -- multiline doesn't work at all, and combos of italics and strongs confuse it, but... it's readable?
-    printf "%s" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§ *§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' -e 's/§//g' | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
+        tmp="${line//${close_mark}/}"
+        close_count=$(( ( ${#line} - ${#tmp} ) / ${#close_mark} ))
+
+        if (( open_count == close_count + 1 )); then
+            line="${line}${close_mark}"
+        fi
+
+        new_var+="${line}"$'\n'
+    done <<< "${var}"
+    var="${new_var}"
+    open_mark="§⬞"
+    close_mark="⬞§"
+    new_var=""
+    while IFS= read -r line; do
+        tmp="${line//${open_mark}/}"
+        open_count=$(( ( ${#line} - ${#tmp} ) / ${#open_mark} ))
+
+        tmp="${line//${close_mark}/}"
+        close_count=$(( ( ${#line} - ${#tmp} ) / ${#close_mark} ))
+
+        if (( close_count == open_count + 1 )); then
+            line="${open_mark}${line}"
+        fi
+
+        new_var+="${line}"$'\n'
+    done <<< "${var}"
+
+    # finally removing the paragraph mark, as we're done with it, and moving it all back to var1.
+    var1=$(printf "%s\n" "${new_var}" | sed 's/§⬞[[:space:]]*⬞§//g'  | sed 's/⬞§[[:space:]]*§⬞//g'  | sed -e 's/§//g' )
+
+
+    notify-send "${var1}"
+
+    printf "%s\n" "${var1}" | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
     if [ "$show_links" = "true" ];then
         # The references by themselves
         rich -u
