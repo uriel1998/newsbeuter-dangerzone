@@ -156,7 +156,7 @@ if [ "$PROCESSED" != "" ];then
     # finally removing the paragraph mark, as we're done with it, and moving it all back to var1.
     var1=$(printf "%s\n" "${new_var}" | sed 's/§⬞[[:space:]]*⬞§//g'  | sed 's/⬞§[[:space:]]*§⬞//g'  | sed -e 's/§//g' )
 
-# I think our antitracking would go here? And otherwise deobfuscating
+# TODO - I think our antitracking would go here? And otherwise deobfuscating these links and removing cruft, etc
 
     printf "%s\n" "${var1}" | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
     if [ "$show_links" = "true" ];then

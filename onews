@@ -8,12 +8,61 @@
 #
 ##############################################################################
 
-# first argument, if any, should be profile, used to load different configs, environment files, etc.
-if [ "${1}" != "" ];then
-    profile="${1}"
-else
-    profile=""
-fi
+# The first argument, if any, should be profile, used to load different configs, environment files, etc.
+# If the SECOND argument
+
+LOUD=0
+RELOAD=0
+CLEAN=0
+
+display_help () {
+    echo "onews [--clean | --reload ] --profile [profile_name]"
+    echo " "
+    echo "if profile is omitted, falls back to default"
+}
+
+
+function loud() {
+    if [ $LOUD -eq 1 ];then
+        echo "$@"
+    fi
+}
+
+
+###############################################################################
+# Enter Here
+###############################################################################
+
+
+# parse command line options
+#
+while [ $# -gt 0 ]; do
+    option="$1"
+    case $option in
+    --reload)
+        RELOAD=1
+        shift
+        ;;
+    --profile)
+        shift
+        profile="${1}"
+        shift
+        ;;
+    --clean)
+        CLEAN=1
+        shift
+        ;;
+    --help)
+        display_help
+        exit
+        ;;
+    --loud)
+        LOUD=1
+        shift
+        ;;
+    *) ;;
+    esac
+done
 
 # Set directories, get environment, etc.
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
@@ -23,7 +72,7 @@ if [ ! -d "${CACHE_DIR}" ];then
 fi
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
 if [ ! -d "${CONFIG_DIR}" ];then
-    # If it doesn't exist, then just use defaults
+    # If it doesn't exist, then just use defaults because NBDZ isn't set up
     enabled_out_dir="${SCRIPT_DIR}/out_enabled"
     save_directory="${HOME}/Downloads"  #  TODO - export all of these!
     NBConfigFile="${XDG_CONFIG_HOME/newsboat/config:-$HOME/.newsboat/config}" #default newsboat configuration
@@ -39,14 +88,12 @@ else
         profile="default"
     fi
     # select profile-specific versions if they exist, otherwise use newsbeuter_dangerzone dir
-echo "TI1"
     if [ -d "$(readlink -f "${CONFIG_DIR}/${profile}")" ] && [ "$profile" != "default" ];then
         # default is a special fallback case; so if someone doesn't put in a profile, it
         # automatically falls back to default, and then to ~/.newsboat if needed.
         my_CONFIG_DIR="${CONFIG_DIR}/${profile}"
         echo "$my_CONFIG_DIR"
     else
-        echo "TI2"
         my_CONFIG_DIR="${CONFIG_DIR}/default" # if you want, you can symlink this to ~/.newsboat
         if [[ ! -d "$(readlink -f "${CONFIG_DIR}/default")" ]]; then
             my_CONFIG_DIR="$HOME/.newsboat"
@@ -74,6 +121,17 @@ export profile
 export show_links
 export my_CONFIG_DIR
 export use_kitty
+
+### Deal with clean and RELOAD
+if [ "$CLEAN" != "0" ];then
+        newsboat --config-file="${NBConfigFile}" --cache-file="${NBCacheFile}" --log-file="${NBLogFile}" --url-file="${NBUrlFile}" -X --cleanup -x reload
+        exit
+fi
+if [ "$RELOAD" != "0" ];then
+        newsboat --config-file="${NBConfigFile}" --cache-file="${NBCacheFile}" --log-file="${NBLogFile}" --url-file="${NBUrlFile}" -x reload
+        exit
+fi
+
 
 # Reset image cache of current image URL
 # This is a duplicate here so that it clears on startup
