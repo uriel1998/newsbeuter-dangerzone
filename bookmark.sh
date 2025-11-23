@@ -9,6 +9,8 @@
 #
 ##############################################################################
 
+# binaries should be linked to newsbeuter_dangerzone's config directory
+
 # no gui, dammit. Kitty or spawned or in terminal.
 # gets passed URL, title, description IIRC
 # basically I want to either use tdab devour
@@ -21,39 +23,30 @@
 
   # (since Newsboat 2.10) the title of the feed you’re currently in (preset as you’d expect).
 #(If you find that the above preset values always work for you, enable bookmark-autopilot to avoid being asked anything.)
-
-
-if [ -z "$1" ];then
-    url=$(xclip -o)
-    shift
-else
-    url="$1"
-    shift
+#export enabled_out_dir
+#export save_directory
+#export profile
+#export show_links
+# Set directories, get environment, etc.
+export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.local/state}/newsbeuter_dangerzone"
+if [ ! -d "${CACHE_DIR}" ];then
+    mkdir -p "${CACHE_DIR}"
 fi
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
+# we are going to assume used as bookmarker from newsboat
 
-title="${@:1}"
 
-if [ -z "$url" ];then
-    if [ "$GUI" == "YUP" ];then
-        tempurl=$(yad --width=500 --center --window-icon="icon-gtk-network" --title="Choose URL" --text="Please input an URL" --entry --editable )
-    else
-        echo "Please input an URL.  "
-        read tempurl
-    fi
-    if [ -z "$tempurl" ];then
-        exit 1
-    else
-        url="$tempurl"
-    fi
-fi
+    url="${1}"
+    title="${2}"
+    description="${3}"
+    feed="${4}"
+# test and see if this works, may have to check if #4 is filled etc.
+# test if urls
+# if no description, get it (like agaetr) as optional, also allow adding of
+# description in fzf
 
-#Could this be causing the problem since it's in a subshell?
-#export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-export SCRIPT_DIR="$HOME/.newsboat"
-cd "${SCRIPT_DIR}"
-#Deshortening, deobfuscating, and unredirecting the URL
-
-source "$SCRIPT_DIR/muna.sh"
+source "$CONFIG_DIR/muna.sh"
 unredirector
 link="$url"
 
@@ -88,9 +81,6 @@ fi
 # Parsing enabled out systems. Find files in out_enabled, then import
 # functions from each and running them with variables already established.
 
-if [ ! -z "$GUI" ];then
-    posters=$(yad --width=400 --height=400 --center --window-icon=gtk-network --borders 3 --skip-taskbar --title="Choose outputs for $link" --text="${title}" --checklist --list --column=Use:RD --column=metadata:text $( /usr/bin/ls -A "$SCRIPT_DIR/out_enabled" | sed 's/.sh//g' | grep -v ".keep" | sed 's/^/false /' ) | awk -F '|' '{ print $2 }' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
-else
     READY=0
     # begin loop
     while [ "$READY" == "0" ];do
@@ -115,7 +105,6 @@ else
             echo "It's there!"
         fi
     done
-fi
 
 for p in $posters;do
     if [ "$p" != ".keep" ];then
