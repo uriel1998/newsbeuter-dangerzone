@@ -39,7 +39,7 @@ delete-read-articles-on-quit yes
 max-items 50
 
 # -- Displaying ----------------------------------------------------------
-browser "tmux neww elinks %u"
+browser "tmux new-window -n 'article' \"curl %u | renderer.sh | less\""
 
 # Examples using rdrview and my reading script
 # While tempting to use tdab here, newsboat graphics get messed up.

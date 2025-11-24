@@ -26,33 +26,88 @@ if [ ! -d "${CACHE_DIR}" ];then
     mkdir -p "${CACHE_DIR}"
 fi
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
+source "$CONFIG_DIR/muna.sh"
+
+function loud() {
+    if [ $LOUD -eq 1 ];then
+        echo "$@"
+    fi
+}
+
+function get_better_description() {
+    # to strip out crappy descriptions and either omit them or, if available,
+    # substitute og tags.
+
+    patterns=("Photo illustration by" "The Independent is on the ground" "Sign up for our email newsletter" "originally published")
+    patterns+="(Image Credit:"
+
+    # Loop through the array and check if any pattern matches
+    # If so, nuke the description.
+    for pattern in "${patterns[@]}"; do
+        if [[ "$description" == *"$pattern"* ]]; then
+            loud "[info] Removing bogus description."
+            description=""
+        fi
+    done
+    # description is typically empty from newsboat, so if it's set here, it's
+    # probably user desired, so we'll skip getting from opengraph/the web
+    if [ "$description" == "" ];then
+        loud "[info] Attempting to find OpenGraph tags for description"
+        html=$(wget -O- "${link}" | sed 's|>|>\n|g')
+        og_description=$(echo "${html}" | sed -n 's/.*<meta property="og:description".* content="\([^"]*\)".*/\1/p' | sed -e 's/ "/ “/g' -e 's/" /” /g' -e 's/"\./”\./g' -e 's/"\,/”\,/g' -e 's/\."/\.”/g' -e 's/\,"/\,”/g' -e 's/"/“/g' -e "s/'/’/g" -e 's/ -- /—/g' -e 's/(/❲/g' -e 's/)/❳/g' -e 's/ — /—/g' -e 's/ - /—/g'  -e 's/ – /—/g' -e 's/ – /—/g')
+        if [[ "$description" == *"..."* ]] && [ "$og_description" != "" ];then
+            loud "[info] Subsituting OpenGraph description for parsed description."
+            description="${og_description}"
+        fi
+        if [ "$og_description" != "" ] && [ "$description" == "" ];then
+            loud "[info] Subsituting OpenGraph description for empty or bad description."
+            description="${og_description}"
+        fi
+    fi
+}
+
+##############################################################################
+# Enter here
+##############################################################################
+
 # we are going to assume used as bookmarker from newsboat
+# or the same input format for the cli arguments
+
+if [ $(echo "${1}" | grep -c http) -eq 0 ];then
+    loud "[ERROR] No URL passed as first argument."
+    exit 99
+fi
+
+# These are GLOBAL from this point.
+url="${1}"
+title="${2}"
+description="${3}"
+feed="${4}"
 
 
-    url="${1}"
-    title="${2}"
-    description="${3}"
-    feed="${4}"
+# these functions are in muna, just avoiding yet another sub-sub-sub shell
+# they work on the variable $url and set it back.
+strip_tracking_url
+unredirector
+link="${url}"
+# so now both $url and $link should point to the same, unredirected, cleaned URL.
 
-
-# test if urls
-# run url through muna
-# TODO - add flag to have it strip id or tracking elements
 # if no description, get it (like agaetr) as optional
+get_better_description
+
 # present gathered information in fzf preview panes
+# description in fzf
+
+
+echo "description: ${description}"
+echo "feed: ${feed}"
+
 # present menu options - including "edit description" (it's in an variable)
 # and select however many of out-enabled as you like.
 # TODO - can also have environment var of "default on" or "default off"
 
 
-# description in fzf
-echo "description: ${description}"
-echo "feed: ${feed}"
-source "$CONFIG_DIR/muna.sh"
-# these functions are in muna, just avoiding yet another sub-sub-sub shell
-strip_tracking_url
-unredirector
-link="$url"
+
 
 
 function get_better_description() {
