@@ -23,7 +23,7 @@ display_help () {
 
 
 function loud() {
-    if [ $LOUD -eq 1 ];then
+    if [ "${LOUD:-0}" -eq 1 ];then
         echo "$@"
     fi
 }

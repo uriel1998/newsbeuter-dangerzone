@@ -1,17 +1,16 @@
 #!/bin/bash
-  
+
 ##############################################################################
 # muna, by Steven Saus 3 May 2022
 # steven@stevesaus.com
 # Licenced under the Apache License
-##############################################################################  
-  
+##############################################################################
 
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
- 
+
 function loud() {
-    if [ $LOUD -eq 1 ];then
+    if [ "${LOUD:-0}" -eq 1 ];then
         echo "$@"
     fi
 }
@@ -22,21 +21,11 @@ strip_tracking_url() {
 	# variable.  So there's no real "return" other than setting that var.
     local base_no_frag frag path qs cleaned_qs cleaned_url
     local orig_effective clean_effective
-    local -a curl_opts
 
     if [ -z "${url}" ]; then
         printf 'Usage: strip_tracking_url "URL"\n' >&2
         return 1
     fi
-
-    curl_opts=(
-        --silent
-        --location
-        --max-time 5
-        --connect-timeout 5
-        --output /dev/null
-        --write-out '%{url_effective}'
-    )
 
     # Separate fragment (#...)
     case "${url}" in
@@ -110,45 +99,71 @@ strip_tracking_url() {
 	fi
 }
 
-
-
-
-
 function unredirector {
 	# because this is a bash function, it's using the variable $url as the returned
 	# variable.  So there's no real "return" other than setting that var.
-    #Explainer/reminder - curl will return 404 error codes *unless* you have 
-    # --fail set, in which case you get the error code. That's done here so 
-    # that it handles 404 and missing server exactly the same way, while 
+    # Explainer/reminder - curl will return 404 error codes *unless* you have
+    # --fail set, in which case you get the error code. That's done here so
+    # that it handles 404 and missing server exactly the same way, while
     # letting the 300 level codes pass through normally.
-    
-    headers=$(curl -k -s --fail -m 5 --location -sS --head "$url")
-    code=$(echo "$headers" | head -1 | awk '{print $2}')
-    
+
+    #headers=$(curl -k -s --fail -m 5 --location -sS --head "$url")
+    #code=$(echo "$headers" | head -1 | awk '{print $2}')
+
+    # switching to wget b/c reasons
+    local ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
+    local headers
+    headers="$(
+        wget \
+        --spider \
+        --server-response \
+        --timeout=5 \
+        --max-redirect=20 \
+        --no-check-certificate \
+        -erobots=off \
+        --no-cache \
+        --user-agent="${ua}" \
+        "${url}" 2>&1
+    )"
+    local code
+    code="$(
+        printf '%s\n' "${headers}" \
+        | awk '/HTTP\/[0-9.]* / {print $2; exit}'
+    )"
     #checks for null as well
     if [ -z "$code" ];then
-        if [ $LOUD -eq 1 ];then  
+        if [ $LOUD -eq 1 ];then
             loud "[info] Page/server not found, trying Internet Archive"
         fi
         firsturl="$url"
-        
-        #In the JSON the Internet Archive returns, the string 
-        # "archived_snapshots": {}  
+
+        #In the JSON the Internet Archive returns, the string
+        # "archived_snapshots": {}
         # is returned if it does not exist in the Archive either.
-        
-        api_ia=$(curl -s http://archive.org/wayback/available?url="$url")
+        # swapping out for wget
+        #api_ia=$(curl -s http://archive.org/wayback/available?url="$url")
+        api_ia="$(wget \
+            --quiet \
+            --timeout=5 \
+            --tries=1 \
+            --no-check-certificate \
+            -erobots=off \
+            --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0" \
+            -O - \
+            "http://archive.org/wayback/available?url=${url}" )"
+
         NotExists=$(echo "$api_ia" | grep -c -e '"archived_snapshots": {}')
         if [ "$NotExists" != "0" ];then
             SUCCESS=1 #that is, not a success
-            if [ $LOUD -eq 1 ];then  
-                loud "[error] Web page is gone and not in Internet Archive!" 
-                loud "[error] For page $firsturl" 
+            if [ $LOUD -eq 1 ];then
+                loud "[error] Web page is gone and not in Internet Archive!"
+                loud "[error] For page $firsturl"
             fi
             unset -v $url
             unset -v $firsturl
         else
-            if [ $LOUD -eq 1 ];then  
-                loud "[info] Fetching Internet Archive version of" 
+            if [ $LOUD -eq 1 ];then
+                loud "[info] Fetching Internet Archive version of"
                 loud "[info] page $firsturl"
             fi
             url=$(echo "$api_ia" | awk -F 'url": "' '{print $3}' 2>/dev/null | awk -F '", "' '{print $1}' | awk -F '"' '{print $1}')
@@ -156,36 +171,37 @@ function unredirector {
         fi
     else
         if echo "$code" | grep -q -e "3[0-9][0-9]";then
-            if [ $LOUD -eq 1 ];then  
-                loud "[info] HTTP $code redirect"    
+            if [ $LOUD -eq 1 ];then
+                loud "[info] HTTP $code redirect"
             fi
             resulturl=""
-            resulturl=$(wget -T 5 -O- --server-response "$url" 2>&1 | grep "^Location" | tail -1 | awk -F ' ' '{print $2}')
+            resulturl=$(echo "${headers}" | grep "^Location" | tail -1 | awk -F ' ' '{print $2}')
+            echo "HI"
             if [ -z "$resulturl" ]; then
-                if [ $LOUD -eq 1 ];then  
-                    loud "[info] No new location found" 
+                if [ $LOUD -eq 1 ];then
+                    loud "[info] No new location found"
                 fi
                 resulturl=$(echo "$url")
             else
-                if [ $LOUD -eq 1 ];then  
-                    loud "[info] New location found" 
+                if [ $LOUD -eq 1 ];then
+                    loud "[info] New location found"
                 fi
                 url=$(echo "$resulturl")
-                if [ $LOUD -eq 1 ];then  
-                    loud "[info] REprocessing $url" 
+                if [ $LOUD -eq 1 ];then
+                    loud "[info] REprocessing $url"
                 fi
                 headers=$(curl -k -s -m 5 --location -sS --head "$url")
                 code=$(echo "$headers" | head -1 | awk '{print $2}')
                 if echo "$code" | grep -q -e "3[0-9][0-9]";then
-                    if [ $LOUD -eq 1 ];then  
-                        loud "[info] Second redirect; passing as-is" 
+                    if [ $LOUD -eq 1 ];then
+                        loud "[info] Second redirect; passing as-is"
                     fi
                 fi
             fi
         fi
         if echo "$code" | grep -q -e "2[0-9][0-9]";then
-            if [ $LOUD -eq 1 ];then  
-                loud "[info] HTTP $code exists" 
+            if [ $LOUD -eq 1 ];then
+                loud "[info] HTTP $code exists"
             fi
         fi
     fi
@@ -223,10 +239,10 @@ else
         SUCCESS=0
         strip_tracking_url
         unredirector
- 
+
         if [ $SUCCESS -eq 0 ];then
             # If it gets here, it has to be standalone
-            echo "$url"    
+            echo "$url"
         else
             exit 99
         fi

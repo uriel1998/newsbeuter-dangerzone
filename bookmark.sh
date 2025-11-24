@@ -37,7 +37,7 @@ if [ ! -d "$(readlink -f "${my_CONFIG_DIR}")" ];then
 fi
 
 function loud() {
-    if [ $LOUD -eq 1 ];then
+    if [ "${LOUD:-0}" -eq 1 ];then
         echo "$@"
     fi
 }
@@ -123,16 +123,14 @@ get_better_description
 
 
 
-SelectedFile=$(cat "$CacheFile" | fzf --no-hscroll -m --height 80% --border --ansi --no-bold --preview="$SCRIPTDIR/quite-intriguing-preview {}" | sed 's/ (/./g' | sed 's/)//g' | sed 's/:man:/:man -Pcat:/g' | awk -F ':' '{print $2 " " $1}')
-
-
-
 # TODO - put shortener back in
 # TODO - use preview to show what the text to send will be, duh!!!!
 
 # Parsing enabled out systems. Find files in out_enabled, then import
 # functions from each and running them with variables already established.
-
+# use my_CONFIG_DIR here, and we will need to rewrite the out files to
+# parse the appropriate ini file, like by what program called it, what to default
+# back to, etc.
     READY=0
     # begin loop
     while [ "$READY" == "0" ];do
