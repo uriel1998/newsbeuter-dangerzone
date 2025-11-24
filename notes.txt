@@ -26,8 +26,14 @@ Macro for swapping link display.
 
 Added examples using tdab and tdab focus as browser with rdrview and renderer to get sidebar with full text from sites.
 
+WILL USE ENV VARIABLES with out methods
+- calling_program -> agaetr/nbdz (to be initial prompt for where things are)
+- if prompt exists or my_CONFIG_DIR
+- use calling_program to determine filename of ini, default to agaetr
+- that way I'll only have to maintain one between suites.
+- also, is there a way to automatically pull muna in? I wonder....
 
-
+- should I present list of other URLs in the article???
 
 
 # Also, we're always exporting the links anyway....

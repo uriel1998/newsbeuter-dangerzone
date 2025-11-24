@@ -33,6 +33,7 @@ LinksCacheFile=${CACHE_DIR}/newsboat_links
 echo "" > "${CacheFile}"
 echo "" > "${LinksCacheFile}"
 
+#TODO - should I move these to a subdirectory in cache??
 
 #resetting kitty display if existant
 if [ -S "/tmp/mykitty" ];then
@@ -113,8 +114,12 @@ if [ "$PROCESSED" != "" ];then
 
     var1=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==1')
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
+
+    # TODO - I think our antitracking would go here? And otherwise deobfuscating these links and removing cruft, etc
+    # TODO - yeah, put muna calls in here....
+
     echo "${var2}" > "${LinksCacheFile}"
-    printf "%s\n" "${var1}" > /home/steven/shit.txt
+
 
     # Get rid of garbage, translate back. Also remove emphasis and bold that are just over whitespace.
     var=$(printf "%s\n" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' | fold -s -w $WRAP)
@@ -156,7 +161,6 @@ if [ "$PROCESSED" != "" ];then
     # finally removing the paragraph mark, as we're done with it, and moving it all back to var1.
     var1=$(printf "%s\n" "${new_var}" | sed 's/§⬞[[:space:]]*⬞§//g'  | sed 's/⬞§[[:space:]]*§⬞//g'  | sed -e 's/§//g' )
 
-# TODO - I think our antitracking would go here? And otherwise deobfuscating these links and removing cruft, etc
 
     printf "%s\n" "${var1}" | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
     if [ "$show_links" = "true" ];then
