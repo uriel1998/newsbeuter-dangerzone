@@ -10,23 +10,15 @@
 ##############################################################################
 
 # binaries should be linked to newsbeuter_dangerzone's config directory
-
 # no gui, dammit. Kitty or spawned or in terminal.
-# gets passed URL, title, description IIRC
-# basically I want to either use tdab devour
+# get passed from newsboat -
+# the URL to bookmark (already preset with the URL of the current selection);
+# the bookmark title (in most cases preset with the title of the current selection);
+# the bookmark description (default empty); and
+# (since Newsboat 2.10) the title of the feed you’re currently in
+# from env from onews
+#enabled_out_dir, save_directory, profile, my_CONFIG_DIR
 
-
-   #the URL to bookmark (already preset with the URL of the current selection);
-#   the bookmark title (in most cases preset with the title of the current selection);
-
- #  the bookmark description (default empty); and
-
-  # (since Newsboat 2.10) the title of the feed you’re currently in (preset as you’d expect).
-#(If you find that the above preset values always work for you, enable bookmark-autopilot to avoid being asked anything.)
-#export enabled_out_dir
-#export save_directory
-#export profile
-#export show_links
 # Set directories, get environment, etc.
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.local/state}/newsbeuter_dangerzone"
@@ -41,9 +33,18 @@ CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
     title="${2}"
     description="${3}"
     feed="${4}"
-# test and see if this works, may have to check if #4 is filled etc.
+
+
 # test if urls
-# if no description, get it (like agaetr) as optional, also allow adding of
+# run url through muna
+# TODO - add flag to have it strip id or tracking elements
+# if no description, get it (like agaetr) as optional
+# present gathered information in fzf preview panes
+# present menu options - including "edit description" (it's in an variable)
+# and select however many of out-enabled as you like.
+# TODO - can also have environment var of "default on" or "default off"
+
+
 # description in fzf
 echo "description: ${description}"
 echo "feed: ${feed}"
@@ -51,6 +52,34 @@ source "$CONFIG_DIR/muna.sh"
 unredirector
 link="$url"
 
+
+function get_better_description() {
+    # to strip out crappy descriptions and either omit them or, if available,
+    # substitute og tags.
+
+    patterns=("Photo illustration by" "The Independent is on the ground" "Sign up for our email newsletter" "originally published")
+    patterns+="(Image Credit:"
+
+    # Loop through the array and check if any pattern matches
+    # If so, nuke the description.
+    for pattern in "${patterns[@]}"; do
+        if [[ "$description" == *"$pattern"* ]]; then
+            loud "[info] Removing bogus description."
+            description=""
+        fi
+    done
+    loud "[info] Attempting to find OpenGraph tags for description"
+    html=$(wget -O- "${link}" | sed 's|>|>\n|g')
+    og_description=$(echo "${html}" | sed -n 's/.*<meta property="og:description".* content="\([^"]*\)".*/\1/p' | sed -e 's/ "/ “/g' -e 's/" /” /g' -e 's/"\./”\./g' -e 's/"\,/”\,/g' -e 's/\."/\.”/g' -e 's/\,"/\,”/g' -e 's/"/“/g' -e "s/'/’/g" -e 's/ -- /—/g' -e 's/(/❲/g' -e 's/)/❳/g' -e 's/ — /—/g' -e 's/ - /—/g'  -e 's/ – /—/g' -e 's/ – /—/g')
+    if [[ "$description" == *"..."* ]] && [ "$og_description" != "" ];then
+        loud "[info] Subsituting OpenGraph description for parsed description."
+        description="${og_description}"
+    fi
+    if [ "$og_description" != "" ] && [ "$description" == "" ];then
+        loud "[info] Subsituting OpenGraph description for empty or bad description."
+        description="${og_description}"
+    fi
+}
 
 # If no title, get one
 # from https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
