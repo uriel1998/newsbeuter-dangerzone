@@ -28,6 +28,14 @@ fi
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
 source "$CONFIG_DIR/muna.sh"
 
+# If the output dir is not configured in environment, sub the base NBDZ config dir
+if [ ! -d "$(readlink -f "${enabled_out_dir}")" ];then
+    enabled_out_dir="${CONFIG_DIR}/out_enabled"
+fi
+if [ ! -d "$(readlink -f "${my_CONFIG_DIR}")" ];then
+    my_CONFIG_DIR="${CONFIG_DIR}"
+fi
+
 function loud() {
     if [ $LOUD -eq 1 ];then
         echo "$@"
@@ -37,6 +45,13 @@ function loud() {
 function get_better_description() {
     # to strip out crappy descriptions and either omit them or, if available,
     # substitute og tags.
+    # Also gets title if empty
+
+    # If no title, get one
+    # from https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
+    if [ -z "$title" ]; then
+        title=$(wget -qO- "$link" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html.. )
+    fi
 
     patterns=("Photo illustration by" "The Independent is on the ground" "Sign up for our email newsletter" "originally published")
     patterns+="(Image Credit:"
@@ -66,6 +81,10 @@ function get_better_description() {
     fi
 }
 
+
+
+
+
 ##############################################################################
 # Enter here
 ##############################################################################
@@ -92,16 +111,11 @@ unredirector
 link="${url}"
 # so now both $url and $link should point to the same, unredirected, cleaned URL.
 
-# if no description, get it (like agaetr) as optional
+# if no description, get it (like agaetr) and get title if empty
 get_better_description
 
 # present gathered information in fzf preview panes
 # description in fzf
-
-
-echo "description: ${description}"
-echo "feed: ${feed}"
-
 # present menu options - including "edit description" (it's in an variable)
 # and select however many of out-enabled as you like.
 # TODO - can also have environment var of "default on" or "default off"
@@ -109,62 +123,11 @@ echo "feed: ${feed}"
 
 
 
+SelectedFile=$(cat "$CacheFile" | fzf --no-hscroll -m --height 80% --border --ansi --no-bold --preview="$SCRIPTDIR/quite-intriguing-preview {}" | sed 's/ (/./g' | sed 's/)//g' | sed 's/:man:/:man -Pcat:/g' | awk -F ':' '{print $2 " " $1}')
 
-function get_better_description() {
-    # to strip out crappy descriptions and either omit them or, if available,
-    # substitute og tags.
 
-    patterns=("Photo illustration by" "The Independent is on the ground" "Sign up for our email newsletter" "originally published")
-    patterns+="(Image Credit:"
 
-    # Loop through the array and check if any pattern matches
-    # If so, nuke the description.
-    for pattern in "${patterns[@]}"; do
-        if [[ "$description" == *"$pattern"* ]]; then
-            loud "[info] Removing bogus description."
-            description=""
-        fi
-    done
-    loud "[info] Attempting to find OpenGraph tags for description"
-    html=$(wget -O- "${link}" | sed 's|>|>\n|g')
-    og_description=$(echo "${html}" | sed -n 's/.*<meta property="og:description".* content="\([^"]*\)".*/\1/p' | sed -e 's/ "/ “/g' -e 's/" /” /g' -e 's/"\./”\./g' -e 's/"\,/”\,/g' -e 's/\."/\.”/g' -e 's/\,"/\,”/g' -e 's/"/“/g' -e "s/'/’/g" -e 's/ -- /—/g' -e 's/(/❲/g' -e 's/)/❳/g' -e 's/ — /—/g' -e 's/ - /—/g'  -e 's/ – /—/g' -e 's/ – /—/g')
-    if [[ "$description" == *"..."* ]] && [ "$og_description" != "" ];then
-        loud "[info] Subsituting OpenGraph description for parsed description."
-        description="${og_description}"
-    fi
-    if [ "$og_description" != "" ] && [ "$description" == "" ];then
-        loud "[info] Subsituting OpenGraph description for empty or bad description."
-        description="${og_description}"
-    fi
-}
-
-# If no title, get one
-# from https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
-if [ -z "$title" ]; then
-    title=$(wget -qO- "$link" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html.. )
-fi
-
-# SHORTENING OF URL
-# call first (should be only) element in shortener dir to shorten url
-
-if [ "$(ls -A "$SCRIPT_DIR/short_enabled")" ]; then
-    shortener=$(ls -lR "$SCRIPT_DIR/short_enabled" | grep ^l | awk '{print $9}')
-    if [ -z "$shortener" ];then
-        echo "No URL shortening performed."
-    else
-        if [ "$shortener" != ".keep" ];then
-            short_funct=$(echo "${shortener%.*}_shortener")
-            source "$SCRIPT_DIR/short_enabled/$shortener"
-            url="$link"
-            echo "$SCRIPT_DIR/short_enabled/$shortener"
-            eval ${short_funct}
-            link="$shorturl"
-            echo "$shorturl"
-            echo "$link"
-        fi
-    fi
-fi
-
+# TODO - put shortener back in
 # TODO - use preview to show what the text to send will be, duh!!!!
 
 # Parsing enabled out systems. Find files in out_enabled, then import
@@ -175,10 +138,10 @@ fi
     while [ "$READY" == "0" ];do
         header_text=$(echo -e " Title: ${title} \n Link: ${link}")
         prompt_text=" Choose your outputs!"
-        bob=$(/usr/bin/ls -A "$SCRIPT_DIR/out_enabled")
+        bob=$(/usr/bin/ls -A "${enabled_out_dir}")
 
         #posters=$(echo -e "edit_link\nedit_description\n${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
-        posters=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
+        posters=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% --preview="bookmark_preview.sh" | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         # we will exit the loop UNLESS
         READY=1
 
