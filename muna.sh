@@ -132,11 +132,8 @@ function unredirector {
     )"
     #checks for null as well
     if [ -z "$code" ];then
-        if [ $LOUD -eq 1 ];then
-            loud "[info] Page/server not found, trying Internet Archive"
-        fi
+        loud "[info] Page/server not found, trying Internet Archive"
         firsturl="$url"
-
         #In the JSON the Internet Archive returns, the string
         # "archived_snapshots": {}
         # is returned if it does not exist in the Archive either.
@@ -155,54 +152,37 @@ function unredirector {
         NotExists=$(echo "$api_ia" | grep -c -e '"archived_snapshots": {}')
         if [ "$NotExists" != "0" ];then
             SUCCESS=1 #that is, not a success
-            if [ $LOUD -eq 1 ];then
-                loud "[error] Web page is gone and not in Internet Archive!"
-                loud "[error] For page $firsturl"
-            fi
+            loud "[error] Web page is gone and not in Internet Archive!"
+            loud "[error] For page $firsturl"
             unset -v $url
             unset -v $firsturl
         else
-            if [ $LOUD -eq 1 ];then
-                loud "[info] Fetching Internet Archive version of"
-                loud "[info] page $firsturl"
-            fi
+            loud "[info] Fetching Internet Archive version of"
+            loud "[info] page $firsturl"
             url=$(echo "$api_ia" | awk -F 'url": "' '{print $3}' 2>/dev/null | awk -F '", "' '{print $1}' | awk -F '"' '{print $1}')
             unset -v firsturl
         fi
     else
         if echo "$code" | grep -q -e "3[0-9][0-9]";then
-            if [ $LOUD -eq 1 ];then
-                loud "[info] HTTP $code redirect"
-            fi
+            loud "[info] HTTP $code redirect"
             resulturl=""
             resulturl=$(echo "${headers}" | grep "^Location" | tail -1 | awk -F ' ' '{print $2}')
-            echo "HI"
             if [ -z "$resulturl" ]; then
-                if [ $LOUD -eq 1 ];then
-                    loud "[info] No new location found"
-                fi
+                loud "[info] No new location found"
                 resulturl=$(echo "$url")
             else
-                if [ $LOUD -eq 1 ];then
-                    loud "[info] New location found"
-                fi
+                loud "[info] New location found"
                 url=$(echo "$resulturl")
-                if [ $LOUD -eq 1 ];then
-                    loud "[info] REprocessing $url"
-                fi
+                loud "[info] REprocessing $url"
                 headers=$(curl -k -s -m 5 --location -sS --head "$url")
                 code=$(echo "$headers" | head -1 | awk '{print $2}')
                 if echo "$code" | grep -q -e "3[0-9][0-9]";then
-                    if [ $LOUD -eq 1 ];then
-                        loud "[info] Second redirect; passing as-is"
-                    fi
+                    loud "[info] Second redirect; passing as-is"
                 fi
             fi
         fi
         if echo "$code" | grep -q -e "2[0-9][0-9]";then
-            if [ $LOUD -eq 1 ];then
-                loud "[info] HTTP $code exists"
-            fi
+            loud "[info] HTTP $code exists"
         fi
     fi
 }
