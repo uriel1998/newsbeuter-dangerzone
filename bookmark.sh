@@ -49,6 +49,8 @@ CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
 echo "description: ${description}"
 echo "feed: ${feed}"
 source "$CONFIG_DIR/muna.sh"
+# these functions are in muna, just avoiding yet another sub-sub-sub shell
+strip_tracking_url
 unredirector
 link="$url"
 
