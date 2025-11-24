@@ -16,10 +16,107 @@ function loud() {
     fi
 }
 
-# because this is a bash function, it's using the variable $url as the returned
-# variable.  So there's no real "return" other than setting that var.
+
+strip_tracking_url() {
+	# because this is a bash function, it's using the variable $url as the returned
+	# variable.  So there's no real "return" other than setting that var.
+    local base_no_frag frag path qs cleaned_qs cleaned_url
+    local orig_effective clean_effective
+    local -a curl_opts
+
+    if [ -z "${url}" ]; then
+        printf 'Usage: strip_tracking_url "URL"\n' >&2
+        return 1
+    fi
+
+    curl_opts=(
+        --silent
+        --location
+        --max-time 5
+        --connect-timeout 5
+        --output /dev/null
+        --write-out '%{url_effective}'
+    )
+
+    # Separate fragment (#...)
+    case "${url}" in
+        *\#*)
+            frag="${url#*#}"
+            base_no_frag="${url%%#*}"
+            ;;
+        *)
+            frag=""
+            base_no_frag="${url}"
+            ;;
+    esac
+
+    # Separate query string (?...)
+    case "${base_no_frag}" in
+        *\?*)
+            qs="${base_no_frag#*\?}"
+            path="${base_no_frag%%\?*}"
+            ;;
+        *)
+            qs=""
+            path="${base_no_frag}"
+            ;;
+    esac
+
+    # Strip known tracking parameters from query
+    if [ -n "${qs}" ]; then
+        cleaned_qs="$(
+            printf '%s\n' "${qs}" | awk -F'&' '
+                BEGIN {
+                    # Extend this regexp with more tracking param names if you like
+                    tracking = "^(utm_[^=]*|fbclid|gclid|dclid|mc_cid|mc_eid|igshid|pk_campaign|pk_source|pk_medium|pk_kwd|pk_cid)$"
+                }
+                {
+                    out = ""
+                    for (i = 1; i <= NF; i++) {
+                        key = $i
+                        sub(/=.*/, "", key)   # strip everything after =
+                        if (key ~ tracking) {
+                            continue
+                        }
+                        if (out == "") {
+                            out = $i
+                        } else {
+                            out = out "&" $i
+                        }
+                    }
+                    print out
+                }
+            '
+        )"
+    else
+        cleaned_qs=""
+    fi
+
+    # Rebuild cleaned URL
+    cleaned_url="${path}"
+    if [ -n "${cleaned_qs}" ]; then
+        cleaned_url="${cleaned_url}?${cleaned_qs}"
+    fi
+    if [ -n "${frag}" ]; then
+        cleaned_url="${cleaned_url}#${frag}"
+    fi
+
+    # If nothing changed, no need to test
+    if [ "${cleaned_url}" = "${url}" ]; then
+        loud "[info] No change after cleaning"
+    else
+		loud "[info] Cleaned url to ${url}"
+		url="${cleaned_url}"
+	fi
+}
+
+
+
+
 
 function unredirector {
+	# because this is a bash function, it's using the variable $url as the returned
+	# variable.  So there's no real "return" other than setting that var.
     #Explainer/reminder - curl will return 404 error codes *unless* you have 
     # --fail set, in which case you get the error code. That's done here so 
     # that it handles 404 and missing server exactly the same way, while 
@@ -112,6 +209,10 @@ else
         echo "Please call this as a function or with the url as the first argument."
         exit 99
     else
+        if [ "${1}" == "-q" ];then
+            # backwards compatability, this is now default behavior
+            shift
+        fi
         if [ "${1}" == "--loud" ];then
             LOUD=1
             shift
@@ -120,7 +221,9 @@ else
         fi
         url="${1}"
         SUCCESS=0
+        strip_tracking_url
         unredirector
+ 
         if [ $SUCCESS -eq 0 ];then
             # If it gets here, it has to be standalone
             echo "$url"    
