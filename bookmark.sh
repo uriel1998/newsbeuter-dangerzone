@@ -45,7 +45,8 @@ CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
 # test if urls
 # if no description, get it (like agaetr) as optional, also allow adding of
 # description in fzf
-
+echo "description: ${description}"
+echo "feed: ${feed}"
 source "$CONFIG_DIR/muna.sh"
 unredirector
 link="$url"
@@ -77,6 +78,8 @@ if [ "$(ls -A "$SCRIPT_DIR/short_enabled")" ]; then
         fi
     fi
 fi
+
+# TODO - use preview to show what the text to send will be, duh!!!!
 
 # Parsing enabled out systems. Find files in out_enabled, then import
 # functions from each and running them with variables already established.

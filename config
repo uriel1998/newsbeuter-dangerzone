@@ -57,7 +57,7 @@ external-url-viewer "urlview"
 # -- Bookmarks ---------------------------------------------------------
 bookmark-cmd "bookmark.sh"
 bookmark-interactive yes
-bookmark-autopilot no
+bookmark-autopilot yes
 
 # -- Macros -----------------------------------------------------------
 
