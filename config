@@ -41,13 +41,11 @@ max-items 50
 # -- Displaying ----------------------------------------------------------
 browser "tmux neww elinks %u"
 
-# Examples using rdrview and tmux_sidebar and tmux_devour
-# browser "rdrview -H %u | ~/.config/newsbeuter_dangerzone/renderer.sh | less"
-# browser "export tdab_focus=true;tmux_sidebar.sh \"export static_columns=70;rdrview -H %u | ~/.config/newsbeuter_dangerzone/renderer.sh | less\"; export tdab_focus=\"\";clear"
-# browser "tmux_devour.sh \"rdrview -H %u | ~/.config/newsbeuter_dangerzone/renderer.sh | less\""
+# Examples using rdrview and my reading script
+# While tempting to use tdab here, newsboat graphics get messed up.
+# browser "tmux new-window -n 'article' \"rdrview -H %u | renderer.sh | less\""
 
-# TODO - do those need to be absolute paths? Weren't we exporting the path?
-# TODO - get newsboat to redraw the screen afterwards.
+
 
 display-article-progress yes
 feed-sort-order unreadarticlecount-desc
