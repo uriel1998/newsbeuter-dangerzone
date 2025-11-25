@@ -57,7 +57,7 @@ strip_tracking_url() {
             printf '%s\n' "${qs}" | awk -F'&' '
                 BEGIN {
                     # Extend this regexp with more tracking param names if you like
-                    tracking = "^(utm_[^=]*|fbclid|gclid|dclid|mc_cid|mc_eid|igshid|pk_campaign|pk_source|pk_medium|pk_kwd|pk_cid)$"
+                    tracking = "^(utm_[^=]*|fbclid|gclid|dclid|mc_cid|mc_eid|igshid|pk_campaign|pk_source|pk_medium|pk_kwd|ss_source|pk_cid)$"
                 }
                 {
                     out = ""
@@ -100,30 +100,55 @@ strip_tracking_url() {
 }
 
 function unredirector {
-	# because this is a bash function, it's using the variable $url as the returned
-	# variable.  So there's no real "return" other than setting that var.
-    # Explainer/reminder - curl will return 404 error codes *unless* you have
-    # --fail set, in which case you get the error code. That's done here so
-    # that it handles 404 and missing server exactly the same way, while
-    # letting the 300 level codes pass through normally.
+    # because this is a bash function, it's using the variable $url as the returned
+    # variable.  So there's no real "return" other than setting that var.
 
-    #headers=$(curl -k -s --fail -m 5 --location -sS --head "$url")
-    #code=$(echo "$headers" | head -1 | awk '{print $2}')
+    # Handle Squarespace / similar redirectors that embed the real URL in ?u=
+    # Example:
+    # https://z6h1.engage.squarespace-mail.com/r?...&u=https%3A%2F%2Fwww.example.com%2F...&...
+    if printf '%s\n' "${url}" | grep -qE '[?&]u='; then
+        loud "[info] Detected embedded target URL in 'u=' parameter; extracting"
+
+        # Extract the value of the u= parameter (still URL-encoded)
+        local encoded_target
+        encoded_target="$(
+            printf '%s\n' "${url}" \
+            | sed -n 's/.*[?&]u=\([^&]*\).*/\1/p'
+        )"
+
+        if [ -n "${encoded_target}" ]; then
+            # URL-decode without python/perl:
+            # 1) '+' -> space
+            # 2) %XX -> corresponding byte via printf '%b'
+            local decoded data
+            data="${encoded_target//+/ }"
+            decoded="$(printf '%b' "${data//%/\\x}")"
+
+            if [ -n "${decoded}" ]; then
+                loud "[info] Unwrapped redirect to ${decoded}"
+                url="${decoded}"
+            else
+                loud "[info] Failed to decode embedded URL; leaving original URL unchanged"
+            fi
+        else
+            loud "[info] No 'u=' parameter value found; leaving original URL unchanged"
+        fi
+    fi
 
     # switching to wget b/c reasons
     local ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
     local headers
     headers="$(
         wget \
-        --spider \
-        --server-response \
-        --timeout=5 \
-        --max-redirect=20 \
-        --no-check-certificate \
-        -erobots=off \
-        --no-cache \
-        --user-agent="${ua}" \
-        "${url}" 2>&1
+            --spider \
+            --server-response \
+            --timeout=10 \
+            --max-redirect=20 \
+            --no-check-certificate \
+            -erobots=off \
+            --no-cache \
+            --user-agent="${ua}" \
+            "${url}" 2>&1
     )"
     local code
     code="$(
@@ -131,61 +156,74 @@ function unredirector {
         | awk '/HTTP\/[0-9.]* / {print $2; exit}'
     )"
     #checks for null as well
-    if [ -z "$code" ];then
+    if [ -z "${code}" ]; then
         loud "[info] Page/server not found, trying Internet Archive"
-        firsturl="$url"
+        firsturl="${url}"
         #In the JSON the Internet Archive returns, the string
         # "archived_snapshots": {}
         # is returned if it does not exist in the Archive either.
         # swapping out for wget
         #api_ia=$(curl -s http://archive.org/wayback/available?url="$url")
-        api_ia="$(wget \
-            --quiet \
-            --timeout=5 \
-            --tries=1 \
-            --no-check-certificate \
-            -erobots=off \
-            --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0" \
-            -O - \
-            "http://archive.org/wayback/available?url=${url}" )"
+        api_ia="$(
+            wget \
+                --quiet \
+                --timeout=5 \
+                --tries=1 \
+                --no-check-certificate \
+                -erobots=off \
+                --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0" \
+                -O - \
+                "http://archive.org/wayback/available?url=${url}"
+        )"
 
-        NotExists=$(echo "$api_ia" | grep -c -e '"archived_snapshots": {}')
-        if [ "$NotExists" != "0" ];then
+        NotExists="$(printf '%s\n' "${api_ia}" | grep -c -e '"archived_snapshots": {}')"
+        if [ "${NotExists}" != "0" ]; then
             SUCCESS=1 #that is, not a success
             loud "[error] Web page is gone and not in Internet Archive!"
-            loud "[error] For page $firsturl"
-            unset -v $url
-            unset -v $firsturl
+            loud "[error] For page ${firsturl}"
+            unset -v "${url}"
+            unset -v "${firsturl}"
         else
             loud "[info] Fetching Internet Archive version of"
-            loud "[info] page $firsturl"
-            url=$(echo "$api_ia" | awk -F 'url": "' '{print $3}' 2>/dev/null | awk -F '", "' '{print $1}' | awk -F '"' '{print $1}')
+            loud "[info] page ${firsturl}"
+            url="$(
+                printf '%s\n' "${api_ia}" \
+                | awk -F 'url": "' '{print $3}' 2>/dev/null \
+                | awk -F '", "' '{print $1}' \
+                | awk -F '"' '{print $1}'
+            )"
             unset -v firsturl
         fi
     else
-        if echo "$code" | grep -q -e "3[0-9][0-9]";then
-            loud "[info] HTTP $code redirect"
+        if printf '%s\n' "${code}" | grep -q -e "3[0-9][0-9]"; then
+            loud "[info] HTTP ${code} redirect"
             resulturl=""
-            resulturl=$(echo "${headers}" | grep "^Location" | tail -1 | awk -F ' ' '{print $2}')
-            if [ -z "$resulturl" ]; then
+            resulturl="$(
+                printf '%s\n' "${headers}" \
+                | grep "^Location" \
+                | tail -1 \
+                | awk '{print $2}'
+            )"
+            if [ -z "${resulturl}" ]; then
                 loud "[info] No new location found"
-                resulturl=$(echo "$url")
+                resulturl="${url}"
             else
                 loud "[info] New location found"
-                url=$(echo "$resulturl")
-                loud "[info] REprocessing $url"
-                headers=$(curl -k -s -m 5 --location -sS --head "$url")
-                code=$(echo "$headers" | head -1 | awk '{print $2}')
-                if echo "$code" | grep -q -e "3[0-9][0-9]";then
+                url="${resulturl}"
+                loud "[info] REprocessing ${url}"
+                headers="$(curl -k -s -m 5 --location -sS --head "${url}")"
+                code="$(printf '%s\n' "${headers}" | head -1 | awk '{print $2}')"
+                if printf '%s\n' "${code}" | grep -q -e "3[0-9][0-9]"; then
                     loud "[info] Second redirect; passing as-is"
                 fi
             fi
         fi
-        if echo "$code" | grep -q -e "2[0-9][0-9]";then
-            loud "[info] HTTP $code exists"
+        if printf '%s\n' "${code}" | grep -q -e "2[0-9][0-9]"; then
+            loud "[info] HTTP ${code} exists"
         fi
     fi
 }
+
 
 ##############################################################################
 # Are we sourced?
@@ -219,7 +257,7 @@ else
         SUCCESS=0
         strip_tracking_url
         unredirector
-
+        strip_tracking_url
         if [ $SUCCESS -eq 0 ];then
             # If it gets here, it has to be standalone
             echo "$url"
