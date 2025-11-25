@@ -27,6 +27,21 @@ Macro for swapping link display.
 Added examples using tdab and tdab focus as browser with rdrview and renderer to get sidebar with full text from sites.
 
 WILL USE ENV VARIABLES with out methods
+
+For muttrc:
+
+####################################################
+# Renderer Tweaks
+####################################################
+setenv show_links false # default
+setenv clean_links false #default
+macro index ,Y "<enter-command>setenv show_links true;echo '[info] Links on; reloading message (THIS MAY TAKE A MOMENT)'\n<exit><display-message>"
+macro pager ,Y "<enter-command>setenv show_links true;echo '[info] Links on; reloading message (THIS MAY TAKE A MOMENT)'\n<exit><display-message>"
+macro index ,y "<enter-command>setenv show_links false;echo '[info] Links off; reloading  message'\n<exit><display-message>"
+macro pager ,y "<enter-command>setenv show_links false;echo '[info] Links off; reloading  message'\n<exit><display-message>"
+
+(need to do clean_links toggle for all as well)
+
 - calling_program -> agaetr/nbdz (to be initial prompt for where things are)
 - if prompt exists or my_CONFIG_DIR
 - use calling_program to determine filename of ini, default to agaetr

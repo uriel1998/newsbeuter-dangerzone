@@ -18,7 +18,7 @@
 # adding a br after each table row so it doesn't become collapsed and we have SOME whitespace
 # considering -nonumbers to clean up the body text, but...
 # using rich to draw a box around the text and format it a little more nicely
-
+# saving env varibles for mutt, other programs that you can't alter env on the fly.
 # Saving image links to $XDG_CACHE_HOME/newsboat_img_links as a read/write communication
 # Saving URLS found to $XDG_CACHE_HOME/newsboat_links as read/write communication
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
@@ -29,11 +29,9 @@ if [ -z "${XDG_CACHE_HOME}" ];then
     export XDG_CACHE_HOME="${HOME}/.config"
 fi
 CacheFile=${CACHE_DIR}/newsboat_img_links
-LinksCacheFile=${CACHE_DIR}/newsboat_links
 echo "" > "${CacheFile}"
+LinksCacheFile=${CACHE_DIR}/newsboat_links
 echo "" > "${LinksCacheFile}"
-
-#TODO - should I move these to a subdirectory in cache??
 
 #resetting kitty display if existant
 if [ -S "/tmp/mykitty" ];then
@@ -100,9 +98,6 @@ if [ -z "$PROCESSED" ];then
         fi
     fi
 fi
-
-
-
 
 if [ "$PROCESSED" != "" ];then
     # We need to separate out the references portion so it doesn't cut off URLs.
