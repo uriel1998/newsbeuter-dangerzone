@@ -181,8 +181,7 @@ if [ "$PROCESSED" != "" ];then
 
     # finally removing the paragraph mark, as we're done with it, and moving it all back to var1.
     var1=$(printf "%s\n" "${new_var}" | sed 's/§⬞[[:space:]]*⬞§//g'  | sed 's/⬞§[[:space:]]*§⬞//g'  | sed -e 's/§//g' )
-
-
+# TODO - check if from mutt, and if so, we need to process plaintext mails differently.
     printf "%s\n" "${var1}" | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
     if [ "$show_links" = "true" ];then
         # The references by themselves

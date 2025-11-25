@@ -40,7 +40,9 @@ macro pager ,Y "<enter-command>setenv show_links true;echo '[info] Links on; rel
 macro index ,y "<enter-command>setenv show_links false;echo '[info] Links off; reloading  message'\n<exit><display-message>"
 macro pager ,y "<enter-command>setenv show_links false;echo '[info] Links off; reloading  message'\n<exit><display-message>"
 
-(need to do clean_links toggle for all as well)
+
+# NOTES FOR BOOKMARKER
+ also clean links is togggleable.
 
 - calling_program -> agaetr/nbdz (to be initial prompt for where things are)
 - if prompt exists or my_CONFIG_DIR
@@ -54,7 +56,7 @@ macro pager ,y "<enter-command>setenv show_links false;echo '[info] Links off; r
 # Also, we're always exporting the links anyway....
 add use_kitty switch to renderer and show images and all that.
 
-
+# TODO - renderer check if from mutt, and if so, we need to process plaintext mails differently.
 Next steps:
 bookmarker
 image display without use_kitty

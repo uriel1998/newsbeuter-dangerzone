@@ -21,6 +21,10 @@
 
 # Set directories, get environment, etc.
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+
+
+
+
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.local/state}/newsbeuter_dangerzone"
 if [ ! -d "${CACHE_DIR}" ];then
     mkdir -p "${CACHE_DIR}"
