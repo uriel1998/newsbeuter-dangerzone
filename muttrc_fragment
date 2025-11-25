@@ -1,0 +1,13 @@
+####################################################
+# Renderer Tweaks
+####################################################
+setenv show_links false # default
+setenv clean_links false #default
+macro index ,Y "<enter-command>setenv show_links true;echo '[info] Links on; reloading message (THIS MAY TAKE A MOMENT)'\n<exit><display-message>"
+macro pager ,Y "<enter-command>setenv show_links true;echo '[info] Links on; reloading message (THIS MAY TAKE A MOMENT)'\n<exit><display-message>"
+macro index ,y "<enter-command>setenv show_links false;echo '[info] Links off; reloading  message'\n<exit><display-message>"
+macro pager ,y "<enter-command>setenv show_links false;echo '[info] Links off; reloading  message'\n<exit><display-message>"
+macro index ,C "<enter-command>setenv clean_links true;echo '[info] Links on; reloading message (THIS MAY TAKE A MOMENT)'\n<exit><display-message>"
+macro pager ,C "<enter-command>setenv clean_links true;echo '[info] Links on; reloading message (THIS MAY TAKE A MOMENT)'\n<exit><display-message>"
+macro index ,c "<enter-command>setenv show_links false;echo '[info] Links off; reloading  message'\n<exit><display-message>"
+macro pager ,c "<enter-command>setenv show_links false;echo '[info] Links off; reloading  message'\n<exit><display-message>"
