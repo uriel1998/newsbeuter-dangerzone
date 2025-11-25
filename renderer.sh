@@ -116,31 +116,37 @@ if [ "$PROCESSED" != "" ];then
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
 
 # TODO - switch for cleaning or non-cleaning from env variable
+# TODO - cannot use env for mutt, fuckity fuck fuck fuck.
 
+    if [ "$show_links" = "true" ];then
 
-    orig_url="${url}"
-    var2_clean=""
-    while IFS= read -r line; do
-        if [[ "${line}" == *http* ]]; then
-            # split references lines
-            url=""
-            number="${line%%.*}"
-            url="${line#*. }"
-            #url=$(echo "${line}" | awk -F '' '{print $2}')
-            # clean the url
-            unredirector
-            strip_tracking_url
-            #resassmeble
-            var2_clean+=$'\t'"${number}. ${url}"$'\n'
-        else
-            var2_clean+=$(echo -e " ")
-        fi
-    done <<< "${var2}"
-    url="${orig_url}"
+        orig_url="${url}"
+        var2_clean=""
+        while IFS= read -r line; do
+            if [[ "${line}" == *http* ]]; then
+                # split references lines
+                url=""
+                number="${line%%.*}"
+                url="${line#*. }"
+                #url=$(echo "${line}" | awk -F '' '{print $2}')
+                # clean the url
+                unredirector
+                strip_tracking_url
+                #resassmeble
+                var2_clean+=$'\t'"${number}. ${url}"$'\n'
+            else
+                var2_clean+=$(echo -e " ")
+            fi
+        done <<< "${var2}"
+        wait
+        url="${orig_url}"
+        var2_clean=$(echo "${var2_clean}" | sort )
 
-# TODO - why is this all one line for var2_clean ?
-    echo "${var2_clean}" > "${LinksCacheFile}"
-
+        echo "${var2_clean}" > "${LinksCacheFile}"
+    else
+        # if we are not displaying links, we're not going to bother cleaning them.
+        echo "${var2}" > "${LinksCacheFile}"
+    fi
 
     # Get rid of garbage, translate back. Also remove emphasis and bold that are just over whitespace.
     var=$(printf "%s\n" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' | fold -s -w $WRAP)
@@ -189,7 +195,7 @@ if [ "$PROCESSED" != "" ];then
         rich -u
         echo "Visible URLs / References : "
         echo " "
-        echo "$var2_clean"
+        echo "${var2_clean}"
         echo " "
         rich -u
         if [ "${ImageLinks}" != "" ];then
