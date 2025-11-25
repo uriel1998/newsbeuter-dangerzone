@@ -100,7 +100,7 @@ of your choice. Change into that directory.
 * move or symlink the shell scripts to ~/.config/newsbeuter_dangerzone
 
 
-
+See the muttrc fragment for toggling showing/hiding links as well as automatic cleaning of them.  Cleaning the links TAKES TIME.
 ###########################################################################
 old version below here.
 #######################################################################

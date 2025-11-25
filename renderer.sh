@@ -111,6 +111,7 @@ if [ "$PROCESSED" != "" ];then
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
 
     if [ "$show_links" = "true" ];then
+        notify-send "$clean_links"
         if [ "$clean_links" = "true" ];then
             orig_url="${url}"
             var2_clean=""
@@ -132,16 +133,15 @@ if [ "$PROCESSED" != "" ];then
             done <<< "${var2}"
             url="${orig_url}"
             var2_clean=$(echo "${var2_clean}" | sort )
-            echo "${var2_clean}" > "${LinksCacheFile}"
         else
-            # we are showing, but not cleaning
-            echo "${var2}" > "${LinksCacheFile}"
+            # we are showing, but not cleaning, so dumping original in there.
+            var2_clean=$(echo "${var2}" | sort )
         fi
     else
         # if we are not displaying links, we're not going to bother cleaning them.
-        echo "${var2}" > "${LinksCacheFile}"
+        var2_clean=$(echo "${var2}" | sort )
     fi
-
+    echo "${var2_clean}" > "${LinksCacheFile}"
     # Get rid of garbage, translate back. Also remove emphasis and bold that are just over whitespace.
     var=$(printf "%s\n" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' | fold -s -w $WRAP)
     # fixing multiline em/strong by wrapping first.

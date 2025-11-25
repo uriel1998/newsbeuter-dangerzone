@@ -112,6 +112,7 @@ else
     save_directory=$(grep 'save_directory =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
     enabled_out_dir=$(grep 'enabled_out_dir =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}') # TODO default to $profile/out_enabled
     show_links==$(grep 'show_links =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
+    clean_links==$(grep 'clean_links =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
 fi
 
 # I *hope* these get picked up by the subshell
