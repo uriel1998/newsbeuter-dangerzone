@@ -110,34 +110,33 @@ if [ "$PROCESSED" != "" ];then
     var1=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==1')
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
 
-# TODO - switch for cleaning or non-cleaning from env variable
-# TODO - cannot use env for mutt, fuckity fuck fuck fuck.
-
     if [ "$show_links" = "true" ];then
-
-        orig_url="${url}"
-        var2_clean=""
-        while IFS= read -r line; do
-            if [[ "${line}" == *http* ]]; then
-                # split references lines
-                url=""
-                number="${line%%.*}"
-                url="${line#*. }"
-                #url=$(echo "${line}" | awk -F '' '{print $2}')
-                # clean the url
-                unredirector
-                strip_tracking_url
-                #resassmeble
-                var2_clean+=$'\t'"${number}. ${url}"$'\n'
-            else
-                var2_clean+=$(echo -e " ")
-            fi
-        done <<< "${var2}"
-        wait
-        url="${orig_url}"
-        var2_clean=$(echo "${var2_clean}" | sort )
-
-        echo "${var2_clean}" > "${LinksCacheFile}"
+        if [ "$clean_links" = "true" ];then
+            orig_url="${url}"
+            var2_clean=""
+            while IFS= read -r line; do
+                if [[ "${line}" == *http* ]]; then
+                    # split references lines
+                    url=""
+                    number="${line%%.*}"
+                    url="${line#*. }"
+                    #url=$(echo "${line}" | awk -F '' '{print $2}')
+                    # clean the url
+                    unredirector
+                    strip_tracking_url
+                    #resassmeble
+                    var2_clean+=$'\t'"${number}. ${url}"$'\n'
+                else
+                    var2_clean+=$(echo -e " ")
+                fi
+            done <<< "${var2}"
+            url="${orig_url}"
+            var2_clean=$(echo "${var2_clean}" | sort )
+            echo "${var2_clean}" > "${LinksCacheFile}"
+        else
+            # we are showing, but not cleaning
+            echo "${var2}" > "${LinksCacheFile}"
+        fi
     else
         # if we are not displaying links, we're not going to bother cleaning them.
         echo "${var2}" > "${LinksCacheFile}"

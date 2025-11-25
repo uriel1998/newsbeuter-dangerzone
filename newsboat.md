@@ -9,7 +9,8 @@
 
 # Macros  
 • ,p & ,P — show images/save images  
-• ,y & ,Y — show links/hide links   
+• ,y & ,Y — show links/hide links
+• ,c & ,c — clean links/don't clean links   
 • ,R & ,r — show/hide read feeds  
 • :tag — only show feeds w/tag  
 • :goto — Search for a feed  

@@ -63,6 +63,8 @@ bookmark-autopilot yes
 
 macro Y set html-renderer "export show_links=true;renderer.sh"
 macro y set html-renderer "export show_links=false;renderer.sh"
+macro C set html-renderer "export clean_links=true;renderer.sh"
+macro c set html-renderer "export clean_links=false;renderer.sh"
 macro R set show-read-feeds yes
 macro r set show-read-feeds no
 
