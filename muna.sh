@@ -123,8 +123,7 @@ function unredirector {
             local decoded data
             data="${encoded_target//+/ }"
             decoded="$(printf '%b' "${data//%/\\x}")"
-
-            if [ -n "${decoded}" ]; then
+            if [[ "${decoded}" == *http* ]];then
                 loud "[info] Unwrapped redirect to ${decoded}"
                 url="${decoded}"
             else

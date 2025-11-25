@@ -22,7 +22,7 @@
 # Saving image links to $XDG_CACHE_HOME/newsboat_img_links as a read/write communication
 # Saving URLS found to $XDG_CACHE_HOME/newsboat_links as read/write communication
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
-
+source "${CONFIG_DIR}/muna.sh"
 
 CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.local/state}
 if [ -z "${XDG_CACHE_HOME}" ];then
@@ -115,10 +115,31 @@ if [ "$PROCESSED" != "" ];then
     var1=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==1')
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
 
-    # TODO - I think our antitracking would go here? And otherwise deobfuscating these links and removing cruft, etc
-    # TODO - yeah, put muna calls in here....
+# TODO - switch for cleaning or non-cleaning from env variable
 
-    echo "${var2}" > "${LinksCacheFile}"
+
+    orig_url="${url}"
+    var2_clean=""
+    while IFS= read -r line; do
+        if [[ "${line}" == *http* ]]; then
+            # split references lines
+            url=""
+            number="${line%%.*}"
+            url="${line#*. }"
+            #url=$(echo "${line}" | awk -F '' '{print $2}')
+            # clean the url
+            unredirector
+            strip_tracking_url
+            #resassmeble
+            var2_clean+=$'\t'"${number}. ${url}"$'\n'
+        else
+            var2_clean+=$(echo -e " ")
+        fi
+    done <<< "${var2}"
+    url="${orig_url}"
+
+# TODO - why is this all one line for var2_clean ?
+    echo "${var2_clean}" > "${LinksCacheFile}"
 
 
     # Get rid of garbage, translate back. Also remove emphasis and bold that are just over whitespace.
@@ -168,7 +189,7 @@ if [ "$PROCESSED" != "" ];then
         rich -u
         echo "Visible URLs / References : "
         echo " "
-        echo "$var2"
+        echo "$var2_clean"
         echo " "
         rich -u
         if [ "${ImageLinks}" != "" ];then
