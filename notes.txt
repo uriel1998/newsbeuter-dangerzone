@@ -57,6 +57,11 @@ macro pager ,y "<enter-command>setenv show_links false;echo '[info] Links off; r
 add use_kitty switch to renderer and show images and all that.
 
 # TODO - renderer check if from mutt, and if so, we need to process plaintext mails differently.
+
+Have both set env calling_program , additional check about plaintext emails
+
+
+
 Next steps:
 bookmarker
 image display without use_kitty

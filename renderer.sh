@@ -32,6 +32,24 @@ CacheFile=${CACHE_DIR}/newsboat_img_links
 echo "" > "${CacheFile}"
 LinksCacheFile=${CACHE_DIR}/newsboat_links
 echo "" > "${LinksCacheFile}"
+PLAINTEXT=0
+
+# Plaintext may have URLs in it - say from mutt - so we need to pull them here.
+extract_urls_from_plaintext() {
+    local text="${1}"
+    local counter=0
+    local url=""
+
+    # Find all http/https URLs, even if surrounded by other text
+    while IFS= read -r url; do
+        url=$(echo "$url" | awk '{print $1}')
+        ((counter++))
+        printf '   %d. %s\n' "${counter}" "${url}"
+    done < <(
+        grep -Eo 'http?s://.+[^[[:space:]]' <<< "${text}"
+    )
+}
+
 
 #resetting kitty display if existant
 if [ -S "/tmp/mykitty" ];then
@@ -58,6 +76,7 @@ fi
 
 if [ $# -eq 0 ]; then
     # no arguments passed, use stdin
+    # this is where newsboat comes in.
     input=$(cat)
 else
     if [ $(echo "${1}" | grep -c http) -gt 0 ];then
@@ -65,10 +84,18 @@ else
         PROCESSED=$(elinks "${1}" -dump -dump-charset UTF-8 -dump-width 130)
     else
         # it's a file, parse it this way
+        # this is where mutt comes in, so check for html/xml here.
         if [ -f "${1}" ];then
-            input=$(cat "${1}")
+            input=$(< "${1}")
+            testvar=$(echo "${input}" | grep -ci -e "<HTML" -e "<XML" )
+            if [ $testvar -eq 0 ];then
+                # it's plaintext -- extract links if exist
+                plaintext_links=$(extract_urls_from_plaintext "${input}")
+                PROCESSED=$(printf "%s\n\nReferences\n\n%s\n\n" "${input}" "${plaintext_links}")
+            fi
         else
-            echo "I don't know what to do with this."
+            loud "[error] I don't know what to do with this input."
+            exit 90
         fi
     fi
 fi
@@ -100,18 +127,10 @@ if [ -z "$PROCESSED" ];then
 fi
 
 if [ "$PROCESSED" != "" ];then
-    # We need to separate out the references portion so it doesn't cut off URLs.
-    # get the References line number
-    ref_line=$(echo "${PROCESSED}" | grep -n '^References$' | cut -f1 -d:)
-    # break it into before and after references
-    first_variable=$(echo "$content" | head -n $((ref_line-1)))
-    second_variable=$(echo "$content" | tail -n +$((ref_line+1)))
-
     var1=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==1')
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
 
     if [ "$show_links" = "true" ];then
-        notify-send "$clean_links"
         if [ "$clean_links" = "true" ];then
             orig_url="${url}"
             var2_clean=""
@@ -181,7 +200,6 @@ if [ "$PROCESSED" != "" ];then
 
     # finally removing the paragraph mark, as we're done with it, and moving it all back to var1.
     var1=$(printf "%s\n" "${new_var}" | sed 's/§⬞[[:space:]]*⬞§//g'  | sed 's/⬞§[[:space:]]*§⬞//g'  | sed -e 's/§//g' )
-# TODO - check if from mutt, and if so, we need to process plaintext mails differently.
     printf "%s\n" "${var1}" | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
     if [ "$show_links" = "true" ];then
         # The references by themselves
