@@ -110,8 +110,8 @@ feed="${4}"
 
 # these functions are in muna, just avoiding yet another sub-sub-sub shell
 # they work on the variable $url and set it back.
-strip_tracking_url
 unredirector
+strip_tracking_url
 link="${url}"
 # so now both $url and $link should point to the same, unredirected, cleaned URL.
 
