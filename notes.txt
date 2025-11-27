@@ -47,6 +47,11 @@ macro pager ,c "<enter-command>setenv show_links false;echo '[info] Cleaning off
 # NOTES FOR BOOKMARKER
  also clean links is togggleable.
 
+OH THE RECOVERED METADATA SHOULD BE DESCRIPTION2 DUH
+#realized what I was doing wrong with length calculation with mastodon.
+
+
+the guy who wrote toot is now doing his own crossposter, which is just fine, because linux, baby.  Also it's a single point of failure.
 - calling_program -> agaetr/nbdz (to be initial prompt for where things are)
 HOWEVER filenames for ini are still NBDZ format, thanks. Just make a profile dir for mutt.
 - if prompt exists or my_CONFIG_DIR

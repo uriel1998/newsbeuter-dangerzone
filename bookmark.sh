@@ -21,7 +21,7 @@
 
 # Set directories, get environment, etc.
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-
+description2=""
 
 
 
@@ -70,17 +70,15 @@ function get_better_description() {
             description=""
         fi
     done
-    # description is typically empty from newsboat, so if it's set here, it's
-    # probably user desired, so we'll skip getting from opengraph/the web
-    if [ "$description" == "" ];then
-        loud "[info] Attempting to find OpenGraph tags for description"
-        html=$(wget -O- "${link}" | sed 's|>|>\n|g')
-        og_description=$(echo "${html}" | sed -n 's/.*<meta property="og:description".* content="\([^"]*\)".*/\1/p' | sed -e 's/ "/ “/g' -e 's/" /” /g' -e 's/"\./”\./g' -e 's/"\,/”\,/g' -e 's/\."/\.”/g' -e 's/\,"/\,”/g' -e 's/"/“/g' -e "s/'/’/g" -e 's/ -- /—/g' -e 's/(/❲/g' -e 's/)/❳/g' -e 's/ — /—/g' -e 's/ - /—/g'  -e 's/ – /—/g' -e 's/ – /—/g')
-        if [[ "$description" == *"..."* ]] && [ "$og_description" != "" ];then
-            loud "[info] Subsituting OpenGraph description for parsed description."
-            description="${og_description}"
-        fi
-        if [ "$og_description" != "" ] && [ "$description" == "" ];then
+
+    loud "[info] Attempting to find OpenGraph tags for description"
+    html=$(wget -O- "${link}" | sed 's|>|>\n|g')
+    og_description=$(echo "${html}" | sed -n 's/.*<meta property="og:description".* content="\([^"]*\)".*/\1/p' | sed -e 's/ "/ “/g' -e 's/" /” /g' -e 's/"\./”\./g' -e 's/"\,/”\,/g' -e 's/\."/\.”/g' -e 's/\,"/\,”/g' -e 's/"/“/g' -e "s/'/’/g" -e 's/ -- /—/g' -e 's/(/❲/g' -e 's/)/❳/g' -e 's/ — /—/g' -e 's/ - /—/g'  -e 's/ – /—/g' -e 's/ – /—/g')
+    if [ "$og_description" != "" ];then
+        if  [[ "$description" == *"..."* ]];then
+            loud "[info] Storing OpenGraph description for parsed description in slot 2."
+            description2="${og_description}"
+        else
             loud "[info] Subsituting OpenGraph description for empty or bad description."
             description="${og_description}"
         fi
@@ -109,7 +107,7 @@ export title=$(echo "${2}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#27;
 export description=$(echo "${3}"  | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#27;/’/g' -e 's/&#39;/’/g' -e 's/%27/’/g' -e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' )
 export feed="${4}"
 export enabled_out_dir
-
+export description2
 
 # these functions are in muna, just avoiding yet another sub-sub-sub shell
 # they work on the variable $url and set it back.

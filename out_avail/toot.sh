@@ -53,39 +53,49 @@ function toot_send {
     # URL length (at least for one) counts for 23.  So let's fix our math and avoid shortening (and then port to agaetr)
     #Yes, I know the URL length doesn't actually count against it.  Just
     #reusing code here.
-    bigstring=$(printf "(%s) %s \n\n%s \n\n%s \n%s \n\n%s" "$pubtime" "$title" "$description" "$link" "${description2}" "$hashtags")
+    outstring=$(printf "%s \n\n%s \n\n%s \n%s" "$title" "$description" "${description2}" "$hashtags")
 
-    if [ ${#bigstring} -lt 500 ];then
-        printf "(%s) %s \n\n%s \n\n%s \n%s \n\n%s" "$pubtime" "$title" "$description" "$link" "${description2}" "$hashtags" > "${tempfile}"
+    if [ ${#outstring} -lt 475 ];then
+        printf "%s \n\n%s \n\n%s \n%s" "$title" "$description" "$link" "${description2}" "$hashtags" > "${tempfile}"
     else
-        outstring=$(printf "(%s) %s \n\n%s \n\n%s \n\n%s" "$pubtime" "$title" "$link" "$description2" "$hashtags")
-        if [ ${#outstring} -lt 500 ]; then
-            printf "(%s) %s \n\n%s \n\n%s \n\n%s" "$pubtime" "$title" "$link" "$description2" "$hashtags" > "${tempfile}"
+        # testing length description, which is either from the feed, null (default newsboat/mutt), or *user set* from newsboat/mutt.
+        tlen=$(( ${#title} + 3 )) # accounting for newlines
+        d1len=$(( ${#description} + 3 ))
+        d2len=$(( ${#description2} + 3 ))
+        hashlen=$(( ${#hashtags} + 3 ))
+        urlen=25 # accounting for space
+        total_length=$(( tlen + d1len + d2len + hashlen + urlen ))
+        diff_len=$(( 500 - total_length ))
+        if [ $diff_len -lt 0 ]; then
+            #write the outstring; it's 500 characters or less.
         else
-            outstring=$(printf "(%s) %s \n\n%s \n\n%s" "$pubtime" "$title" "$description2" "$link")
-            if [ ${#outstring} -lt 500 ]; then
-                printf "(%s) %s \n\n%s \n\n%s" "$pubtime" "$title" "$description2" "$link" > "${tempfile}"
+            if [ $hashlen -gt $diff_len ];then
+                #write the outstring, without hashtags
             else
-                outstring=$(printf "%s \n\n%s \n\n%s" "$title" "$description2" "$link")
-                if [ ${#outstring} -lt 500 ]; then
-                    printf "%s \n\n%s \n\n%s" "$title" "$description2" "$link" > "${tempfile}"
+                diff_len=$(( diff_len - hashlen ))
+                if [ $d2len -gt $diff_len ];then
+                    # use d2len and diff_len to figure out how much to trim off d2len, post.
+                    # We may trim to ZERO, and that's okay.
                 else
-                    outstring=$(printf "(%s) %s \n\n%s " "$pubtime" "$title" "$link")
-                    if [ ${#outstring} -lt 500 ]; then
-                        printf "(%s) %s \n\n%s " "$pubtime" "$title" "$link" > "${tempfile}"
+                    diff_len=$(( diff_len - d2len ))  # the difference was more than we could cut out of d2len
+                    if [ $d1len -gt $diff_len ];then
+                        # use d1len and diff_len to figure out how much to trim off d1len, post.
                     else
-                        outstring=$(printf "%s \n\n%s" "$title" "$link")
-                        if [ ${#outstring} -lt 500 ]; then
-                            printf "%s \n\n%s" "$title" "$link" > "${tempfile}"
-                        else
-                            short_title=`echo "$title" | awk '{print substr($0,1,110)}'`
-                            printf "%s \n\n%s" "$short_title" "$link" > "${tempfile}"
-                        fi
+                        diff_len=$(( diff_len - d1len ))  # the difference was more than we could cut out of d1len
+                        # use tlen and diff_len to figure out how much to trim off title, post.
+                        # this test HAS to pass, because urllen is ALWAYS pegged to 23, so it can't overflow
                     fi
                 fi
             fi
         fi
-    fi
+
+
+
+
+
+        #references
+#        printf "%s \n\n%s \n\n%s \n\n%s" "$title" "$link" "$description2" "$hashtags" > "${tempfile}"
+#                        short_title=`echo "$title" | awk '{print substr($0,1,400)}'`
 
 
     # Get the image, if exists, then send the post
