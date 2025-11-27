@@ -9,6 +9,9 @@
 ##############################################################################
 
 
+#enabled_out_dir, save_directory, profile, my_CONFIG_DIR
+#my_CONFIG_DIR & CACHE_DIR
+
 function loud() {
     if [ $LOUD -eq 1 ];then
         echo "$@"
@@ -21,16 +24,16 @@ function toot_send {
     if [ "$title" == "$link" ];then
         title=""
     fi
-    
+
     account_using=$(grep 'mastodon =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
     binary=$(grep 'toot =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
-    
-    
-    #Yes, I know the URL length doesn't actually count against it.  Just 
+
+
+    #Yes, I know the URL length doesn't actually count against it.  Just
     #reusing code here.
     bigstring=$(printf "(%s) %s \n\n%s \n\n%s \n%s \n\n%s" "$pubtime" "$title" "$description" "$link" "${description2}" "$hashtags")
-    
-    if [ ${#bigstring} -lt 500 ];then 
+
+    if [ ${#bigstring} -lt 500 ];then
         printf "(%s) %s \n\n%s \n\n%s \n%s \n\n%s" "$pubtime" "$title" "$description" "$link" "${description2}" "$hashtags" > "${tempfile}"
     else
         outstring=$(printf "(%s) %s \n\n%s \n\n%s \n\n%s" "$pubtime" "$title" "$link" "$description2" "$hashtags")
@@ -62,7 +65,7 @@ function toot_send {
         fi
     fi
 
-   
+
     # Get the image, if exists, then send the post
     if [ ! -z "${imgurl}" ];then
         if [ -f "${imgurl}" ];then
@@ -75,9 +78,9 @@ function toot_send {
             curl "${imgurl}" -o "${Outfile}" --max-time 60 --create-dirs -s
         fi
         if [ -f "${Outfile}" ];then
-            loud "[info] Image obtained, resizing."       
+            loud "[info] Image obtained, resizing."
             if [ -f /usr/bin/convert ];then
-                /usr/bin/convert -resize 800x512\! "${Outfile}" "${Outfile}" 
+                /usr/bin/convert -resize 800x512\! "${Outfile}" "${Outfile}"
             fi
             if [ ! -z "${ALT_TEXT}" ];then
                 Limgurl=$(printf " --media %s --description \"%s\"" "${Outfile}" "${ALT_TEXT}")
@@ -102,17 +105,17 @@ function toot_send {
     else
         cw=""
     fi
-    
+
     postme=$(printf "cat %s | %s post %s %s -u %s" "${tempfile}" "$binary" "${Limgurl}" "${cw}" "${account_using}")
     eval ${postme}
-    
+
     if [ -f "${Outfile}" ];then
         rm "${Outfile}"
     fi
     if [ -f "${tempfile}" ];then
         rm "${tempfile}"
     fi
-    
+
 }
 
 ##############################################################################
@@ -139,7 +142,7 @@ else
             shift
         else
             LOUD=0
-        fi    
+        fi
         link="${1}"
         if [ ! -z "$2" ];then
             title="$2"

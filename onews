@@ -11,7 +11,7 @@
 # The first argument, if any, should be profile, used to load different configs, environment files, etc.
 # If the SECOND argument
 
-LOUD=0
+LOUD=1
 RELOAD=0
 CLEAN=0
 
@@ -60,7 +60,7 @@ while [ $# -gt 0 ]; do
         LOUD=1
         shift
         ;;
-    *) ;;
+    *) shift ;;
     esac
 done
 

@@ -22,8 +22,8 @@ prepopulate-query-feeds yes
 refresh-on-startup no
 suppress-first-reload yes
 auto-reload yes
-reload-threads 10
-reload-time 120
+reload-threads 30
+reload-time 900
 download-full-page yes
 download-path "/home/steven/downloads"
 

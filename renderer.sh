@@ -162,7 +162,7 @@ if [ "$PROCESSED" != "" ];then
     fi
     echo "${var2_clean}" > "${LinksCacheFile}"
     # Get rid of garbage, translate back. Also remove emphasis and bold that are just over whitespace.
-    var=$(printf "%s\n" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' | fold -s -w $WRAP)
+    var=$(printf "%s\n" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#27;/’/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' | fold -s -w $WRAP)
     # fixing multiline em/strong by wrapping first.
     open_mark="§⬞"
     close_mark="⬞§"

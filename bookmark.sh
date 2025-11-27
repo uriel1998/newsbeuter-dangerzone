@@ -25,12 +25,14 @@ export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 
 
-CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.local/state}/newsbeuter_dangerzone"
+export CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.local/state}/newsbeuter_dangerzone"
 if [ ! -d "${CACHE_DIR}" ];then
     mkdir -p "${CACHE_DIR}"
 fi
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
+export CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
 source "$CONFIG_DIR/muna.sh"
+
+enabled_out_dir="${my_CONFIG_DIR}/${profile}/out_enabled"
 
 # If the output dir is not configured in environment, sub the base NBDZ config dir
 if [ ! -d "$(readlink -f "${enabled_out_dir}")" ];then
@@ -54,7 +56,7 @@ function get_better_description() {
     # If no title, get one
     # from https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
     if [ -z "$title" ]; then
-        title=$(wget -qO- "$link" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html.. )
+        title=$(wget -qO- "$link" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html..  )
     fi
 
     patterns=("Photo illustration by" "The Independent is on the ground" "Sign up for our email newsletter" "originally published")
@@ -102,17 +104,18 @@ if [ $(echo "${1}" | grep -c http) -eq 0 ];then
 fi
 
 # These are GLOBAL from this point.
-url="${1}"
-title="${2}"
-description="${3}"
-feed="${4}"
+export url="${1}"
+export title=$(echo "${2}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#27;/’/g' -e 's/&#39;/’/g' -e 's/%27/’/g' -e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' )
+export description=$(echo "${3}"  | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#27;/’/g' -e 's/&#39;/’/g' -e 's/%27/’/g' -e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' )
+export feed="${4}"
+export enabled_out_dir
 
 
 # these functions are in muna, just avoiding yet another sub-sub-sub shell
 # they work on the variable $url and set it back.
 unredirector
 strip_tracking_url
-link="${url}"
+export link="${url}"
 # so now both $url and $link should point to the same, unredirected, cleaned URL.
 
 # if no description, get it (like agaetr) and get title if empty
@@ -128,7 +131,6 @@ get_better_description
 
 
 # TODO - put shortener back in
-# TODO - use preview to show what the text to send will be, duh!!!!
 
 # Parsing enabled out systems. Find files in out_enabled, then import
 # functions from each and running them with variables already established.
@@ -138,13 +140,14 @@ get_better_description
     READY=0
     # begin loop
     while [ "$READY" == "0" ];do
+
         header_text=$(echo -e " Title: ${title} \n Link: ${link}")
         prompt_text=" Choose your outputs!"
         bob=$(/usr/bin/ls -A "${enabled_out_dir}")
 
         #posters=$(echo -e "edit_link\nedit_description\n${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
-        posters=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% --preview="bookmark_preview.sh" | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         # we will exit the loop UNLESS
+        posters=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 70% --preview='printf "Title: %s\n\nDescription: %s\n\nURL: %s\n\nFeed Name: %s\n\n" "$(echo ${title} | fold -s -w 50)" "$(echo ${description} | fold -s -w 50)" "$(echo ${url} | fold -s -w 50)" "$(echo ${feed} | fold -s -w 50)"' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         READY=1
 
         if [[ $posters == *"edit_link"* ]]; then
