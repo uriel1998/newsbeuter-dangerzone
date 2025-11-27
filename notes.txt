@@ -48,6 +48,7 @@ macro pager ,c "<enter-command>setenv show_links false;echo '[info] Cleaning off
  also clean links is togggleable.
 
 - calling_program -> agaetr/nbdz (to be initial prompt for where things are)
+HOWEVER filenames for ini are still NBDZ format, thanks. Just make a profile dir for mutt.
 - if prompt exists or my_CONFIG_DIR
 - use calling_program to determine filename of ini, default to agaetr
 - that way I'll only have to maintain one between suites.

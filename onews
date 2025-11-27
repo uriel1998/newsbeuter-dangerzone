@@ -14,6 +14,7 @@
 LOUD=1
 RELOAD=0
 CLEAN=0
+export calling_program="newsbeuter_dangerzone"
 
 display_help () {
     echo "onews [--clean | --reload ] --profile [profile_name]"
@@ -122,6 +123,7 @@ export profile
 export show_links
 export my_CONFIG_DIR
 export use_kitty
+export calling_program
 
 ### Deal with clean and RELOAD
 if [ "$CLEAN" != "0" ];then
