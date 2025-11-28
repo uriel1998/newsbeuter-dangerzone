@@ -73,6 +73,7 @@ if [ ! -d "${CACHE_DIR}" ];then
 fi
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
 if [ ! -d "${CONFIG_DIR}" ];then
+    loud "[WARN] NBDZ config directory does not exist; things may not work!"
     # If it doesn't exist, then just use defaults because NBDZ isn't set up
     enabled_out_dir="${SCRIPT_DIR}/out_enabled"
     save_directory="${HOME}/Downloads"  #  TODO - export all of these!
@@ -88,6 +89,7 @@ else
     if [ "${profile}" = "" ];then
         profile="default"
     fi
+    loud "[info] Using profile ${profile}"
     # select profile-specific versions if they exist, otherwise use newsbeuter_dangerzone dir
     if [ -d "$(readlink -f "${CONFIG_DIR}/${profile}")" ] && [ "$profile" != "default" ];then
         # default is a special fallback case; so if someone doesn't put in a profile, it
@@ -127,10 +129,12 @@ export calling_program
 
 ### Deal with clean and RELOAD
 if [ "$CLEAN" != "0" ];then
+        loud "[info] Cleaning database."
         newsboat --config-file="${NBConfigFile}" --cache-file="${NBCacheFile}" --log-file="${NBLogFile}" --url-file="${NBUrlFile}" -X --cleanup -x reload
         exit
 fi
 if [ "$RELOAD" != "0" ];then
+        loud "[info] Reloading feeds. This may take a WHILE."
         newsboat --config-file="${NBConfigFile}" --cache-file="${NBCacheFile}" --log-file="${NBLogFile}" --url-file="${NBUrlFile}" -x reload
         exit
 fi
@@ -151,6 +155,7 @@ fi
 
 # added for kitty detection
 if [ -S "/tmp/mykitty" ] && [ "$use_kitty" != "false" ];then
+    loud "[info] kitty detected and being used."
     # running in kitty; the images will pop up in a window thanks to render_images.sh
     # https://dev.to/ajkerrigan/kitty-image-quality-in-the-terminal-without-giving-up-tmux-16be
     # So different sidebar layout needed
@@ -172,7 +177,9 @@ if [ -S "/tmp/mykitty" ] && [ "$use_kitty" != "false" ];then
     kitty @ --to unix:/tmp/mykitty send-text --match "title:^newsboat_image_display" $'\x1b[D'
 else
     if [ $c_tmux -gt 0 ];then
+        loud "[info] tmux detected and being used."
         if [ -f $(which tmux_sidebar.sh) ];then
+            loud "[info] tdab detected and being used."
             #all this is pointless if the sidebar isn't possible
             # tmux, not kitty
             tmux_sidebar.sh -f 20 rich -w 60 -m "${CONFIG_DIR}/newsboat_cheatsheet_tall.md" --pager   # TODO - Need to remove absolute path here.
@@ -192,6 +199,7 @@ else
         COLUMNS=$(tput cols)
     fi
     export COLUMNS
+    loud "[info] Loading newsboat."
     newsboat --config-file="${NBConfigFile}" --cache-file="${NBCacheFile}" --log-file="${NBLogFile}" --url-file="${NBUrlFile}"
     if [ $c_tmux -gt 0 ];then
         # remove tmux only preview pane

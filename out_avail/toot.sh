@@ -53,11 +53,9 @@ function toot_send {
     # URL length (at least for one) counts for 23.  So let's fix our math and avoid shortening (and then port to agaetr)
     #Yes, I know the URL length doesn't actually count against it.  Just
     #reusing code here.
-    outstring=$(printf "%s \n\n%s \n\n%s \n%s" "$title" "$description" "${description2}" "$hashtags")
+    outstring=$(printf "%s  \n\n%s  \n\n%s  \n%s" "${title}" "${description}" "${description2}" "$hashtags")
 
-    if [ ${#outstring} -lt 475 ];then
-        printf "%s \n\n%s \n\n%s \n%s" "$title" "$description" "$link" "${description2}" "$hashtags" > "${tempfile}"
-    else
+    if [ ${#outstring} -gt 475 ];then
         # testing length description, which is either from the feed, null (default newsboat/mutt), or *user set* from newsboat/mutt.
         tlen=$(( ${#title} + 3 )) # accounting for newlines
         d1len=$(( ${#description} + 3 ))
@@ -67,37 +65,43 @@ function toot_send {
         total_length=$(( tlen + d1len + d2len + hashlen + urlen ))
         diff_len=$(( 500 - total_length ))
         if [ $diff_len -lt 0 ]; then
-            #write the outstring; it's 500 characters or less.
+            printf "%s \n\n%s \n\n%s \n\n%s \n\n%s" "${title}" "${description}" "${description2}" "${link}" "${hashtags}" > "${tempfile}"
         else
             if [ $hashlen -gt $diff_len ];then
-                #write the outstring, without hashtags
+                printf "%s  \n\n%s  \n\n%s  \n\n%s" "${title}" "${description}" "${description2}" "${link}" > "${tempfile}"
             else
                 diff_len=$(( diff_len - hashlen ))
                 if [ $d2len -gt $diff_len ];then
-                    # use d2len and diff_len to figure out how much to trim off d2len, post.
-                    # We may trim to ZERO, and that's okay.
+                    trimto=$(( d2len - diff_len - 4 ))
+                    description2="${description2:0:trimto}... "
+                    printf "%s  \n\n%s  \n\n%s  \n\n%s" "${title}" "${description}" "${description2}" "${link}" > "${tempfile}"
                 else
-                    diff_len=$(( diff_len - d2len ))  # the difference was more than we could cut out of d2len
+                    diff_len=$(( diff_len - d2len ))
+                    # the difference was more than we could cut out of d2len
                     if [ $d1len -gt $diff_len ];then
                         # use d1len and diff_len to figure out how much to trim off d1len, post.
+                        trimto=$(( d1len - diff_len - 4 ))
+                        description="${description:0:trimto}... "
+                        printf "%s  \n\n%s  \n\n%s" "${title}" "${description}" "${link}" > "${tempfile}"
                     else
-                        diff_len=$(( diff_len - d1len ))  # the difference was more than we could cut out of d1len
+                        diff_len=$(( diff_len - d1len ))
+                        # the difference was more than we could cut out of d1len
+                        trimto=$(( tlen - diff_len - 4 ))
+                        title="${title:0:trimto}... "
+                        printf "%s  \n\n%s" "${title}" "${link}" > "${tempfile}"
                         # use tlen and diff_len to figure out how much to trim off title, post.
                         # this test HAS to pass, because urllen is ALWAYS pegged to 23, so it can't overflow
                     fi
                 fi
             fi
         fi
+    else
+        # I realize this is a double test.
+        printf "%s \n\n%s \n\n%s \n%s" "${title}" "${description}" "${description2}" "$link" "$hashtags" > "${tempfile}"
+    fi
 
 
-
-
-
-        #references
-#        printf "%s \n\n%s \n\n%s \n\n%s" "$title" "$link" "$description2" "$hashtags" > "${tempfile}"
-#                        short_title=`echo "$title" | awk '{print substr($0,1,400)}'`
-
-
+ 
     # Get the image, if exists, then send the post
     if [ ! -z "${imgurl}" ];then
         if [ -f "${imgurl}" ];then
