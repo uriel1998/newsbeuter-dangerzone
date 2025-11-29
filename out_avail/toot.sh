@@ -101,7 +101,7 @@ function toot_send {
     fi
 
 
- 
+
     # Get the image, if exists, then send the post
     if [ ! -z "${imgurl}" ];then
         if [ -f "${imgurl}" ];then
@@ -118,7 +118,7 @@ function toot_send {
             if [ -f /usr/bin/convert ];then
                 /usr/bin/convert -resize 800x512\! "${Outfile}" "${Outfile}"
             fi
-            if [ ! -z "${ALT_TEXT}" ];then
+            if [ ! -z "${ALT_TEXT}" ];then  # use the ai alt text script to get alt text if configured. #TODO 
                 Limgurl=$(printf " --media %s --description \"%s\"" "${Outfile}" "${ALT_TEXT}")
             else
                 Limgurl=$(printf " --media %s --description \"An image pulled automatically from the post for decorative purposes only.\"" "${Outfile}")

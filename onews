@@ -173,6 +173,7 @@ if [ -S "/tmp/mykitty" ] && [ "$use_kitty" != "false" ];then
     fi
     export COLUMNS
     #( /home/steven/.newsboat/renderer_images.sh ) &    # TODO - Need to remove absolute path here.     # separate because of kitty
+    loud "[info] Loading newsboat."
     newsboat --config-file="${NBConfigFile}" --cache-file="${NBCacheFile}" --log-file="${NBLogFile}" --url-file="${NBUrlFile}"
     kitty @ --to unix:/tmp/mykitty send-text --match "title:^newsboat_image_display" $'\x1b[D'
 else
