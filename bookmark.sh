@@ -152,7 +152,7 @@ get_better_description
 # and select however many of out-enabled as you like.
 # TODO - can also have environment var of "default on" or "default off"
 
-
+# OH!  If there's an image detected, we can add options to add or generate the alt text, along with a preset.  And if no image detected, we leave that out of our menu.  Duh.
 
 
 # TODO - put shortener back in
