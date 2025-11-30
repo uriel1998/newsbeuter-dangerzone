@@ -83,6 +83,31 @@ function get_better_description() {
             description="${og_description}"
         fi
     fi
+    # Since there's no description anyway....
+    og_image=$(echo "${html}" | sed -n 's/.*<meta property="og:image".* content="\([^"]*\)".*/\1/p')
+    # Extract og:image:alt content
+    og_image_alt=$(echo "${html}" | sed -n 's/.*<meta property="og:image:alt".* content="\([^"]*\)".*/\1/p')
+    if [[ $og_image == http* ]];then
+        imgurl="${og_image}"
+        ALT_TEXT="${og_image_alt}"
+        loud "[info] Found ${og_image}"
+        loud "[info] Found ${og_image_alt}"
+        #Checking the image url AGAIN before sending it to the client
+        imagecheck=$(wget -q --spider "${imgurl}"; echo $?)
+        if [ "${imagecheck}" -ne 0 ];then
+            loud "[warn] Image no longer available; omitting."
+            imgurl=""
+            ALT_TEXT=""
+        else
+            export imgurl
+            # if alt text is none and ai_alt_text is set
+            # DOWNLOAD THE IMAGE
+            # call the ai_alt_text - if some setting is set.
+            #export ALT_TEXT
+        fi
+    fi
+
+
 }
 
 
@@ -108,6 +133,8 @@ export description=$(echo "${3}"  | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e '
 export feed="${4}"
 export enabled_out_dir
 export description2
+export ALT_TEXT
+export imgurl
 
 # these functions are in muna, just avoiding yet another sub-sub-sub shell
 # they work on the variable $url and set it back.

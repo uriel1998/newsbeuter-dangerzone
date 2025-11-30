@@ -69,7 +69,10 @@ add use_kitty switch to renderer and show images and all that.
 
 Have both set env calling_program , additional check about plaintext emails
 
-update bookmarker with get_better_description to call for opengraph images.  Then also use ai_alt_text script to set ALT_TEXT 
+update bookmarker with get_better_description to call for opengraph images.  Then also use ai_alt_text script to set ALT_TEXT
+
+
+FOR LATER- Okay, urlview gets into the showdocs ecosystem, so we're going to leave that be for the moment.
 
 Next steps:
 bookmarker

@@ -34,7 +34,7 @@ function loud() {
 # Enter Here
 ###############################################################################
 
-
+loud "[info] Starting NBDZ"
 # parse command line options
 #
 while [ $# -gt 0 ]; do
@@ -131,11 +131,17 @@ export calling_program
 if [ "$CLEAN" != "0" ];then
         loud "[info] Cleaning database."
         newsboat --config-file="${NBConfigFile}" --cache-file="${NBCacheFile}" --log-file="${NBLogFile}" --url-file="${NBUrlFile}" -X --cleanup -x reload
+        if [ $LOUD -eq 1 ];then
+            notify-send "Completed clean"
+        fi
         exit
 fi
 if [ "$RELOAD" != "0" ];then
         loud "[info] Reloading feeds. This may take a WHILE."
         newsboat --config-file="${NBConfigFile}" --cache-file="${NBCacheFile}" --log-file="${NBLogFile}" --url-file="${NBUrlFile}" -x reload
+        if [ $LOUD -eq 1 ];then
+            notify-send "Completed reload"
+        fi
         exit
 fi
 
