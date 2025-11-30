@@ -155,7 +155,6 @@ get_better_description
 # OH!  If there's an image detected, we can add options to add or generate the alt text, along with a preset.  And if no image detected, we leave that out of our menu.  Duh.
 
 
-# TODO - put shortener back in
 
 # Parsing enabled out systems. Find files in out_enabled, then import
 # functions from each and running them with variables already established.
@@ -169,7 +168,20 @@ get_better_description
         header_text=$(echo -e " Title: ${title} \n Link: ${link}")
         prompt_text=" Choose your outputs!"
         bob=$(/usr/bin/ls -A "${enabled_out_dir}")
+# so let's just pre-process bob here, and add our additional menu entries prn
+        bob=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep")
+        bob=$(printf %s\
 
+
+        # * Edit Title
+        # * Edit Description
+        # * Edit Description2
+        # * Edit Hashtags
+        # * Edit Alt Text
+        # * Generate Alt Text
+
+        # It's important that the passthrough - just hitting return - gets us through with quick defaults.
+        
         #posters=$(echo -e "edit_link\nedit_description\n${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         # we will exit the loop UNLESS
         posters=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 70% --preview='printf "Title: %s\n\nDescription: %s\n\nURL: %s\n\nFeed Name: %s\n\n" "$(echo ${title} | fold -s -w 50)" "$(echo ${description} | fold -s -w 50)" "$(echo ${url} | fold -s -w 50)" "$(echo ${feed} | fold -s -w 50)"' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
