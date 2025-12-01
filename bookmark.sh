@@ -23,8 +23,6 @@
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 description2=""
 
-
-
 export CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.local/state}/newsbeuter_dangerzone"
 if [ ! -d "${CACHE_DIR}" ];then
     mkdir -p "${CACHE_DIR}"
@@ -36,10 +34,11 @@ enabled_out_dir="${my_CONFIG_DIR}/${profile}/out_enabled"
 
 # If the output dir is not configured in environment, sub the base NBDZ config dir
 if [ ! -d "$(readlink -f "${enabled_out_dir}")" ];then
-    enabled_out_dir="${CONFIG_DIR}/out_enabled"
+    enabled_out_dir="${my_CONFIG_DIR}/out_enabled"
 fi
 if [ ! -d "$(readlink -f "${my_CONFIG_DIR}")" ];then
     my_CONFIG_DIR="${CONFIG_DIR}"
+    enabled_out_dir="${my_CONFIG_DIR}/out_enabled"
 fi
 
 function loud() {
@@ -165,26 +164,31 @@ get_better_description
     # begin loop
     while [ "$READY" == "0" ];do
 
-        header_text=$(echo -e " Title: ${title} \n Link: ${link}")
-        prompt_text=" Choose your outputs!"
+        header_text="Bookmarker.sh"
+        prompt_text==$(echo -e "->")
         bob=$(/usr/bin/ls -A "${enabled_out_dir}")
 # so let's just pre-process bob here, and add our additional menu entries prn
         bob=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep")
-        bob=$(printf %s\
-
-
-        # * Edit Title
-        # * Edit Description
-        # * Edit Description2
-        # * Edit Hashtags
-        # * Edit Alt Text
-        # * Generate Alt Text
-
+        if [ "$imgurl" != "" ];then
+            bob=$(printf "%s\n%s\n%s\n%s\n%s\n%s\n" \
+                "${bob}"
+                "• Edit Title" \
+                "• Edit Description" \
+                "• Edit Hashtags" \
+                "• Generate Alt Text" \
+                "• Edit Alt Text" )
+        else
+            bob=$(printf "%s\n%s\n%s\n%s\n" \
+                "${bob}"
+                "• Edit Title" \
+                "• Edit Description" \
+                "• Edit Hashtags" )
+        fi
         # It's important that the passthrough - just hitting return - gets us through with quick defaults.
-        
+
         #posters=$(echo -e "edit_link\nedit_description\n${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         # we will exit the loop UNLESS
-        posters=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 70% --preview='printf "Title: %s\n\nDescription: %s\n\nURL: %s\n\nFeed Name: %s\n\n" "$(echo ${title} | fold -s -w 50)" "$(echo ${description} | fold -s -w 50)" "$(echo ${url} | fold -s -w 50)" "$(echo ${feed} | fold -s -w 50)"' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
+        posters=$(echo -e "${bob}" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 70% --preview='printf "Title: %s\n\nDescription: %s\n\nURL: %s\n\nFeed Name: %s\n\n" "$(echo ${title} | fold -s -w 50)" "$(echo ${description} | fold -s -w 50)" "$(echo ${url} | fold -s -w 50)" "$(echo ${feed} | fold -s -w 50)"' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         READY=1
 
         if [[ $posters == *"edit_link"* ]]; then

@@ -86,9 +86,10 @@ else
     PATH=$PATH:"${CONFIG_DIR}"  # <- newsbeuter_dangerzone script executables
     export PATH
     # if NBDZ is configured, but no profile is set, then it means default.
-    if [ "${profile}" = "" ];then
+    if [ "${profile}" == "" ];then
         profile="default"
     fi
+    export profile
     loud "[info] Using profile ${profile}"
     # select profile-specific versions if they exist, otherwise use newsbeuter_dangerzone dir
     if [ -d "$(readlink -f "${CONFIG_DIR}/${profile}")" ] && [ "$profile" != "default" ];then
@@ -114,6 +115,9 @@ else
     use_kitty=$(grep 'use_kitty =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
     save_directory=$(grep 'save_directory =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
     enabled_out_dir=$(grep 'enabled_out_dir =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}') # TODO default to $profile/out_enabled
+    if [ "${enabled_out_dir}" = "" ];then
+        enabled_out_dir="${my_CONFIG_DIR}/out_enabled"
+    fi
     show_links==$(grep 'show_links =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
     clean_links==$(grep 'clean_links =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
 fi
