@@ -19,6 +19,8 @@
 # from env from onews
 #enabled_out_dir, save_directory, profile, my_CONFIG_DIR
 
+LOUD=1
+
 # Set directories, get environment, etc.
 export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 description2=""
@@ -73,6 +75,7 @@ function get_better_description() {
     loud "[info] Attempting to find OpenGraph tags for description"
     html=$(wget -O- "${link}" | sed 's|>|>\n|g')
     og_description=$(echo "${html}" | sed -n 's/.*<meta property="og:description".* content="\([^"]*\)".*/\1/p' | sed -e 's/ "/ “/g' -e 's/" /” /g' -e 's/"\./”\./g' -e 's/"\,/”\,/g' -e 's/\."/\.”/g' -e 's/\,"/\,”/g' -e 's/"/“/g' -e "s/'/’/g" -e 's/ -- /—/g' -e 's/(/❲/g' -e 's/)/❳/g' -e 's/ — /—/g' -e 's/ - /—/g'  -e 's/ – /—/g' -e 's/ – /—/g')
+    notify-send "${og_description}"
     if [ "$og_description" != "" ];then
         if  [[ "$description" == *"..."* ]];then
             loud "[info] Storing OpenGraph description for parsed description in slot 2."
@@ -160,37 +163,29 @@ get_better_description
 # use my_CONFIG_DIR here, and we will need to rewrite the out files to
 # parse the appropriate ini file, like by what program called it, what to default
 # back to, etc.
-    READY=0
+    READY=0notify-send $("${CONFIG_DIR}/muna.sh" "${og_image}")
     # begin loop
     while [ "$READY" == "0" ];do
 
         header_text="Bookmarker.sh"
         prompt_text==$(echo -e "->")
         bob=$(/usr/bin/ls -A "${enabled_out_dir}")
-# so let's just pre-process bob here, and add our additional menu entries prn
         bob=$(echo -e "${bob}" | sed 's/.sh//g' | grep -v ".keep")
         if [ "$imgurl" != "" ];then
-            bob=$(printf "%s\n%s\n%s\n%s\n%s\n%s\n" \
-                "${bob}"
-                "• Edit Title" \
-                "• Edit Description" \
-                "• Edit Hashtags" \
-                "• Generate Alt Text" \
-                "• Edit Alt Text" )
+            bob=$(printf "%s\n• Edit Title\n• Edit Description\n• Edit Hashtags\n• Generate Alt Text\n• Edit Alt Text\n• Quit" "${bob}")
         else
-            bob=$(printf "%s\n%s\n%s\n%s\n" \
-                "${bob}"
-                "• Edit Title" \
-                "• Edit Description" \
-                "• Edit Hashtags" )
+            bob=$(printf "%s\n• Edit Title\n• Edit Description\n• Edit Hashtags\n• Quit" "${bob}")
         fi
         # It's important that the passthrough - just hitting return - gets us through with quick defaults.
 
         #posters=$(echo -e "edit_link\nedit_description\n${bob}" | sed 's/.sh//g' | grep -v ".keep" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 50% | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         # we will exit the loop UNLESS
-        posters=$(echo -e "${bob}" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 70% --preview='printf "Title: %s\n\nDescription: %s\n\nURL: %s\n\nFeed Name: %s\n\n" "$(echo ${title} | fold -s -w 50)" "$(echo ${description} | fold -s -w 50)" "$(echo ${url} | fold -s -w 50)" "$(echo ${feed} | fold -s -w 50)"' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
+        posters=$(echo -e "${bob}" | fzf --multi --header="$header_text" --header-lines=0 --prompt="$prompt_text" --tmux 70% --preview='printf "Title: %s\n\nDescription: %s\n%s\nURL: %s\n\nImage URL:%s\n\nAlt Text:%s\n\nFeed Name: %s\n\n" "$(echo ${title} | fold -s -w 50)" "$(echo ${description} | fold -s -w 50)" "$(echo ${description2} | fold -s -w 50)" "$(echo ${url} | fold -s -w 50)" "$(echo ${imgurl} | fold -s -w 50)" "$(echo ${ALT_TEXT} | fold -s -w 50)" "$(echo ${feed} | fold -s -w 50)"' | sed 's/$/.sh&/p' | awk '!_[$0]++' )
         READY=1
-
+        if [[ $posters == *"• "* ]]; then
+                READY=0
+        fi
+        # edit title, description, hashtags,gen alttext,edit alttext
         if [[ $posters == *"edit_link"* ]]; then
             READY=0
             echo "Old: ${link}"
