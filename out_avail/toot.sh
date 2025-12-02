@@ -97,7 +97,7 @@ function toot_send {
         fi
     else
         # I realize this is a double test.
-        printf "%s \n\n%s \n\n%s \n%s" "${title}" "${description}" "${description2}" "$link" "$hashtags" > "${tempfile}"
+        printf "%s \n\n%s \n\n%s \n%s" "${title}" "${description}" "${description2}" "${link}" "${hashtags}" > "${tempfile}"
     fi
 
 
