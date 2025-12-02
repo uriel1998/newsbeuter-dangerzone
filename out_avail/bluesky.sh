@@ -99,9 +99,9 @@ function bluesky_send {
         printf "%s \n\n%s \n\n%s \n%s" "${title}" "${description}" "${description2}" "${link}" "${hashtags}" > "${tempfile}"
     fi
 
+
     # Get the image, if exists, then send the post
     if [ ! -z "${imgurl}" ];then
-
         if [ -f "${imgurl}" ];then
             filename=$(basename -- "${imgurl}")
             extension="${filename##*.}"
@@ -117,9 +117,10 @@ function bluesky_send {
                 /usr/bin/convert -resize 800x512\! "${Outfile}" "${Outfile}"
             fi
             if [ ! -z "${ALT_TEXT}" ];then
-                Limgurl=$(printf " --image \'%s\' --image-alt '%s'" "${Outfile}" "${ALT_TEXT}")
+                Limgurl=$(printf " --media %s --description \"%s\"" "${Outfile}" "${ALT_TEXT}")
             else
-                Limgurl=$(printf " --image \'%s\' --image-alt 'An automated image pulled from the post - %s'" "${Outfile}" "${title}")
+                # I suppose there could be another call to ai_gen_alt_text here
+                Limgurl=$(printf " --media %s --description \"An image pulled automatically from the post for decorative purposes only.\"" "${Outfile}")
             fi
         else
             Limgurl=""
