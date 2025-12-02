@@ -186,17 +186,30 @@ get_better_description
                 READY=0
         fi
         # edit title, description, hashtags,gen alttext,edit alttext
-        if [[ $posters == *"edit_link"* ]]; then
-            READY=0
+        if [[ $posters == *"Edit Title"* ]]; then
             echo "Old: ${link}"
             read -p "Enter your new URL: " link
         fi
-        if [[ $posters == *"edit_description"* ]]; then
-            READY=0
+
+        if [[ $posters == *"Edit Description"* ]]; then
             echo "Old: ${title}"
             read -p "Enter your new description: " title
             echo "It's there!"
         fi
+        if [[ $posters == *"Edit Hashtag"* ]]; then
+            echo "Old: ${link}"
+            read -p "Enter your new URL: " link
+        fi
+        if [[ $posters == *"Generate Alt Text"* ]]; then
+            echo "Old: ${link}"
+            read -p "Enter your new URL: " link
+        fi
+        if [[ $posters == *"Edit Alt Text"* ]]; then
+            echo "Old: ${link}"
+            read -p "Enter your new URL: " link
+        fi
+
+
     done
 
 for p in $posters;do

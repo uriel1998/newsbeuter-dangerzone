@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+CLEANUPNEEDED=""
+
 if [ $# -lt 1 ]; then
     echo "Usage: $0 IMAGE [PROMPT]" >&2
     exit 1
@@ -10,8 +12,25 @@ IMAGE="$1"
 PROMPT="${2:-Describe this image in one short sentence.}"
 
 if [ ! -f "${IMAGE}" ]; then
-    echo "Error: '${IMAGE}' is not a file" >&2
-    exit 1
+	if [[ $IMAGE == *"http"* ]]; then
+		TEMPFILE=$(mktemp)
+		ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
+        wget --timeout=10 \
+			--max-redirect=20 \
+            --no-check-certificate \
+            -erobots=off \
+            --no-cache \
+            --quiet \
+            --user-agent="${ua}" \
+            "${IMAGE}" -O "${TEMPFILE}" 2>&1 1>/dev/null
+		if [ -f "${TEMPFILE}" ];then
+			CLEANUPNEEDED=1
+			IMAGE="${TEMPFILE}"
+		else
+			echo "Error: '${IMAGE}' is not a file" >&2
+			exit 99
+		fi
+	fi
 fi
 
 if [ -z "${OPENAI_API_KEY:-}" ]; then
@@ -49,3 +68,7 @@ curl -sS https://api.openai.com/v1/chat/completions \
   ]
 }
 EOF
+
+if [ $CLEANUPNEEDED != "" ];then
+	rm ${TEMPFILE}
+fi
