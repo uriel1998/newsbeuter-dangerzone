@@ -53,11 +53,11 @@ function get_better_description() {
     # to strip out crappy descriptions and either omit them or, if available,
     # substitute og tags.
     # Also gets title if empty
-
+    local ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
     # If no title, get one
     # from https://unix.stackexchange.com/questions/103252/how-do-i-get-a-websites-title-using-command-line
     if [ -z "$title" ]; then
-        title=$(wget -qO- "$link" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html..  )
+        title=$(wget --no-check-certificate -erobots=off --user-agent="${ua}" -qO- "$link" | awk -v IGNORECASE=1 -v RS='</title' 'RT{gsub(/.*<title[^>]*>/,"");print;exit}' | recode html..  )
     fi
 
     patterns=("Photo illustration by" "The Independent is on the ground" "Sign up for our email newsletter" "originally published")
@@ -73,9 +73,8 @@ function get_better_description() {
     done
 
     loud "[info] Attempting to find OpenGraph tags for description"
-    html=$(wget -O- "${link}" | sed 's|>|>\n|g')
+    html=$(wget --no-check-certificate -erobots=off --user-agent="${ua}" -O- "${link}" | sed 's|>|>\n|g')
     og_description=$(echo "${html}" | sed -n 's/.*<meta property="og:description".* content="\([^"]*\)".*/\1/p' | sed -e 's/ "/ “/g' -e 's/" /” /g' -e 's/"\./”\./g' -e 's/"\,/”\,/g' -e 's/\."/\.”/g' -e 's/\,"/\,”/g' -e 's/"/“/g' -e "s/'/’/g" -e 's/ -- /—/g' -e 's/(/❲/g' -e 's/)/❳/g' -e 's/ — /—/g' -e 's/ - /—/g'  -e 's/ – /—/g' -e 's/ – /—/g')
-    notify-send "${og_description}"
     if [ "$og_description" != "" ];then
         if  [[ "$description" == *"..."* ]];then
             loud "[info] Storing OpenGraph description for parsed description in slot 2."
@@ -163,7 +162,8 @@ get_better_description
 # use my_CONFIG_DIR here, and we will need to rewrite the out files to
 # parse the appropriate ini file, like by what program called it, what to default
 # back to, etc.
-    READY=0notify-send $("${CONFIG_DIR}/muna.sh" "${og_image}")
+    READY=0
+
     # begin loop
     while [ "$READY" == "0" ];do
 
@@ -187,38 +187,39 @@ get_better_description
         fi
         # edit title, description, hashtags,gen alttext,edit alttext
         if [[ $posters == *"Edit Title"* ]]; then
-            echo "Old: ${link}"
-            read -p "Enter your new URL: " link
+            echo "Old: ${title}"
+            read -p "Enter your new title: " title
         fi
 
         if [[ $posters == *"Edit Description"* ]]; then
-            echo "Old: ${title}"
-            read -p "Enter your new description: " title
-            echo "It's there!"
+            echo "Old: ${description}"
+            read -p "Enter your new description: " description
         fi
-        if [[ $posters == *"Edit Hashtag"* ]]; then
-            echo "Old: ${link}"
-            read -p "Enter your new URL: " link
+        if [[ $posters == *"Edit Hashtag"* ]]; then #TODO - they aren't actually there
+            echo "Old: ${hashtags}"
+            read -p "Enter your new Hashtags: " hashtags
         fi
         if [[ $posters == *"Generate Alt Text"* ]]; then
-            echo "Old: ${link}"
-            read -p "Enter your new URL: " link
+            loud "[info] Generating Alt Text"
+            ALT_TEXT=$("$CONFIG_DIR/ai_gen_alt_text.sh" "${imgurl}")
         fi
         if [[ $posters == *"Edit Alt Text"* ]]; then
-            echo "Old: ${link}"
-            read -p "Enter your new URL: " link
+            echo "Original: ${ALT_TEXT}"
+            read -p "Enter new alt text: " ALT_TEXT
         fi
-
-
+        if [[ $posters == *"• Quit"* ]]; then
+            loud "[info] Exiting."
+            exit 0
+        fi
     done
 
-for p in $posters;do
-    if [ "$p" != ".keep" ];then
-        echo "Processing ${p%.*}..."
-        send_funct=$(echo "${p%.*}_send")
-        source "$SCRIPT_DIR/out_enabled/$p"
-        echo "$SCRIPT_DIR/out_enabled/$p"
-        eval ${send_funct}
-        sleep 5
-    fi
-done
+    for p in $posters;do
+        if [ "$p" != ".keep" ];then
+            echo "Processing ${p%.*}..."
+            send_funct=$(echo "${p%.*}_send")
+            source "$SCRIPT_DIR/out_enabled/$p"
+            echo "$SCRIPT_DIR/out_enabled/$p"
+            eval ${send_funct}
+            sleep 5
+        fi
+    done
