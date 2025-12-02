@@ -118,9 +118,10 @@ function toot_send {
             if [ -f /usr/bin/convert ];then
                 /usr/bin/convert -resize 800x512\! "${Outfile}" "${Outfile}"
             fi
-            if [ ! -z "${ALT_TEXT}" ];then  # use the ai alt text script to get alt text if configured. #TODO 
+            if [ ! -z "${ALT_TEXT}" ];then
                 Limgurl=$(printf " --media %s --description \"%s\"" "${Outfile}" "${ALT_TEXT}")
             else
+                # I suppose there could be another call to ai_gen_alt_text here
                 Limgurl=$(printf " --media %s --description \"An image pulled automatically from the post for decorative purposes only.\"" "${Outfile}")
             fi
         else
