@@ -7,7 +7,7 @@
 #  Licensed under the MIT license
 #
 ##############################################################################
- 
+ # TODO - BELOW IS NOT DONE
 
 function loud() {
     if [ $LOUD -eq 1 ];then
@@ -21,16 +21,16 @@ function tumblr_send {
     if [ "$title" == "$link" ];then
         title=""
     fi
-    
+
 
     binary=$(grep 'gotumblr =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
     textfile=$(grep 'textmd =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
     picgo_binary=$(grep 'picgo =' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
     workdir=$(echo  $( dirname $(realpath "${textfile}") ))
     # is it in our ini where it should be?
-        
-    
-    
+
+
+
     tbn=$(grep 'TUMBLR_BLOG_NAME=' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
     tck=$(grep 'TUMBLR_CONSUMER_KEY=' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
     tcs=$(grep 'TUMBLR_CONSUMER_SECRET=' "${XDG_CONFIG_HOME}/agaetr/agaetr.ini" | sed 's/ //g' | awk -F '=' '{print $2}')
@@ -41,17 +41,17 @@ function tumblr_send {
     export TUMBLR_CONSUMER_SECRET="${tcs}"
     export TUMBLR_OAUTH_TOKEN="${tot}"
     export TUMBLR_OAUTH_TOKEN_SECRET="${tots}"
-    
+
     #outstring=$(printf "(%s) %s - %s %s %s" "$pubtime" "$title" "$description" "$link" "$hashtags")
-   
-    # Get the image, if exists. 
+
+    # Get the image, if exists.
     if [ ! -z "${imgurl}" ];then
         # If image is local. upload via picgo
         if [ -f "${imgurl}" ];then
-            loud "[info] Image is a local file, uploading via picgo"        
+            loud "[info] Image is a local file, uploading via picgo"
             bob=$(${picgo_binary} u "${imgurl}")
             imgurl=$(echo "${bob}" | grep -e "^http")
-        fi    
+        fi
         # triple check that it's a url
         if [[ $imgurl == http* ]];then
             loud "[info] Image exists, and is an URL"
@@ -68,7 +68,7 @@ function tumblr_send {
     echo " " >> "${textfile}"
     echo "${description}" >> "${textfile}"
 
-    if [ "$Limgurl" != "" ];then 
+    if [ "$Limgurl" != "" ];then
         if [ "${ALT_TEXT}" != "" ];then
             printf "<img src=\"%s\" alt=\"%s\" >\n" "${Limgurl}" "${ALT_TEXT}" >> "${textfile}"
         else
@@ -76,7 +76,7 @@ function tumblr_send {
         fi
         echo " " >> "${textfile}"
     fi
-    if [ "$link" != "" ];then 
+    if [ "$link" != "" ];then
         printf "[%s](%s)" "${title}" "${link}" >> "${textfile}"
         echo " " >> "${textfile}"
     fi
@@ -85,14 +85,14 @@ function tumblr_send {
         echo " " >> "${textfile}"
         echo "Archive Links:  " >> "${textfile}"
         echo "${description2_md}" >> "${textfile}"
-    fi   
-    
+    fi
+
     CURR_DIR=$(pwd)
     cd "${workdir}"
     runstring=$(printf "go run %s t" "${binary}")
     eval "${runstring}"
     cd "${CURR_DIR}"
-    
+
 }
 
 ##############################################################################
@@ -117,7 +117,7 @@ else
             shift
         else
             LOUD=0
-        fi    
+        fi
         link="${1}"
         if [ ! -z "$2" ];then
             title="$2"

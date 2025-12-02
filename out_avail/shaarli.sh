@@ -14,8 +14,29 @@ function loud() {
     fi
 }
 
-
 function shaarli_send {
+
+
+    # check some config things that SHOULD be set, etc.
+    if [ -n "${my_CONFIG_DIR}" ];then
+        # if the variable is set and exported, they've probably set it up properly.
+        ConfigFile="${my_CONFIG_DIR}/newsbeuter_dangerzone.ini"
+    else
+        loud "[WARN] Configuration variable not set, checking default location."
+        # try to find a default quickly.
+        CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
+        # here, though, we're doublechecking.
+        if [ -f "${CONFIG_DIR}/newsbeuter_dangerzone.ini" ];then
+            ConfigFile="${CONFIG_DIR}/newsbeuter_dangerzone.ini"
+        else
+            loud "[ERROR] Configuration not found at"
+            loud "[ERROR] ${CONFIG_DIR}/newsbeuter_dangerzone.ini"
+            exit 97
+        fi
+    fi
+
+# TODO - BELOW IS NOT DONE
+
     inifile="${XDG_CONFIG_HOME}/agaetr/agaetr.ini"
     binary=$(grep 'shaarli =' "${inifile}" | sed 's/ //g' | awk -F '=' '{print $2}')
     # No length requirements here!
@@ -36,6 +57,8 @@ function shaarli_send {
 # From http://stackoverflow.com/questions/2683279/ddg#34642589
 ##############################################################################
 
+
+
 # Try to execute a `return` statement,
 # but do it in a sub-shell and catch the results.
 # If this script isn't sourced, that will raise an error.
@@ -43,7 +66,7 @@ $(return >/dev/null 2>&1)
 
 # What exit code did that give?
 if [ "$?" -eq "0" ];then
-    echo "[info] Function shaarli ready to go."
+    loud "[info] Function toot ready to go."
     OUTPUT=0
 else
     OUTPUT=1
@@ -54,11 +77,14 @@ else
             LOUD=1
             shift
         else
-            LOUD=0
-        fi    
+            if [ "$LOUD" == "" ];then
+                # so it doesn't clobber exported env
+                LOUD=0
+            fi
+        fi
         link="${1}"
         if [ ! -z "$2" ];then
-            title="$2"
+            title="$2" # These should already be cleaned.
         fi
         shaarli_send
     fi

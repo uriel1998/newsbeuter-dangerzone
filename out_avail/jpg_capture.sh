@@ -86,9 +86,18 @@ else
     if [ "$#" = 0 ];then
         echo -e "Please call this as a function or with \nthe url as the first argument and optional \ndescription as the second."
     else
+        if [ "${1}" == "--loud" ];then
+            LOUD=1
+            shift
+        else
+            if [ "$LOUD" == "" ];then
+                # so it doesn't clobber exported env
+                LOUD=0
+            fi
+        fi
         link="${1}"
         if [ ! -z "$2" ];then
-            title="$2"
+            title="$2" # These should already be cleaned.
         fi
         jpeg_capture_send
     fi
