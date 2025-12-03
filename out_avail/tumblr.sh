@@ -18,6 +18,27 @@ function loud() {
 
 function tumblr_send {
 
+    # check some config things that SHOULD be set, etc.
+    if [ -n "${my_CONFIG_DIR}" ];then
+        # if the variable is set and exported, they've probably set it up properly.
+        ConfigFile="${my_CONFIG_DIR}/newsbeuter_dangerzone.ini"
+    else
+        loud "[WARN] Configuration variable not set, checking default location."
+        # try to find a default quickly.
+        CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
+        # here, though, we're doublechecking.
+        if [ -f "${CONFIG_DIR}/newsbeuter_dangerzone.ini" ];then
+            ConfigFile="${CONFIG_DIR}/newsbeuter_dangerzone.ini"
+        else
+            loud "[ERROR] Configuration not found at"
+            loud "[ERROR] ${CONFIG_DIR}/newsbeuter_dangerzone.ini"
+            exit 97
+        fi
+    fi
+
+# TODO - BELOW IS NOT DONE
+
+
     if [ "$title" == "$link" ];then
         title=""
     fi
@@ -107,8 +128,10 @@ $(return >/dev/null 2>&1)
 
 # What exit code did that give?
 if [ "$?" -eq "0" ];then
-    loud "[info] Function tumblr ready to go."
+    loud "[info] Function toot ready to go."
+    OUTPUT=0
 else
+    OUTPUT=1
     if [ "$#" = 0 ];then
         echo -e "Please call this as a function or with \nthe url as the first argument and optional \ndescription as the second."
     else
@@ -116,11 +139,14 @@ else
             LOUD=1
             shift
         else
-            LOUD=0
+            if [ "$LOUD" == "" ];then
+                # so it doesn't clobber exported env
+                LOUD=0
+            fi
         fi
         link="${1}"
         if [ ! -z "$2" ];then
-            title="$2"
+            title="$2" # These should already be cleaned.
         fi
         tumblr_send
     fi

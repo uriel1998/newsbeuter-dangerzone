@@ -74,7 +74,13 @@ update bookmarker with get_better_description to call for opengraph images.  The
 
 FOR LATER- Okay, urlview gets into the showdocs ecosystem, so we're going to leave that be for the moment.
 
+WELL FUCK ME.  It doesn't seem to be pulling in everything from TTRSS, so maybe just pulling in URLs locally?  BAH.  WTF.  It used to work.
 
+SO NEXT STEPS GIVEN THAT:
+
+- Switch to agaetr, update with what we've learned, add in alt text, trimming.
+
+Work with incorporating YTCS with newsboat/rssguard
 
 Next steps:
 bookmarker
