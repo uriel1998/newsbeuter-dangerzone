@@ -13,15 +13,24 @@ ANTITRACKING=0
 # is it one-shot or persistent
 PERSISTENT=0
 
-if [ "${CONFIG_DIR}" == "" ];then
-    CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
+# Follows newboat paths
+if [[ -d "$HOME/.newsboat" ]]; then
+    CACHE_DIR="$HOME/.newsboat"
+else
+    CACHE_DIR="$HOME/.local/share/newsboat"
+    mkdir -p "$CACHE_DIR"
 fi
-if [ "${CACHE_DIR}" == "" ];then
-    CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.local/state}
-    if [ -z "${XDG_CACHE_HOME}" ];then
-        export XDG_CACHE_HOME="${HOME}/.config"
-        CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.local/state}
-    fi
+
+if [[ -d "$HOME/.newsboat" ]]; then
+    CONFIG_DIR="$HOME/.newsboat"
+else
+    CONFIG_DIR="$HOME/.config/newsboat"
+    mkdir -p "$CONFIG_DIR"
+fi
+
+#TODO - NOTE THE CHANGE IN CACHE DIR name
+
+
 CacheFile=${CacheDir}/newsboat_img_links
 if [ ! -f "${CacheFile}" ];then
     touch "${CacheFile}"

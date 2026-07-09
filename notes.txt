@@ -1,3 +1,33 @@
+To be honest, the profiles was overkill.  Backing off from that, tearing those bits out. 
+
+
+tweaked newsboat to work with TTrss better
+
+1 - load in with NBDZ, inline with NB
+2 - helper scripts
+	- renderer -> with and without links, perhaps without links and then having the links be searchable?
+	- image viewer/saver
+	- video viewer/saver
+	- bookmarker -> this is simply adding a link to agaeter+
+	- find out where images are in comics, etc, so see if auto-embed is worth it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################### OLD BELOW THIS LINE
+
+
+
+
 filter_images_strings -> for paths like /icons/ and other things that are just noise
 hosts -> to further filter trackers and the like
 

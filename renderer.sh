@@ -21,13 +21,28 @@
 # saving env varibles for mutt, other programs that you can't alter env on the fly.
 # Saving image links to $XDG_CACHE_HOME/newsboat_img_links as a read/write communication
 # Saving URLS found to $XDG_CACHE_HOME/newsboat_links as read/write communication
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/newsbeuter_dangerzone"
+# Follows newboat paths
+export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 source "${CONFIG_DIR}/muna.sh"
 
-CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.local/state}
-if [ -z "${XDG_CACHE_HOME}" ];then
-    export XDG_CACHE_HOME="${HOME}/.config"
+if [[ -d "$HOME/.newsboat" ]]; then
+    CACHE_DIR="$HOME/.newsboat"
+else
+    CACHE_DIR="$HOME/.local/share/newsboat"
+    mkdir -p "$CACHE_DIR"
 fi
+
+if [[ -d "$HOME/.newsboat" ]]; then
+    CONFIG_DIR="$HOME/.newsboat"
+else
+    CONFIG_DIR="$HOME/.config/newsboat"
+    mkdir -p "$CONFIG_DIR"
+fi
+
+
+
+
+
 CacheFile=${CACHE_DIR}/newsboat_img_links
 echo "" > "${CacheFile}"
 LinksCacheFile=${CACHE_DIR}/newsboat_links
@@ -80,8 +95,12 @@ if [ $# -eq 0 ]; then
     input=$(cat)
 else
     if [ $(echo "${1}" | grep -c http) -gt 0 ];then
-        # render a webpage
-        PROCESSED=$(elinks "${1}" -dump -dump-charset UTF-8 -dump-width 130)
+		# render a webpage
+        if [[ "${show_links}" != "true" ]];then
+			PROCESSED=$(elinks "${1}" -dump -no-numbering -no-references -dump-charset UTF-8 -dump-width 130)
+        else
+			PROCESSED=$(elinks "${1}" -dump -dump-charset UTF-8 -dump-width 130)
+		fi
     else
         # it's a file, parse it this way
         # this is where mutt comes in, so check for html/xml here.
@@ -111,7 +130,8 @@ if [ -z "$PROCESSED" ];then
     antimatch=$(echo "${input}" | pup 'div[style*="display: none;"],div[style*="display:none;"], div[style*="visibility: hidden;"], div[style*="overflow: hidden;"]')
     echo " " # <- leading whitespace, do not delete
     lynx_vars=""
-    if [ "${show_links}" != "true" ];then
+    if [[ "${show_links}" != "true" ]];then
+		exit
         if [ "$antimatch" != "" ];then
             PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -nolist -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
         else
