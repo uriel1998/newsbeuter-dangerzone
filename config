@@ -51,10 +51,21 @@ show-read-feeds yes
 text-width 120
 html-renderer "renderer.sh"
 external-url-viewer "urlview"
+  
+# -- Prettyfying --------------------------------------------------------
 
-feedlist-format "%?T?║%4i %n %8u %8T %t &╠═══════════════════════════════════════════════════════════════%t?"
-highlight feedlist "[║│]" color3 color0
-highlight feedlist "╠═.*" color3 color0 
+selecttag-title-format "╭──[ Select Category ]──────────────────────────"
+selecttag-format "├─ [%2i] %-28T │ %4n unread │ %2f active feeds │ %2u total"
+
+feedlist-title-format "╭──[ Select Feed ]──────────────────────────"
+feedlist-format "  %?n?◆&◇? [%3i] %-42t %> %T %11u"
+
+#feedlist-format "%?T?║%4i %n %8u %8T %t &╠═══════════════════════════════════════════════════════════════%t?"
+
+
+
+#highlight feedlist "[║│]" color3 color0
+#highlight feedlist "╠═.*" color3 color0 
 
 # -- Bookmarks ---------------------------------------------------------
 bookmark-cmd "bookmark.sh"
@@ -86,8 +97,8 @@ macro r set show-read-feeds no
 unbind-key r all
 unbind-key j all
 unbind-key k all
-unbind-key NPAGE all
-unbind-key PPAGE all
+#unbind-key NPAGE all
+#unbind-key PPAGE all
 unbind-key \ all
 unbind-key / all
 
@@ -101,8 +112,8 @@ bind-key n next-unread
 bind-key \ set-tag
 bind-key k next-unread-feed
 bind-key j prev-unread-feed
-bind-key NPAGE next-unread-feed
-bind-key PPAGE prev-unread-feed
+#bind-key NPAGE next-unread-feed
+#bind-key PPAGE prev-unread-feed
 bind-key ] next-unread-feed
 bind-key [ prev-unread-feed
 bind-key / select-tag

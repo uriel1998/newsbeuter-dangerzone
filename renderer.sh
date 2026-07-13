@@ -124,18 +124,18 @@ if [ -z "$PROCESSED" ];then
     echo " " # <- leading whitespace, do not delete
     lynx_vars=""
     if [ "$antimatch" != "" ];then
-        PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
+        PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean 2>/dev/null | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
     else
-        PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
+        PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean 2>/dev/null | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
     fi
 fi
-
+printf '%s\n' "${PROCESSED}" > ~/tmp/newsboat-processed.txt
 if [ "$PROCESSED" != "" ];then
     var1=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==1')
     var2=$(printf "%s" "${PROCESSED}" | awk 'BEGIN{RS="References\n"; ORS=""} NR==2')
 
-    if [ "$show_links" = "true" ];then
-        if [ "$clean_links" = "true" ];then
+
+        
             orig_url="${url}"
             var2_clean=""
             while IFS= read -r line; do
@@ -144,26 +144,22 @@ if [ "$PROCESSED" != "" ];then
                     url=""
                     number=$(printf ' %02d' "${line%%.*}")
                     url="${line#*. }"
+                    url="${url%\"}"
                     #url=$(echo "${line}" | awk -F '' '{print $2}')
                     # clean the url
                     #unredirector
                     strip_tracking_url
                     #resassmeble
-                    var2_clean+=$'\t'"${number}. ${url}"$'\n'
+                    var2_clean+="${number}. ${url}"$'\n'
                 else
                     continue
                 fi
             done <<< "${var2}"
             url="${orig_url}"
             var2_clean=$(echo "${var2_clean}" | sort )
-        else
-            # we are showing, but not cleaning, so dumping original in there.
-            var2_clean=$(echo "${var2}" | sort )
-        fi
-    else
-        # if we are not displaying links, we're not going to bother cleaning them.
-        var2_clean=$(echo "${var2}" | sort )
-    fi
+        
+        
+
     echo "${var2_clean}" > "${LinksCacheFile}"
     # Get rid of garbage, translate back. Also remove emphasis and bold that are just over whitespace.
     var=$(printf "%s\n" "${var1}" | sed -e 's/ ⬞/⬞/g' -e 's/ ⬞/⬞/g' -e 's/&#27;/’/g' -e 's/&#39;/’/g' --e 's/â€œ/“/g' -e 's/â€™/’/g' -e 's/â€”/—/g' -e 's/â€�/”/g' -e 's/â€˜/‘/g' -e 's/â€¦/…/g' | sed 's/⬞§[[:space:]]*§⬞//g'  |  sed -e 's/⬞ /⬞/g' -e 's/⬞ /⬞/g' | fold -s -w $WRAP)
@@ -205,7 +201,7 @@ if [ "$PROCESSED" != "" ];then
     # finally removing the paragraph mark, as we're done with it, and moving it all back to var1.
     var1=$(printf "%s\n" "${new_var}" | sed 's/§⬞[[:space:]]*⬞§//g'  | sed 's/⬞§[[:space:]]*§⬞//g'  | sed -e 's/§//g' )
     printf "%s\n" "${var1}" | rich -m -a rounded -d 2,0,2,0 -y --print -W $COLUMNS -c -w $WRAP -
-    if [ "$show_links" = "true" ];then
+
         # The references by themselves
         rich -u
         echo "Visible URLs / References : "
@@ -220,7 +216,7 @@ if [ "$PROCESSED" != "" ];then
             echo " "
             rich -u
         fi
-    fi
+
 else
     echo "Textual data did not process properly."
 fi
