@@ -3,6 +3,9 @@
 helpers.env
 genres.json
 *.diff
+config
+newsbeuter_dangerzone.ini
+
 
 # macOS Junks
 .DS_Store

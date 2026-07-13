@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##############################################################################
 #  onews - a wrapper script to open newsboat with a cheatsheet
@@ -13,7 +13,6 @@
 LOUD=1
 RELOAD=0
 CLEAN=0
-export calling_program="newsbeuter_dangerzone"
 
 display_help () {
     echo "onews --loud [--clean | --reload ]"
@@ -76,6 +75,7 @@ else
     mkdir -p "$CONFIG_DIR"
 fi
 
+
 ConfigFile="${CONFIG_DIR}/newsbeuter_dangerzone.ini"
 if [ -f ${ConfigFile} ];then
     static_columns=$(grep 'static_columns =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
@@ -88,10 +88,11 @@ if [ -f ${ConfigFile} ];then
     clean_links==$(grep 'clean_links =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
 fi
 
-# for now; focus on tmux
-use_kitty="false"
 
 # I *hope* these get picked up by the subshell
+
+PATH=$PATH:"${CONFIG_DIR}"  # <- newsbeuter_dangerzone script executables
+export PATH
 export enabled_out_dir
 export save_directory
 export show_links
@@ -137,7 +138,7 @@ if [ $c_tmux -gt 0 ];then
         preview_pane=$(tmux list-panes -F "#D" | grep -v "$o_pane" | grep -v "$side_pane")
         # to make the renderer use the section width
         tmux select-pane -t "$preview_pane"
-        tmux send-keys -t "$preview_pane" /home/steven/.newsboat/renderer_images.sh Enter     # TODO - Need to remove absolute path here.
+        tmux send-keys -t "$preview_pane" "${CONFIG_DIR}/renderer_images.sh Enter"     # TODO - Need to remove absolute path here.
         tmux select-pane -t "$o_pane"
     fi
 fi

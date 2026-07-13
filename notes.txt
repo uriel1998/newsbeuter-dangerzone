@@ -1,4 +1,4 @@
-To be honest, the profiles was overkill.  Backing off from that, tearing those bits out. 
+To be honest, the profiles was overkill.  Backing off from that, tearing those bits out.
 
 
 tweaked newsboat to work with TTrss better
@@ -13,14 +13,58 @@ tweaked newsboat to work with TTrss better
 
 
 
+# Anti-tracking, using a hosts list if present
+# place the hosts list in the script directory (NOT where you symlinked it to!)
+# https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+# Not needed if you use a pi-hole or the rest, though it saves some time.
+hosts_file="${SCRIPT_DIR}/hosts"
+if [ -f "${hosts_file}" ];then 
+    ANTITRACKING=1
+fi
 
 
 
+	4.21. XDG Base Directory Support
+
+	Newsboat implements limited support for the XDG Base Directory Specification. It needs to be set up manually by creating the following directories:
+
+	    ~/.local/share/newsboat/
+	    ~/.config/newsboat/
+
+	If these directories exist or the environment variables $XDG_CONFIG_HOME and $XDG_DATA_HOME are set, newsboat will use these directories, otherwise it will default to ~/.newsboat as its configuration directory.
+
+	If you’re currently using ~/.newsboat/ but wish to migrate to XDG directories, you should move the files as follows:
+
+	config, urls
+	    to $HOME/.config/newsboat/
+	cache.db, history.search, history.cmdline, queue
+	    to $HOME/.local/share/newsboat/
 
 
 
+		Emit JSON lines for external tooling:
 
+		```bash
+		./mpdcontrol.sh --emit-json --stations
+		```
 
+		Skip source collection and `fzf` entirely by providing one JSON input record:
+
+		```bash
+		./mpdcontrol.sh --input '{"source":"station","payload":"/home/steven/.config/mpdq/General_mix.cfg"}'
+		```
+
+		The script also accepts the shell-expanded unquoted form:
+
+		```bash
+		./mpdcontrol.sh --input {"source":"station","payload":"/home/steven/.config/mpdq/General_mix.cfg"}
+		```
+
+		For example, to directly add shuffled psytrance tracks with a limit of 10:
+
+		```bash
+		./mpdcontrol.sh --shuffle --limit 10 --input '{"source":"genre","payload":"psytrance"}'
+		```
 
 
 #################### OLD BELOW THIS LINE

@@ -1,5 +1,5 @@
 # -- Configuration for newsboat for general-purpose reading ------------
-# -- LIVE VERSION STEVEN --#
+
 # config, cache, log paths set by wrapper script
 # Also path to scripts for newsbeuter_dangerzone is added for shell by wrapper script
 
@@ -10,13 +10,9 @@ opml-url ""
 # -- GUI ---------------------------------------------------------------
 show-keymap-hint yes
 selecttag-format "[%2i] %T (%n unread articles in %f feeds, %u feeds total)"
-#feedlist-format "[%i] %u - %t - (%T)"
 
 # -- TinyTinyRss -------------------------------------------------------
-urls-source "ttrss"
-ttrss-url "https://rss.stevesaus.me"
-ttrss-login "ssaus"
-ttrss-password "1originalwombat"
+
 # ^E is flag
 ttrss-flag-star "s"
 ttrss-flag-publish "p"
@@ -25,36 +21,38 @@ prepopulate-query-feeds yes
 # -- Updating ----------------------------------------------------------
 refresh-on-startup no
 suppress-first-reload yes
-#auto-reload yes
-#reload-threads 2
-#reload-time 900
-#download-full-page yes
+auto-reload yes
+reload-threads 30
+reload-time 900
+download-full-page yes
 download-path "/home/steven/downloads"
 
 # hide articles matching: ---------------------------------------------
-#ignore-article "*" "title =~ \"Sponsor\""
-#ignore-article "*" "title =~ \"Advertisement\""
-#ignore-mode "download"
+ignore-article "*" "title =~ \"Sponsor\""
+ignore-article "*" "title =~ \"Advertisement\""
+ignore-mode "display"
 
 # -- Purging ----------------------------------------------------------
-keep-articles-days 15
+keep-articles-days 30
 cleanup-on-quit yes
 delete-read-articles-on-quit yes
-max-items 100
+max-items 50
 
 # -- Displaying ----------------------------------------------------------
-browser "tmux new-window -n 'article' \"rdrview -H %u | renderer.sh | less\""
+browser "tmux new-window -n 'article' \"curl %u | renderer.sh | less\""
+
+# Examples using rdrview and my reading script
 # While tempting to use tdab here, newsboat graphics get messed up.
+# browser "tmux new-window -n 'article' \"rdrview -H %u | renderer.sh | less\""
+
+
+
 display-article-progress yes
 feed-sort-order unreadarticlecount-desc
-show-read-feeds yes
+show-read-feeds no
 text-width 120
 html-renderer "renderer.sh"
 external-url-viewer "urlview"
-
-feedlist-format "%?T?║%4i %n %8u %8T %t &╠═══════════════════════════════════════════════════════════════%t?"
-highlight feedlist "[║│]" color3 color0
-highlight feedlist "╠═.*" color3 color0 
 
 # -- Bookmarks ---------------------------------------------------------
 bookmark-cmd "bookmark.sh"
@@ -64,8 +62,8 @@ bookmark-autopilot yes
 # -- Macros -----------------------------------------------------------
 
 macro Y set html-renderer "export show_links=true;renderer.sh"
-macro y set html-renderer "export show_links=false;export clean_links=false;renderer.sh"
-macro C set html-renderer "export clean_links=true;export show_links=true;renderer.sh"
+macro y set html-renderer "export show_links=false;renderer.sh"
+macro C set html-renderer "export clean_links=true;renderer.sh"
 macro c set html-renderer "export clean_links=false;renderer.sh"
 macro R set show-read-feeds yes
 macro r set show-read-feeds no

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##############################################################################
 # muna, by Steven Saus 3 May 2022
@@ -17,8 +17,8 @@ function loud() {
 
 
 strip_tracking_url() {
-	# because this is a bash function, it's using the variable $url as the returned
-	# variable.  So there's no real "return" other than setting that var.
+    # because this is a bash function, it's using the variable $url as the returned
+    # variable.  So there's no real "return" other than setting that var.
     local base_no_frag frag path qs cleaned_qs cleaned_url
     local orig_effective clean_effective
 
@@ -94,9 +94,9 @@ strip_tracking_url() {
     if [ "${cleaned_url}" = "${url}" ]; then
         loud "[info] No change after cleaning"
     else
-		loud "[info] Cleaned url to ${url}"
-		url="${cleaned_url}"
-	fi
+        loud "[info] Cleaned url to ${url}"
+        url="${cleaned_url}"
+    fi
 }
 
 function unredirector {

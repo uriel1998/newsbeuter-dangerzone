@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ##############################################################################
 #
@@ -21,32 +21,32 @@
 # saving env varibles for mutt, other programs that you can't alter env on the fly.
 # Saving image links to $XDG_CACHE_HOME/newsboat_img_links as a read/write communication
 # Saving URLS found to $XDG_CACHE_HOME/newsboat_links as read/write communication
-# Follows newboat paths
-export SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+if [ "${CONFIG_DIR}" == "" ];then
+    if [[ -d "$HOME/.newsboat" ]]; then
+        CONFIG_DIR="$HOME/.newsboat"
+    else
+        CONFIG_DIR="$HOME/.config/newsboat"
+        mkdir -p "$CONFIG_DIR"
+    fi
+fi
+
+if [ "${CACHE_DIR}" == "" ];then
+    # Follows newboat paths
+    if [[ -d "$HOME/.newsboat" ]]; then
+        CACHE_DIR="$HOME/.newsboat"
+    else
+        CACHE_DIR="$HOME/.local/share/newsboat"
+        mkdir -p "$CACHE_DIR"
+    fi
+fi
+
 source "${CONFIG_DIR}/muna.sh"
-
-if [[ -d "$HOME/.newsboat" ]]; then
-    CACHE_DIR="$HOME/.newsboat"
-else
-    CACHE_DIR="$HOME/.local/share/newsboat"
-    mkdir -p "$CACHE_DIR"
-fi
-
-if [[ -d "$HOME/.newsboat" ]]; then
-    CONFIG_DIR="$HOME/.newsboat"
-else
-    CONFIG_DIR="$HOME/.config/newsboat"
-    mkdir -p "$CONFIG_DIR"
-fi
-
-
-
 
 
 CacheFile=${CACHE_DIR}/newsboat_img_links
-echo "" > "${CacheFile}"
+: >  "${CacheFile}"
 LinksCacheFile=${CACHE_DIR}/newsboat_links
-echo "" > "${LinksCacheFile}"
+: > "${LinksCacheFile}"
 PLAINTEXT=0
 
 # Plaintext may have URLs in it - say from mutt - so we need to pull them here.
@@ -61,15 +61,11 @@ extract_urls_from_plaintext() {
         ((counter++))
         printf '   %d. %s\n' "${counter}" "${url}"
     done < <(
-        grep -Eo 'http?s://.+[^[[:space:]]' <<< "${text}"
+        grep -Eo 'https?://[^[:space:]]+' <<< "${text}"
     )
 }
 
-
-#resetting kitty display if existant
-if [ -S "/tmp/mykitty" ];then
-        kitty @ --to unix:/tmp/mykitty send-text --match "title:^newsboat_image_display" $'\x1b[D'
-fi
+ 
 
 # If you have issues with tput, export COLUMNS prior to launching your app
 
@@ -95,12 +91,8 @@ if [ $# -eq 0 ]; then
     input=$(cat)
 else
     if [ $(echo "${1}" | grep -c http) -gt 0 ];then
-		# render a webpage
-        if [[ "${show_links}" != "true" ]];then
-			PROCESSED=$(elinks "${1}" -dump -no-numbering -no-references -dump-charset UTF-8 -dump-width 130)
-        else
-			PROCESSED=$(elinks "${1}" -dump -dump-charset UTF-8 -dump-width 130)
-		fi
+        # render a webpage
+            PROCESSED=$(elinks "${1}" -dump -no-numbering -no-references -dump-charset UTF-8 -dump-width 130)
     else
         # it's a file, parse it this way
         # this is where mutt comes in, so check for html/xml here.
@@ -118,6 +110,7 @@ else
         fi
     fi
 fi
+
 if [ -z "$PROCESSED" ];then
     # putting image links in cache file here.
     ImageLinks=""
@@ -130,19 +123,10 @@ if [ -z "$PROCESSED" ];then
     antimatch=$(echo "${input}" | pup 'div[style*="display: none;"],div[style*="display:none;"], div[style*="visibility: hidden;"], div[style*="overflow: hidden;"]')
     echo " " # <- leading whitespace, do not delete
     lynx_vars=""
-    if [[ "${show_links}" != "true" ]];then
-		exit
-        if [ "$antimatch" != "" ];then
-            PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -nolist -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
-        else
-            PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -nolist -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
-        fi
+    if [ "$antimatch" != "" ];then
+        PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
     else
-        if [ "$antimatch" != "" ];then
-            PROCESSED=$(echo "${input}"  | pup | grep -vF "${antimatch}" | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
-        else
-            PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
-        fi
+        PROCESSED=$(echo "${input}"  | pup | sed -e 's/<div[^>]*>//g' | sed 's/<img[^>]\+>//g' | sed -e 's/<!-- -->//g'| sed -e 's/<em[^>]*>/§⬞/g' | sed -e 's/<\/em>/⬞§/g' | sed -e 's/<strong[^>]*>/§⬞/g' | sed -e 's/<\/strong>/⬞§/g' | sed -e 's/<\/tr>/<\/tr><br \/>/g'| hxclean | hxnormalize -e -L -s 2>/dev/null | hxunent | lynx -dump -stdin -assume_charset=UTF-8 -force_empty_hrefless_a -hiddenlinks=ignore -html5_charsets -dont_wrap_pre -width=$WRAP -collapse_br_tags | grep -v "READ MORE:" )
     fi
 fi
 
@@ -158,16 +142,16 @@ if [ "$PROCESSED" != "" ];then
                 if [[ "${line}" == *http* ]]; then
                     # split references lines
                     url=""
-                    number="${line%%.*}"
+                    number=$(printf ' %02d' "${line%%.*}")
                     url="${line#*. }"
                     #url=$(echo "${line}" | awk -F '' '{print $2}')
                     # clean the url
-                    unredirector
+                    #unredirector
                     strip_tracking_url
                     #resassmeble
                     var2_clean+=$'\t'"${number}. ${url}"$'\n'
                 else
-                    var2_clean+=$(echo -e " ")
+                    continue
                 fi
             done <<< "${var2}"
             url="${orig_url}"
@@ -232,7 +216,7 @@ if [ "$PROCESSED" != "" ];then
         if [ "${ImageLinks}" != "" ];then
             echo "Image Links Present : "
             echo " "
-            echo "${ImageLinks}"
+            echo "${ImageLinks}" | nl -w2 -n rz -s '. '
             echo " "
             rich -u
         fi
