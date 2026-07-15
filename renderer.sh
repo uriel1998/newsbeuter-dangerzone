@@ -114,7 +114,8 @@ fi
 if [ -z "$PROCESSED" ];then
     # putting image links in cache file here.
     ImageLinks=""
-    ImageLinks=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep  -e "^http" | grep -Fvf "${CONFIG_DIR}/filter_images_strings" - )
+    echo "${input}" > ~/tmp/test.html
+    ImageLinks=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep  -e "^http" )
     if [ "${ImageLinks}" != "" ];then
         echo "${ImageLinks}" > "${CacheFile}"
     fi
@@ -211,7 +212,6 @@ if [ "$PROCESSED" != "" ];then
         rich -u
         if [ "${ImageLinks}" != "" ];then
             echo "Image Links Present : "
-            echo " "
             echo "${ImageLinks}" | nl -w2 -n rz -s '. '
             echo " "
             rich -u

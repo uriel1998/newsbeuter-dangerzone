@@ -78,14 +78,14 @@ fi
 
 ConfigFile="${CONFIG_DIR}/newsbeuter_dangerzone.ini"
 if [ -f ${ConfigFile} ];then
-    static_columns=$(grep 'static_columns =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
-    save_directory=$(grep 'save_directory =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
-    enabled_out_dir=$(grep 'enabled_out_dir =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
+    static_columns=$(grep 'static_columns=' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
+    save_directory=$(grep 'save_directory=' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
+    enabled_out_dir=$(grep 'enabled_out_dir=' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
     if [ "${enabled_out_dir}" = "" ];then
         enabled_out_dir="${CONFIG_DIR}/out_enabled"
     fi
-    show_links==$(grep 'show_links =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
-    clean_links==$(grep 'clean_links =' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
+    show_links==$(grep 'show_links=' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
+    clean_links==$(grep 'clean_links=' "${ConfigFile}" | sed 's/ //g' | awk -F '=' '{print $2}')
 fi
 
 
@@ -138,7 +138,7 @@ if [ $c_tmux -gt 0 ];then
         preview_pane=$(tmux list-panes -F "#D" | grep -v "$o_pane" | grep -v "$side_pane")
         # to make the renderer use the section width
         tmux select-pane -t "$preview_pane"
-        tmux send-keys -t "$preview_pane" "${CONFIG_DIR}/renderer_images.sh Enter"     # TODO - Need to remove absolute path here.
+        tmux send-keys -t "$preview_pane" "${CONFIG_DIR}/render_images.sh" Enter     # TODO - Need to remove absolute path here.
         tmux select-pane -t "$o_pane"
     fi
 fi
