@@ -12,8 +12,12 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 save_directory=""
 # reset this file
 default_image="${SCRIPT_DIR}/nbdz_default_image.jpg"
-# DO NOT CHANGE IF USING TMUX TOO; NEEDS TO BE CALLED FROM PANE
-KITTYMODE=0
+# passed in by renderer to note which pane it is.
+ourpane=""
+
+if [[ "${@}" == *"--pane="* ]];then
+    ourpane=$(echo "${@}" | awk -F "=" '{print $2}')
+fi
 
 # Follows newboat paths
 if [[ -d "$HOME/.newsboat" ]]; then
@@ -64,6 +68,7 @@ fi
 show_image (){
     local image="${1}"
 
+
     if [ -z "${image}" ];then
         image="${default_image}"
     fi
@@ -72,13 +77,12 @@ show_image (){
         image=$(printf '%s\n' "$1" | grep -Eo 'https?://[^[:space:]]+')
     fi
     
-if [ "${KITTYMODE}" == "1" ];then 
-    timg -p k "${image}"
-else
-    timg "${image}"
-fi    
+    if [ "$(tmux display-message -p -t "$ourpane" '#{pane_active}')" -eq 1 ]; then
+        timg -p k "${image}"
+    else
+        timg "${image}"
+    fi
 
-    # TODO - test for kitty
 }
 
 save_image (){
@@ -111,27 +115,30 @@ current_line=1
 last_modified=$(stat -c "%Y" "${CacheFile}")
 
 while [ -f "${CacheFile}" ];do
- 
+    clear     
     # show image
     
     total_lines=$(wc -l "${CacheFile}" | awk '{print $1}')
     url=$(head -n ${current_line} "${CacheFile}" | tail -1)
+    #clear
     show_image "${url}"
-
     # present choices
-    if [ $total_lines -gt 1 ];then
-        read -p "──[ Save|Clear|Next|Prev|Kitty|Quit ]──[ $current_line / $total_lines ]──[ " -t 10 -n 1 reply
-    else 
-        read -p "──[ Save|Clear|Kitty|Quit ]──────────────────[ " -t 10 -n 1 reply
+    # refresh rate, display mode different if not focused    
+    if [ "$(tmux display-message -p -t "$ourpane" '#{pane_active}')" -eq 1 ]; then
+        if [ $total_lines -gt 1 ];then
+            read -p "──[ Save|Clear|Next|Prev|Quit ]──[ $current_line / $total_lines ]──[ " -t 10 -n 1 reply
+        else 
+            read -p "──[ Save|Clear|Quit ]──────────────────[ " -t 10 -n 1 reply
+        fi
+    else
+        if [ $total_lines -gt 1 ];then
+            read -p "──[ Save|Clear|Next|Prev|Quit ]──[ $current_line / $total_lines ]──[ " -t 3 -n 1 reply
+        else 
+            read -p "──[ Save|Clear|Quit ]──────────────────[ " -t 3 -n 1 reply
+        fi
     fi
+
     case "${reply}" in
-        K|k) 
-            if [ "$KITTYMODE" == "0" ];then
-                KITTYMODE=1
-            else
-                KITTYMODE=0
-            fi
-            ;;
         S|s)
             save_image "${url}"
             ;;

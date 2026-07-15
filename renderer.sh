@@ -114,7 +114,14 @@ fi
 if [ -z "$PROCESSED" ];then
     # putting image links in cache file here.
     ImageLinks=""
+    
+    # TODO - use this to clean up lemmy, politico, etc image urls
+    
     echo "${input}" > ~/tmp/test.html
+    
+    
+    
+    
     ImageLinks=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep  -e "^http" )
     if [ "${ImageLinks}" != "" ];then
         echo "${ImageLinks}" > "${CacheFile}"

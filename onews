@@ -143,7 +143,7 @@ if [ $c_tmux -gt 0 ];then
         preview_pane=$(tmux list-panes -F "#D" | grep -v "$o_pane" | grep -v "$side_pane")
         # to make the renderer use the section width
         tmux select-pane -t "$preview_pane"
-        tmux send-keys -t "$preview_pane" "${CONFIG_DIR}/render_images.sh" Enter     # TODO - Need to remove absolute path here.
+        tmux send-keys -t "$preview_pane" "${CONFIG_DIR}/render_images.sh --pane=${preview_pane}" Enter     # TODO - Need to remove absolute path here.
         tmux select-pane -t "$o_pane"
     fi
 fi
