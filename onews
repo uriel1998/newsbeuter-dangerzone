@@ -100,6 +100,11 @@ export CONFIG_DIR
 export calling_program
 
 
+#### cleaning mouse droppings
+rm ${CONFIG_DIR}/newsboat_img_links
+rm ${CONFIG_DIR}/newsboat_links
+
+
 ### Deal with clean and RELOAD
 if [ "$CLEAN" != "0" ];then
         loud "[info] Cleaning database."

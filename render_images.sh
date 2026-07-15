@@ -3,14 +3,17 @@
 ##############################################################################
 #
 #  Gettting, displaying images in a tmux panel
-#  (c) Steven Saus 2024
+#  (c) Steven Saus 2026
 #  Licensed under the MIT license
 #
 ##############################################################################
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 save_directory=""
+# reset this file
 default_image="${SCRIPT_DIR}/nbdz_default_image.jpg"
+# DO NOT CHANGE IF USING TMUX TOO; NEEDS TO BE CALLED FROM PANE
+KITTYMODE=0
 
 # Follows newboat paths
 if [[ -d "$HOME/.newsboat" ]]; then
@@ -44,12 +47,9 @@ fi
 
 CacheFile=${CACHE_DIR}/newsboat_img_links
 if [ ! -f "${CacheFile}" ];then
-    touch "${CacheFile}"
+    echo "${default_image}" > "${CacheFile}"
 fi
-# reset this file
-CurrImageFile=${CACHE_DIR}/newsboat_curr_img
-echo "" > ${CurrImageFile}
-TMPDIR=$(mktemp)
+
 
 ##############################################################################
 # loud outputs on stderr
@@ -62,26 +62,34 @@ TMPDIR=$(mktemp)
  
 
 show_image (){
-    local image="${@}"
-    if [ ! -f "${image}" ];then
-        image=$(echo "${@}" | grep -Eo 'https?://[^[:space:]]+')
-    fi
-    if [ "${image}" == "" ];then
+    local image="${1}"
+
+    if [ -z "${image}" ];then
         image="${default_image}"
     fi
+
+    if [ ! -f "${image}" ];then
+        image=$(printf '%s\n' "$1" | grep -Eo 'https?://[^[:space:]]+')
+    fi
+    
+if [ "${KITTYMODE}" == "1" ];then 
     timg -p k "${image}"
+else
+    timg "${image}"
+fi    
+
+    # TODO - test for kitty
 }
 
 save_image (){
-
+    
     local ua="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:140.0) Gecko/20100101 Firefox/140.0"
-    local image_url=$(echo "${@}" | grep -Eo 'https?://[^[:space:]]+')
+    local image_url=$(echo "${1}" | grep -Eo 'https?://[^[:space:]]+')
     
     #removing query strings, getting filename
     filename="${image_url%%\?*}"
     filename="${filename##*/}"
     loud "[info] Saving file as ${save_directory}/${filename}" #TODO - auto-increment
-    notify-send "${save_directory}/${filename}"
     wget --no-check-certificate -erobots=off --user-agent="${ua}" -O "${save_directory}/${filename}" "${image_url}" 
 }
 
@@ -95,28 +103,35 @@ save_image (){
 # do we have a kitty socket? (and are we allowed to use it)
 # are we in tmux? (and are we allowed to use popups)
 
-show_image "${default_image}"
 
 # Determine what is being passed in to us.
 # * nothing - look to image cache file, move pointer to working name
 current_line=1
-command=""
 # get last mod
 last_modified=$(stat -c "%Y" "${CacheFile}")
+
 while [ -f "${CacheFile}" ];do
-    clear
+ 
     # show image
     
+    total_lines=$(wc -l "${CacheFile}" | awk '{print $1}')
     url=$(head -n ${current_line} "${CacheFile}" | tail -1)
     show_image "${url}"
-    total_lines=$(wc -l "${CacheFile}" | awk '{print $1}')
+
     # present choices
     if [ $total_lines -gt 1 ];then
-        read -p "──[ Save|Clear|Next|Previous|Quit ]──[ " -t 10 -n 1 reply
+        read -p "──[ Save|Clear|Next|Prev|Kitty|Quit ]──[ $current_line / $total_lines ]──[ " -t 10 -n 1 reply
     else 
-        read -p "──[ Save|Clear|Quit ]──[ " -t 10 -n 1 reply
+        read -p "──[ Save|Clear|Kitty|Quit ]──────────────────[ " -t 10 -n 1 reply
     fi
     case "${reply}" in
+        K|k) 
+            if [ "$KITTYMODE" == "0" ];then
+                KITTYMODE=1
+            else
+                KITTYMODE=0
+            fi
+            ;;
         S|s)
             save_image "${url}"
             ;;
@@ -151,7 +166,9 @@ while [ -f "${CacheFile}" ];do
             ;;
     esac
 done
- 
+
+
+# perhaps enact a blacklist somewhere? 
 # * file list of urls -- substitute pointer to working name
 #   * get list of urls, check against ANTITRACKING
 #   * loop and pass to show_the_image
