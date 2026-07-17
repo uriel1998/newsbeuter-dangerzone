@@ -14,6 +14,7 @@ save_directory=""
 default_image="${SCRIPT_DIR}/nbdz_default_image.jpg"
 # passed in by renderer to note which pane it is.
 ourpane=""
+use_kitty_images=0
 
 if [[ "${@}" == *"--pane="* ]];then
     ourpane=$(echo "${@}" | awk -F "=" '{print $2}')
@@ -77,12 +78,16 @@ show_image (){
         image=$(printf '%s\n' "$1" | grep -Eo 'https?://[^[:space:]]+')
     fi
     
-    if [ "$(tmux display-message -p -t "$ourpane" '#{pane_active}')" -eq 1 ]; then
+    if [ $use_kitty_images -eq 1 ];then
         timg -p k "${image}"
     else
-        timg "${image}"
+    
+        if [ "$(tmux display-message -p -t "$ourpane" '#{pane_active}')" -eq 1 ]; then
+            timg -p k "${image}"
+        else
+            timg "${image}"
+        fi
     fi
-
 }
 
 save_image (){
@@ -113,9 +118,9 @@ save_image (){
 current_line=1
 # get last mod
 last_modified=$(stat -c "%Y" "${CacheFile}")
-
+clear
 while [ -f "${CacheFile}" ];do
-    clear     
+    echo ""
     # show image
     
     total_lines=$(wc -l "${CacheFile}" | awk '{print $1}')
@@ -132,13 +137,20 @@ while [ -f "${CacheFile}" ];do
         fi
     else
         if [ $total_lines -gt 1 ];then
-            read -p "──[ Save|Clear|Next|Prev|Quit ]──[ $current_line / $total_lines ]──[ " -t 3 -n 1 reply
+            read -p "──[ Save|Clear|Next|Prev|Kitty|Quit ]──[ $current_line / $total_lines ]──[ " -t 5 -n 1 reply
         else 
-            read -p "──[ Save|Clear|Quit ]──────────────────[ " -t 3 -n 1 reply
+            read -p "──[ Save|Clear|Kitty|Quit ]──────────────────[ " -t 5 -n 1 reply
         fi
     fi
 
     case "${reply}" in
+        K|k) 
+            if [ $use_kitty_images -eq 1 ];then
+                use_kitty_images=0
+            else
+                use_kitty_images=1 
+            fi
+            ;;
         S|s)
             save_image "${url}"
             ;;

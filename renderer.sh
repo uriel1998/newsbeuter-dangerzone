@@ -42,11 +42,12 @@ fi
 
 source "${CONFIG_DIR}/muna.sh"
 
-
+PriorArticle=${CACHE_DIR}/prior_article
+touch "${PriorArticle}"
 CacheFile=${CACHE_DIR}/newsboat_img_links
-: >  "${CacheFile}"
+touch "${CacheFile}"
 LinksCacheFile=${CACHE_DIR}/newsboat_links
-: > "${LinksCacheFile}"
+touch "${LinksCacheFile}"
 PLAINTEXT=0
 
 # Plaintext may have URLs in it - say from mutt - so we need to pull them here.
@@ -90,6 +91,7 @@ if [ $# -eq 0 ]; then
     # this is where newsboat comes in.
     input=$(cat)
 else
+    notify-send "hi"
     if [ $(echo "${1}" | grep -c http) -gt 0 ];then
         # render a webpage
             PROCESSED=$(elinks "${1}" -dump -no-numbering -no-references -dump-charset UTF-8 -dump-width 130)
@@ -109,22 +111,14 @@ else
             exit 90
         fi
     fi
-fi
+fi    
 
 if [ -z "$PROCESSED" ];then
     # putting image links in cache file here.
     ImageLinks=""
-    
-    # TODO - use this to clean up lemmy, politico, etc image urls
-    
-    echo "${input}" > ~/tmp/test.html
-    
-    
-    
-    
     ImageLinks=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep  -e "^http" )
     if [ "${ImageLinks}" != "" ];then
-        echo "${ImageLinks}" > "${CacheFile}"
+        printf '%s\n' "${ImageLinks}" > "${CacheFile}"
     fi
     # Looking for parts that wouldn't display anyway; this completely cleans up a LOT.
     antimatch=""

@@ -48,6 +48,9 @@ text-width 120
 html-renderer "renderer.sh"
 external-url-viewer "urlview"
 
+# -- Passing media enclosure to viewer ----------------------------------
+macro m set browser "newsboat-media.sh '%u'"; one; set browser firefox
+
 
 # -- GUI ---------------------------------------------------------------
 show-keymap-hint yes
