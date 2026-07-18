@@ -116,7 +116,7 @@ fi
 if [ -z "$PROCESSED" ];then
     # putting image links in cache file here.
     ImageLinks=""
-    ImageLinks=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep  -e "^http" )
+    ImageLinks=$(echo "${input}" | pup | grep -oP '<img(?![^>]*style="[^"]*(display\s*:\s*(none|hidden|overflow))[^"]*")[^>]+src="\K[^"]+' | grep  -e "^http" | grep -Ei '\.(jpg|jpeg|png|gif|bmp|webp)' )
     if [ "${ImageLinks}" != "" ];then
         printf '%s\n' "${ImageLinks}" > "${CacheFile}"
     fi

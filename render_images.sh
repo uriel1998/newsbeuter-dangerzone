@@ -180,6 +180,7 @@ while [ -f "${CacheFile}" ];do
             else
                 # reset last mod
                 last_modified=$(stat -c "%Y" "${CacheFile}")
+                total_lines=$(wc -l "${CacheFile}" | awk '{print $1}')
                 continue
             fi
             ;;

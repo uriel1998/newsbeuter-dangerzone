@@ -8,7 +8,7 @@
 • \[/\] — prev/next-unread-feed  
 
 # Macros  
-• ,p & ,P — show images/save images  
+• ,m - Show enclosure images in image pane
 • ,y & ,Y — show links/hide links
 • ,c & ,c — clean links/don't clean links   
 • ,R & ,r — show/hide read feeds  
